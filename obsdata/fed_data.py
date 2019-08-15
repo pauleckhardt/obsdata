@@ -2,7 +2,7 @@ import os
 import requests
 import csv
 import pkg_resources
-from datetime import date, datetime
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -12,7 +12,6 @@ DATADIR = pkg_resources.resource_filename(__name__, "")
 request_url = "http://views.cira.colostate.edu/fed/Reports/RawDataReport2.aspx"
 sites_file = os.path.join(DATADIR, "fedsites.csv")
 dataset_file = os.path.join(DATADIR, "dataset.csv")
-out_dir = "/tmp"
 
 
 def set_request_data(site_id, parameter_id, start_date, end_date):
@@ -90,7 +89,7 @@ def get_parameter_info(parameter_code):
     return parameter_info
 
 
-def get_data(request_url, request_data):
+def get_data(request_data):
 
     r = requests.post(request_url, data=request_data)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -156,7 +155,7 @@ def parse_fed_data(rows):
     }
 
 
-def save_data(data):
+def save_data(out_dir, data):
     """
         the 'World Data Centre' format is used,
         It has 32 header lines which describes the site and data,
@@ -242,38 +241,3 @@ def save_data(data):
                         row[3].strftime("%Y-%m-%d"), row[4].rjust(11)
                     )
                 )
-
-
-if __name__ == "__main__":
-
-    # example showing how to retrieve data from the
-    # Federal Land Manager Environmental Database
-    # http://views.cira.colostate.edu/fed/QueryWizard/
-    # and store the data in the 'World Data Centre' format
-
-    # information about available sites can be found
-    # in fedsites.csv
-    # use e.g. site_codes = get_all_site_codes()
-
-    # choose a site to get data from
-    site = "BADL1"  # this is the Code for Badlands NP
-
-    dataset = "IMPROVE Aerosol"
-    parameter = "OCf"  # code for Carbon, Organic Total (Fine)
-    start_date = date(2017, 1, 1)
-    end_date = date(2017, 1, 31)
-
-    site_info = get_site_info(site)
-
-    parameter_info = get_parameter_info(parameter)
-
-    request_data = set_request_data(
-        site_info["ID"],
-        parameter_info["ParameterID"],
-        start_date,
-        end_date
-    )
-
-    data = get_data(request_url, request_data)
-
-    save_data(data)
