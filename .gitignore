@@ -1,0 +1,14 @@
+*.pyc
+*~
+*.log
+.cache
+.coverage
+.tox/
+__pycache__/
+coverage.xml
+pytest.xml
+.pytest_cache
+*.sw*
+*.orig
+.mypy_cache
+

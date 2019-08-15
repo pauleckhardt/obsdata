@@ -1,18 +1,21 @@
 import os
 import requests
 import csv
+import pkg_resources
 from datetime import date, datetime
 from bs4 import BeautifulSoup
 
 
+DATADIR = pkg_resources.resource_filename(__name__, "")
+
+
 request_url = "http://views.cira.colostate.edu/fed/Reports/RawDataReport2.aspx"
-sites_file = "/home/bengt/work/obsdata/download/fedsites.csv"
-dataset_file = "/home/bengt/work/obsdata/download/dataset.csv"
-out_dir = "/home/bengt/work/obsdata/download/"
+sites_file = os.path.join(DATADIR, "fedsites.csv")
+dataset_file = os.path.join(DATADIR, "dataset.csv")
+out_dir = "/tmp"
 
 
 def set_request_data(site_id, parameter_id, start_date, end_date):
-
     return {
         "agidse": 1,
         "dt": "{0}>{1}".format(
@@ -106,13 +109,11 @@ def parse_fed_data(rows):
         return [
             row_nr for row_nr, row in enumerate(rows) if row == string][0]
 
-
     def get_data_dict(rows):
         datadict = {}
         for item, value in zip(rows[0].split(';'), rows[1].split(';')):
             datadict[item] = value
         return datadict
-
 
     metadata = {}
     for item in ["Datasets", "Sites", "Parameters"]:
@@ -162,7 +163,8 @@ def save_data(data):
         then the data-records.
     """
     header_lines = 32
-    title = "{0} {1} mean data".format(data["parameter_code"], data["frequency"])
+    title = "{0} {1} mean data".format(
+        data["parameter_code"], data["frequency"])
     file_name = "{0}_{1}_{2}.dat".format(
         data["site_code"].lower(),
         data["parameter_code"].lower(),
@@ -173,7 +175,9 @@ def save_data(data):
     data_version = "201405"  # ?
     station_name = data["site"]
     station_category = "global"  # ?
-    observation_category = "Air sampling observation at a stationary platform"
+    observation_category = (
+        "Air sampling observation at a stationary platform"
+    )
     country = data["state"]  # this is state, not country
     contributor = "NUI"
     latitude = data["latitude"]
@@ -189,11 +193,10 @@ def save_data(data):
     )
     time_interval = data["frequency"]
     measurement_unit = data["units"]
-    measurement_method = "Light absorption analysis (UV)"  # how do we get this information
-    sampling_type = "continuous"  # how do we get this information ?
-    measurement_scale = "National Physical Laboratory (UK)"  # how do we get this information ?
-
-    header_lines = [
+    measurement_method = "Light absorption analysis (UV)"  # ?
+    sampling_type = "continuous"  # ?
+    measurement_scale = "National Physical Laboratory (UK)"  # ?
+    file_header_rows = [
         "C01 TITLE: {}".format(title),
         "C02 FILE NAME: {}".format(file_name),
         "C03 DATA FORMAT: {}".format(data_format),
@@ -219,17 +222,17 @@ def save_data(data):
         "C23 SAMPLING TYPE: {}".format(sampling_type),
         "C24 TIME ZONE: UTC",
         "C25 MEASUREMENT SCALE: {}".format(measurement_scale),
-        "C26 CREDIT FOR USE: This is a formal notification for data users. 'For scientific purposes, access to these data is unlimited",
-        "C27 and provided without charge. By their use you accept that an offer of co-authorship will be made through personal contact",
-        "C28 with the data providers or owners whenever substantial use is made of their data. In all cases, an acknowledgement",
-        "C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'",
+        "C26 CREDIT FOR USE: This is a formal notification for data users. 'For scientific purposes, access to these data is unlimited",  # noqa
+        "C27 and provided without charge. By their use you accept that an offer of co-authorship will be made through personal contact",  # noqa
+        "C28 with the data providers or owners whenever substantial use is made of their data. In all cases, an acknowledgement",  # noqa
+        "C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'",  # noqa
         "C30 COMMENT:",
         "C31",
         "C32   DATE  TIME       DATE  TIME         {}".format(parameter),
     ]
 
     with open(os.path.join(out_dir, file_name), mode='w') as outfile:
-        for row in header_lines:
+        for row in file_header_rows:
             outfile.write("{}\n".format(row))
 
         for index, row in enumerate(data["data"]):
@@ -238,8 +241,7 @@ def save_data(data):
                     "{0} 99:99 9999-99-99 99:99 {1}\n".format(
                         row[3].strftime("%Y-%m-%d"), row[4].rjust(11)
                     )
-               )
-
+                )
 
 
 if __name__ == "__main__":
@@ -254,8 +256,7 @@ if __name__ == "__main__":
     # use e.g. site_codes = get_all_site_codes()
 
     # choose a site to get data from
-    site = "BADL1" # this is the Code for Badlands NP
-
+    site = "BADL1"  # this is the Code for Badlands NP
 
     dataset = "IMPROVE Aerosol"
     parameter = "OCf"  # code for Carbon, Organic Total (Fine)
