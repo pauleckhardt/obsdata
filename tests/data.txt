@@ -1,0 +1,194 @@
+Overview
+
+Overview
+IMPROVE Data Use: For journal publications, please inform Loretta Wilson (loretta.wilson@colostate.edu) of the planned publication. Drafts of publications will be reviewed upon request for issues that could affect the data interpretation. Preferred Reference: Please reference the Malm,et al. (1994) article below when using IMPROVE data. Malm, W. C., J. F. Sisler, D. Huffman, R. A. Eldred, and T. A. Cahill (1994), Spatial and seasonal trends in particle concentration and optical extinction in the United States, J. Geophys. Res., 99, 1347-1370. Preferred Acknowledgment: IMPROVE is a collaborative association of state, tribal, and federal agencies, and international partners. US Environmental Protection Agency is the primary funding source, with contracting and research support from the National Park Service. The Air Quality Group at the University of California, Davis is the central analytical laboratory, with ion analysis provided by Research Triangle Institute, and carbon analysis provided by Desert Research Institute.
+(Also: Prior to use, all data users are encouraged to review the IMPROVE data advisories located on the IMPROVE website: http://vista.cira.colostate.edu/IMPROVE/Data/QA_QC/Advisory.htm)
+
+Datasets
+
+Dataset;Code;StartDate;EndDate;Frequency;NumRecords
+IMPROVE Aerosol;IMPFSPED;3/2/1988 12:00:00 AM;11/28/2018 12:00:00 AM;Daily;28902878
+
+Sites
+
+Site;Code;Dataset;State;County;Latitude;Longitude;Elevation;StartDate;EndDate;NumPOCs
+Badlands NP;BADL1;IMPFSPED;SD;46071;43.74350;-101.94120;736;03/02/1988;11/28/2018;1
+
+Parameters
+
+DatasetID;Parameter;Code;AQSCode;Units;Description
+10001;Carbon, Organic Total (Fine);OCf;88320;µg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
+10001;Carbon, Organic Total (Fine);OCf;88320;µg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
+
+Site History
+
+History;Dataset;EntryType;EntryDate;Description
+BADL1;IMPFSPED;Operational;10/01/1992;BADL1 climate control was turned off permanently.
+BADL1;IMPFSPED;Operational;04/22/1993;Routine annual maintenance
+BADL1;IMPFSPED;Method;06/28/1994;Changed nylon filter size from 47mm diameter to 25mm
+BADL1;IMPFSPED;Operational;08/10/1994;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/10/1994;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/10/1994;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/10/1994;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/10/1994;Routine annual maintenance
+BADL1;IMPFSPED;Event;03/22/1995;Very high winds
+BADL1;IMPFSPED;Event;03/29/1995;Very high winds
+BADL1;IMPFSPED;Event;06/28/1995;Canada fires causing regional haze and poor visibility
+BADL1;IMPFSPED;Operational;08/11/1995;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/11/1995;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/11/1995;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/11/1995;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/11/1995;Routine annual maintenance
+BADL1;IMPFSPED;Event;09/13/1995;Prescribed fire 30 miles NW of sampler
+BADL1;IMPFSPED;Event;09/02/1996;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/02/1996;A1 Module pump replaced
+BADL1;IMPFSPED;Operational;09/02/1996;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/02/1996;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/02/1996;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/02/1996;Routine annual maintenance
+BADL1;IMPFSPED;Method;09/02/1996;Added glycerin to Module B1 denuder
+BADL1;IMPFSPED;Operational;08/19/1997;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/19/1997;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/19/1997;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/19/1997;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/19/1997;Routine annual maintenance
+BADL1;IMPFSPED;Event;10/15/1997;Prescribed fires in Black Hills NF 80mi W of sampler
+BADL1;IMPFSPED;Operational;05/05/1998;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;05/05/1998;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;05/05/1998;D1 Module Flow Calibration
+BADL1;IMPFSPED;Event;09/02/1998;Fires in Idaho and Montana caused haze and poor visibility this week
+BADL1;IMPFSPED;Operational;01/26/1999;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;01/26/1999;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;01/26/1999;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;01/26/1999;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;01/26/1999;Routine annual maintenance
+BADL1;IMPFSPED;Event;03/24/1999;Large fire 20 miles to SE
+BADL1;IMPFSPED;Event;08/18/1999;Prescribed fire of 660 acres beginning 50 yards E
+BADL1;IMPFSPED;Event;10/13/1999;controlled fire nearby
+BADL1;IMPFSPED;Operational;12/18/1999;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;12/18/1999;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;12/18/1999;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;12/18/1999;Version 2 sampler installed
+BADL1;IMPFSPED;Operational;12/18/1999;Version 2 IMPROVE sampler installed
+BADL1;IMPFSPED;QA/QC Problem;02/01/2000;Interference from collocated FRM PM10 sampler.  Spikes in copper concentration observed when PM10 sampler operates (every sixth day) from approximately February 2000 through September 2004.  FRM sampler was removed on 9/21/04.
+BADL1;IMPFSPED;Event;04/26/2000;Prescribe fire 20 miles NW
+BADL1;IMPFSPED;Event;04/29/2000;Prescribed fire 20mi NW of site 600 acres
+BADL1;IMPFSPED;Event;05/03/2000;Prescribed fire  150Acres fireed 10-12 miles NW of site
+BADL1;IMPFSPED;Operational;06/27/2000;Sampler controller replaced
+BADL1;IMPFSPED;Event;08/23/2000;Several thousand acres burning in Black Hills about 80mi west.
+BADL1;IMPFSPED;Operational;08/31/2000;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/31/2000;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/31/2000;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/31/2000;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/31/2000;Photos Taken
+BADL1;IMPFSPED;Operational;08/31/2000;Routine annual maintenance
+BADL1;IMPFSPED;Event;09/06/2000;84,000 acre Black Hills fire 70 miles W of site
+BADL1;IMPFSPED;Event;09/09/2000;9,000 acre fire 40 miles SW of site
+BADL1;IMPFSPED;Operational;03/03/2001;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/15/2001;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/15/2001;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/15/2001;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/15/2001;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;08/15/2001;Routine annual maintenance
+BADL1;IMPFSPED;Event;10/19/2001;Prescribed fire 15 NW from the site.
+BADL1;IMPFSPED;Event;10/22/2001;Prescribed fire 15 NW from the site.
+BADL1;IMPFSPED;Event;10/28/2001;3600 acre fire 12 miles NW
+BADL1;IMPFSPED;Operational;04/16/2002;Sampler controller replaced
+BADL1;IMPFSPED;Event;06/28/2002;5000 acre fire 100 miles NW of site
+BADL1;IMPFSPED;Operational;07/25/2002;A1 Module pump replaced
+BADL1;IMPFSPED;Operational;07/25/2002;B1 Module pump replaced
+BADL1;IMPFSPED;Operational;07/28/2002;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;07/28/2002;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;07/28/2002;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;07/28/2002;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;07/28/2002;Photos Taken
+BADL1;IMPFSPED;Operational;07/28/2002;Routine annual maintenance
+BADL1;IMPFSPED;Event;11/22/2002;3100 acre prescribed fire 20 miles NW of sampler
+BADL1;IMPFSPED;Event;04/12/2003;Prescribed fire 80 miles W of site
+BADL1;IMPFSPED;Operational;06/18/2003;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;06/18/2003;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;06/18/2003;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;06/18/2003;C1 Module pump replaced
+BADL1;IMPFSPED;Operational;06/18/2003;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;06/18/2003;D1 Module pump replaced
+BADL1;IMPFSPED;Operational;06/18/2003;Photos Taken
+BADL1;IMPFSPED;Operational;06/18/2003;Routine annual maintenance
+BADL1;IMPFSPED;Event;08/28/2003;fire S of park on Pine Ridge Indian Reservation
+BADL1;IMPFSPED;Event;09/30/2003;prescibed fire 1/2 mile from site
+BADL1;IMPFSPED;Event;10/03/2003;200 acre prescribed fire 1/4 mile from site came within 5 feet of sampler
+BADL1;IMPFSPED;Operational;03/04/2004;A1 Module area increased from 2.20 to 3.53 sq cm
+BADL1;IMPFSPED;Operational;09/17/2004;A1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/17/2004;B1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/17/2004;C1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/17/2004;D1 Module Flow Calibration
+BADL1;IMPFSPED;Operational;09/17/2004;routine annual maintenance
+BADL1;IMPFSPED;QA/QC Problem;09/21/2004;Interference from collocated FRM PM10 sampler.  Spikes in copper concentration observed when PM10 sampler operates (every sixth day) from approximately February 2000 through September 2004.  FRM sampler was removed on 9/21/04.
+BADL1;IMPFSPED;Operational;09/23/2004;Collocated D1 Module removed
+BADL1;IMPFSPED;Operational;10/28/2004;B1 Module pump replaced
+BADL1;IMPFSPED;Operational;11/17/2004;B1 Module pump replaced
+BADL1;IMPFSPED;Event;04/19/2005;Fire in Black Hills 100 miles NW 775 acres
+
+Dataset History
+
+History;EntryType;EntryDate;Description
+IMPFSPED;Analysis Note;09/15/1990;Ion analysis contractor switched from Research Triangle Institute (RTI) to Global Geochemistry Company (GGC). Ion samples extracted using anion eluent.
+IMPFSPED;Analysis Note;06/01/1992;Analysis of elements with atomic numbers from Fe to Pb was changed from PIXE to XRF in air with Mo anode source, lowering their minimum detection limits (MDL). The cyclotron time for the PIXE analysis was reduced raising the MDLs for elements below FE.
+IMPFSPED;Analysis Note;03/01/1994;Optical absorption measurement changed from Laser Integrating Plate Method (LIPM) to Hybrid Integrating Plate/Sphere Analysis (HIPS).
+IMPFSPED;Sampling Note;06/01/1994;Started changing nylon filter size from 47mm diameter to 25mm.  Phased in during 1994 site maintenance visits, see individual site histories for exact dates.
+IMPFSPED;Sampling Note;01/01/1995;Started unmasking Module A filters, increasing deposit area from 2.2 sq. cm to 3.5 sq. cm.  Phased in during site maintenance visits over several years, see individual site histories for exact dates.
+IMPFSPED;Analysis Note;05/23/1995;Ion analysis switched to Research Triangle Institute (RTI). Ion samples extracted using anion eluent.
+IMPFSPED;Sampling Note;01/01/1996;Added glycerin to Module B denuders. Phased in during 1996 site maintenance visits, see individual site histories for exact dates.
+IMPFSPED;Sampling Note;10/01/1996;Changed nylon filter manufactures from Gleman to MSI
+IMPFSPED;Analysis Note;06/01/1997;Ion samples extracted using DI water at GRSM1, SHEN1, DOSO1. All other sites extracted with anion eluent.
+IMPFSPED;Analysis Note;12/16/1998;Ion samples extracted using DI water at all sites
+IMPFSPED;Sampling Note;07/27/2001;Secondary quartz filter added to carbon sampling train at CHIR1. Artifact correction based on secondary filters from CHIR1, HANC1, MORA1, SHEN1, YOSE1.
+IMPFSPED;Sampling Note;08/08/2001;Secondary quartz filter added to carbon sampling train at OKEF1and included in artifact correction.
+IMPFSPED;Analysis Note;12/01/2001;Analysis of elements with atomic numbers from Na to Fe was changed from PIXE (for Na to Mn) or Mo-anode XRF (for Fe) to XRF with a Cu anode source in a He-flushed atmosphere.
+IMPFSPED;Analysis Note;06/01/2002;Changed from quarterly to monthly medians to estimate carbon artifact corrections from field blanks & secondary filters
+IMPFSPED;Analysis Note;10/01/2002;Standardized XRF run times at 1000 seconds
+IMPFSPED;Sampling Note;01/01/2004;Changed module B nylon filter supplier from Osmonics to Pall-Gelman
+IMPFSPED;Analysis Note;01/01/2005;Implemented IMPROVE_A protocol for OC and EC analyses using the next generation DRI Model 2001 Thermal/Optical Carbon Analyzer.
+IMPFSPED;Analysis Note;01/01/2005;The He-flushed atmosphere used for Cu-anode XRF (of elements with atomic numbers from Na to Fe) was replaced by vacuum.
+IMPFSPED;Sampling Note;08/07/2008;Secondary quartz filter added to carbon sampling train at five additional sites (BLMO1, LYBR1, PHOE1, PHOE5, YELL1). All secondary OC sites began to collect double field blanks. Field blank collection at all other sites ended. All collected secondary filters are used to calculate monthly median artifact correction for carbon fractions. Secondary OC filter sites existing prior to this time were CHIR1, HANC1, MORA1, OKEF1, SHNE1, YOSE1.
+IMPFSPED;Sampling Note;05/01/2009;Secondary quartz filter added to carbon sampling train at HEGL1 along with double field blank collection.  HEGL1 data are included in the monthly median artifact correction calculation. An additional collocated quartz filter module was added to collect single quartz filters.
+IMPFSPED;Sampling Note;06/24/2009;Secondary quartz filter added to carbon sampling train at WASH1 along with double field blank collection.  WASH1 data are included in the monthly median artifact correction calculation.
+IMPFSPED;Analysis Note;01/01/2011;Analysis of all elements shifted from legacy XRF systems to commercial PANalytical Epsilon5 instruments using multiple secondary targets.
+IMPFSPED;Sampling Note;01/01/2013;Changed from double quartz field blanks to single quartz field blanks at all sites which have field blanks.
+IMPFSPED;Sampling Note;01/01/2013;Introduced new sample holders (cassettes) into network with new support screen design.  Screens were distributed throughout network over a two week period.
+
+Status Flags
+
+Status Flag;Description
+H1;Historical data that have not been assessed or validated.
+I0;Invalid value - unknown reason
+I1;Invalid value - known reason
+I2;Invalid value (-999), though sample-level flag seems valid (SEM)
+M1;Missing value because no value is available
+M2;Missing value because invalidated by data originator
+M3;Missing value due to clogged filter
+NA;Not available from source data
+V0;Valid value
+V1;Valid value but comprised wholly or partially of below detection limit data
+V2;Valid estimated value
+V3;Valid interpolated value
+V4;Valid value despite failing to meet some QC or statistical criteria
+V5;Valid value but qualified because of possible contamination
+V6;Valid value but qualified due to non-standard sampling conditions
+V7;Valid value set equal to the detection limit (DL) since the value was below the DL
+VM;Valid modeled value
+VS;Valid substituted value
+
+Data
+
+Dataset;SiteCode;POC;Date;:Value
+IMPFSPED;BADL1;1;01/01/2017;0.30555
+IMPFSPED;BADL1;1;01/04/2017;0.39832
+IMPFSPED;BADL1;1;01/07/2017;0.49467
+IMPFSPED;BADL1;1;01/10/2017;0.65754
+IMPFSPED;BADL1;1;01/13/2017;0.85112
+IMPFSPED;BADL1;1;01/16/2017;0.48262
+IMPFSPED;BADL1;1;01/19/2017;0.77864
+IMPFSPED;BADL1;1;01/22/2017;0.43116
+IMPFSPED;BADL1;1;01/25/2017;0.17473
+IMPFSPED;BADL1;1;01/28/2017;0.21264
+IMPFSPED;BADL1;1;01/31/2017;0.21017

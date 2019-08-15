@@ -98,11 +98,10 @@ def get_data(request_data):
     url_base = "http://views.cira.colostate.edu"
     url_txt = url_base + href
     r_txt = requests.get(url_txt)
-    rows = r_txt.text.split("\r\n")
-    return parse_fed_data(rows)
+    return parse_fed_data(r_txt.text)
 
 
-def parse_fed_data(rows):
+def parse_fed_data(text):
 
     def get_row_nr(rows, string):
         return [
@@ -113,6 +112,8 @@ def parse_fed_data(rows):
         for item, value in zip(rows[0].split(';'), rows[1].split(';')):
             datadict[item] = value
         return datadict
+
+    rows = text.replace("\r", '').split("\n")
 
     metadata = {}
     for item in ["Datasets", "Sites", "Parameters"]:

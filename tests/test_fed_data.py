@@ -1,12 +1,32 @@
 from datetime import date
+import os
 import pytest
 
 from obsdata.fed_data import (
     get_site_info,
     get_all_site_codes,
     get_parameter_info,
-    set_request_data
+    set_request_data,
+    parse_fed_data,
+    save_data
 )
+
+
+@pytest.fixture
+def fed_data():
+    datafile = os.path.join(os.path.dirname(__file__), "data.txt")
+    with open(datafile, mode='r') as file:
+        return file.read()
+
+
+@pytest.fixture
+def expected_output_file():
+    datafile = os.path.join(
+        os.path.dirname(__file__),
+        "badl1_ocf_20170101.dat"
+    )
+    with open(datafile, mode='r') as file:
+        return file.read()
 
 
 @pytest.mark.parametrize('site_code,expect', (
@@ -48,3 +68,48 @@ def test_set_request_data_date():
         request_data["siidse"] == site_id and
         request_data["paidse"] == parameter_id
     )
+
+
+@pytest.mark.parametrize('para,expect', (
+    ("frequency",  "Daily"),
+    ("site", "Badlands NP"),
+    ("site_code", "BADL1"),
+    ("dataset", "IMPFSPED"),
+    ("state", "SD"),
+    ("county", "46071"),
+    ("latitude", "43.74350"),
+    ("longitude", "-101.94120"),
+    ("elevation", "736"),
+    ("start_date", "03/02/1988"),
+    ("end_date", "11/28/2018"),
+    ("num_pocs", "1"),
+    ("dataset_id", "10001"),
+    ("parameter", "Carbon, Organic Total (Fine)"),
+    ("parameter_code", "OCf"),
+    ("aqs_code", "88320"),
+    ("units", "µg/m^3 LC"),
+))
+def test_parse_metadata(fed_data, para, expect):
+    data = parse_fed_data(fed_data)
+    assert data[para] == expect
+
+
+@pytest.mark.parametrize('row,expect', (
+    (0, ['Dataset', 'SiteCode', 'POC', 'Date', ':Value']),
+    (1, ['IMPFSPED', 'BADL1', '1', date(2017, 1, 1), '0.30555']),
+    (2, ['IMPFSPED', 'BADL1', '1', date(2017, 1, 4), '0.39832']),
+))
+def test_rawdata(fed_data, row, expect):
+    data = parse_fed_data(fed_data)
+    assert data["data"][row] == expect
+
+
+def test_save_data(fed_data, expected_output_file):
+
+    data = parse_fed_data(fed_data)
+    outdir = "/tmp"
+    filename = "badl1_ocf_20170101.dat"
+    os.remove(os.path.join(outdir, filename))
+    save_data(outdir, data)
+    with open(os.path.join(outdir, filename), mode='r') as file:
+        assert file.read() == expected_output_file
