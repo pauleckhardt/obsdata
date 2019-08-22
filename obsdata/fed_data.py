@@ -4,6 +4,7 @@ import csv
 import pkg_resources
 from datetime import datetime
 from bs4 import BeautifulSoup
+from netCDF4 import Dataset, date2num
 
 
 DATADIR = pkg_resources.resource_filename(__name__, "")
@@ -156,11 +157,12 @@ def parse_fed_data(text):
     }
 
 
-def save_data(out_dir, data):
+def save_data_txt(out_dir, data):
     """
         the 'World Data Centre' format is used,
         It has 32 header lines which describes the site and data,
         then the data-records.
+        # TODO: fix format (talk to dave)
     """
     header_lines = 32
     title = "{0} {1} mean data".format(
@@ -242,3 +244,54 @@ def save_data(out_dir, data):
                         row[3].strftime("%Y-%m-%d"), row[4].rjust(11)
                     )
                 )
+
+
+def save_data_netcdf(out_dir, data):
+
+    # TODO: fix format (talk to dave)
+
+    output_file = os.path.join(out_dir, "test.nc")
+    dataset = Dataset(output_file, "w", format="NETCDF4")
+
+    # global attributes
+
+    dataset.station_name = data["site"]
+    dataset.latitude = float(data["latitude"])
+    dataset.longitude = float(data["longitude"])
+    dataset.altitude = float(data["elevation"])
+
+    # dimensions
+
+    n = len(data["data"]) - 1
+    timedim = dataset.createDimension("time", n)
+
+    # time
+
+    time = dataset.createVariable("time", "f8", (timedim.name,))
+    time.standard_name = "time"
+    time.long_name = "time of measurement"
+    time.units = "days since 1900-01-01 00:00:00 UTC"
+    # times.axis = "T"
+    time.calendar = "gregorian"
+    # times.bounds = "time_bnds"
+    # times.cell_methods = "mean"
+    dates = [
+        datetime.combine(row[3],  datetime.min.time())
+        for i, row in enumerate(data["data"]) if i > 0
+    ]
+    time[:] = date2num(dates, time.units, calendar=time.calendar)
+
+    # main parameter
+
+    parameter = dataset.createVariable(
+        data["parameter_code"], "f8", (timedim.name,), fill_value=-9999.)
+    parameter.standard_name = data["parameter"]
+    parameter.missing_value = -9999.
+    parameter.units = data["units"]
+    # parameter.ancillary_variables = "?"
+    # parameter.cell_methods = "time: mean" ;
+    parameter[:] = [
+        row[4] for i, row in enumerate(data["data"]) if i > 0
+    ]
+
+    dataset.close()

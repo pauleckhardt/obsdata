@@ -20,7 +20,7 @@ def get_and_save_data(
 
     data = fed_data.get_data(request_data)
 
-    fed_data.save_data(out_dir, data)
+    fed_data.save_data_txt(out_dir, data)
 
 
 def cli():

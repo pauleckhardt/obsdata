@@ -1,6 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 import os
 import pytest
+import numpy as np
+from netCDF4 import Dataset, num2date
+
 
 from obsdata.fed_data import (
     get_site_info,
@@ -8,7 +11,8 @@ from obsdata.fed_data import (
     get_parameter_info,
     set_request_data,
     parse_fed_data,
-    save_data
+    save_data_txt,
+    save_data_netcdf
 )
 
 
@@ -104,12 +108,57 @@ def test_rawdata(fed_data, row, expect):
     assert data["data"][row] == expect
 
 
-def test_save_data(fed_data, expected_output_file):
+def test_save_data_txt(fed_data, expected_output_file):
 
     data = parse_fed_data(fed_data)
     outdir = "/tmp"
     filename = "badl1_ocf_20170101.dat"
-    os.remove(os.path.join(outdir, filename))
-    save_data(outdir, data)
-    with open(os.path.join(outdir, filename), mode='r') as file:
+    output_filename = os.path.join(outdir, filename)
+    if os.path.exists(output_filename):
+        os.remove(output_filename)
+    save_data_txt(outdir, data)
+    with open(output_filename, mode='r') as file:
         assert file.read() == expected_output_file
+
+
+def test_save_data_netcdf(fed_data):
+
+    data = parse_fed_data(fed_data)
+    outdir = "/tmp"
+    filename = "test.nc"
+    output_filename = os.path.join(outdir, filename)
+    if os.path.exists(output_filename):
+        os.remove(output_filename)
+    save_data_netcdf(outdir, data)
+    dataset = Dataset(output_filename, "r")
+    assert (
+        dataset.station_name == "Badlands NP"
+        and dataset.latitude == 43.74350
+        and dataset.longitude == -101.94120
+        and dataset.altitude == 736.0
+    )
+
+    expected_data = np.array([
+        0.30555, 0.39832, 0.49467, 0.65754, 0.85112, 0.48262,
+        0.77864, 0.43116, 0.17473, 0.21264, 0.21017
+    ])
+    assert np.all(dataset["OCf"] == expected_data)
+
+    expected_dates = np.array([
+        datetime(2017, 1, 1, 0, 0),
+        datetime(2017, 1, 4, 0, 0),
+        datetime(2017, 1, 7, 0, 0),
+        datetime(2017, 1, 10, 0, 0),
+        datetime(2017, 1, 13, 0, 0),
+        datetime(2017, 1, 16, 0, 0),
+        datetime(2017, 1, 19, 0, 0),
+        datetime(2017, 1, 22, 0, 0),
+        datetime(2017, 1, 25, 0, 0),
+        datetime(2017, 1, 28, 0, 0),
+        datetime(2017, 1, 31, 0, 0)
+    ])
+    dates = [
+        num2date(time, dataset["time"].units, dataset["time"].calendar)
+        for time in dataset["time"]
+    ]
+    assert np.all(dates == expected_dates)
