@@ -44,7 +44,10 @@ def tmp_dir(tmpdir):
 def netcdf_dataset(fed_data, tmp_dir):
     data = parse_fed_data(fed_data)
     save_data_netcdf(tmp_dir, data)
-    return Dataset(tmp_dir.join("test.nc"), "r")
+    return Dataset(
+        tmp_dir.join("improve_aerosol_badl1_ocf_20170101.nc"),
+        "r"
+    )
 
 
 def test_validate_input_not_raises():
@@ -111,7 +114,7 @@ def test_set_request_data_date():
     ("frequency",  "Daily"),
     ("site", "Badlands NP"),
     ("site_code", "BADL1"),
-    ("dataset", "IMPFSPED"),
+    ("dataset", 'IMPROVE Aerosol'),
     ("state", "SD"),
     ("county", "46071"),
     ("latitude", "43.74350"),
@@ -144,7 +147,8 @@ def test_rawdata(fed_data, row, expect):
 def test_save_data_txt(fed_data, tmp_dir, expected_output_file):
     data = parse_fed_data(fed_data)
     save_data_txt(tmp_dir, data)
-    with open(tmp_dir.join("badl1_ocf_20170101.dat"), mode='r') as file:
+    outfile = tmp_dir.join("improve_aerosol_badl1_ocf_20170101.dat")
+    with open(outfile, mode='r') as file:
         assert file.read() == expected_output_file
 
 

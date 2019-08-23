@@ -202,9 +202,9 @@ def parse_fed_data(text):
 
     return {
         "frequency": metadata["datasets"]["Frequency"],
+        "dataset": metadata["datasets"]["Dataset"],
         "site": metadata["sites"]["Site"],
         "site_code": metadata["sites"]["Code"],
-        "dataset": metadata["sites"]["Dataset"],
         "state": metadata["sites"]["State"],
         "county": metadata["sites"]["County"],
         "latitude": metadata["sites"]["Latitude"],
@@ -224,6 +224,13 @@ def parse_fed_data(text):
     }
 
 
+def get_output_filename(
+        dataset, site_code, parameter_code, date, extension):
+    return "{0}_{1}_{2}_{3}.{4}".format(
+        dataset, site_code, parameter_code, date, extension
+    )
+
+
 def save_data_txt(out_dir, data):
     """
         the 'World Data Centre' format is used,
@@ -234,10 +241,12 @@ def save_data_txt(out_dir, data):
     header_lines = 32
     title = "{0} {1} mean data".format(
         data["parameter_code"], data["frequency"])
-    file_name = "{0}_{1}_{2}.dat".format(
+    file_name = get_output_filename(
+        data["dataset"].lower().replace(' ', '_'),
         data["site_code"].lower(),
         data["parameter_code"].lower(),
-        data["dates"][0].strftime("%Y%m%d")
+        data["dates"][0].strftime("%Y%m%d"),
+        "dat"
     )
     data_format = "Version 1.0"  # ?
     total_lines = header_lines + len(data["data"])
@@ -317,7 +326,14 @@ def save_data_netcdf(out_dir, data):
 
     # TODO: fix format (talk to dave)
 
-    output_file = os.path.join(out_dir, "test.nc")
+    file_name = get_output_filename(
+        data["dataset"].lower().replace(' ', '_'),
+        data["site_code"].lower(),
+        data["parameter_code"].lower(),
+        data["dates"][0].strftime("%Y%m%d"),
+        "nc"
+    )
+    output_file = os.path.join(out_dir, file_name)
     dataset = Dataset(output_file, "w", format="NETCDF4")
 
     # global attributes

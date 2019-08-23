@@ -5,7 +5,7 @@ from obsdata import fed_data
 
 
 def get_and_save_data(
-        dataset, site, parameter, start_date, end_date, out_dir):
+        dataset, site, parameter, start_date, end_date, data_format, out_dir):
 
     site_info = fed_data.get_site_info(dataset, site)
 
@@ -21,8 +21,10 @@ def get_and_save_data(
     )
 
     data = fed_data.get_data(request_data)
-
-    fed_data.save_data_txt(out_dir, data)
+    if data_format == "nc":
+        fed_data.save_data_netcdf(out_dir, data)
+    elif data_format == "dat":
+        fed_data.save_data_txt(out_dir, data)
 
 
 def cli():
@@ -32,8 +34,8 @@ def cli():
     # http://views.cira.colostate.edu/fed/QueryWizard/
     # and store the data in the 'World Data Centre' format
 
-    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -q /tmp  # noqa
-    # ./get_fed_data.py "castnet" ABT147 O3 2014-01-01 2014-01-31 -q /tmp  # noqa
+    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -q -e nc /tmp  # noqa
+    # ./get_fed_data.py "castnet" ABT147 O3 2014-01-01 2014-01-31 -e nc -q /tmp  # noqa
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -67,12 +69,20 @@ def cli():
         help="end date, format YYYY-MM-DD",
     )
     parser.add_argument(
+        '-e',
+        '--data-format',
+        dest='data_format',
+        type=str,
+        default='nc',
+        help='data format for saving file (nc or data), default is nc (netcdf)',
+    )
+    parser.add_argument(
         '-q',
         '--datadir-for-save',
         dest='out_dir',
         type=str,
         default='/tmp',
-        help='data directory for saving output default is /tmp',
+        help='data directory for saving output, default is /tmp',
     )
 
     args = parser.parse_args()
@@ -94,6 +104,7 @@ def cli():
         args.parameter_code,
         start_date,
         end_date,
+        args.data_format,
         args.out_dir
     )
 
