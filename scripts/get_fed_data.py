@@ -40,7 +40,7 @@ def cli():
         "dataset",
         metavar="dataset",
         type=str,
-        help="fed dataset, e.g improveaerosol"
+        help="fed dataset, e.g 'improve aerosol'"
     )
     parser.add_argument(
         "site_code",

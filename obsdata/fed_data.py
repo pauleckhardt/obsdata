@@ -252,7 +252,7 @@ def save_data_txt(out_dir, data):
         "C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'",  # noqa
         "C30 COMMENT:",
         "C31",
-        "C32   DATE  TIME       DATE  TIME         {}".format(parameter),
+        "C32   DATE  TIME       DATE  TIME {}".format(parameter.rjust(11)),
     ]
 
     with open(os.path.join(out_dir, file_name), mode='w') as outfile:
@@ -262,8 +262,8 @@ def save_data_txt(out_dir, data):
         for index, row in enumerate(data["data"]):
             if index > 0:
                 outfile.write(
-                    "{0} 99:99 9999-99-99 99:99 {1}\n".format(
-                        row[3].strftime("%Y-%m-%d"), row[4].rjust(11)
+                    "{0} 9999-99-99 99:99 {1}\n".format(
+                        row[3].strftime("%Y-%m-%d %H:%M"), row[4].rjust(11)
                     )
                 )
 
