@@ -12,7 +12,9 @@ from obsdata.fed_data import (
     set_request_data,
     parse_fed_data,
     save_data_txt,
-    save_data_netcdf
+    save_data_netcdf,
+    validate_input,
+    InputError
 )
 
 
@@ -43,6 +45,20 @@ def netcdf_dataset(fed_data, tmp_dir):
     data = parse_fed_data(fed_data)
     save_data_netcdf(tmp_dir, data)
     return Dataset(tmp_dir.join("test.nc"), "r")
+
+
+def test_validate_input_not_raises():
+    assert validate_input('improve aerosol', 'BADL1', 'OCf')
+
+
+@pytest.mark.parametrize('dataset,site,parameter', (
+    ('no improve aerosol', 'BADL1', 'OCf'),
+    ('improve aerosol', 'ReallyBADL1', 'OCf'),
+    ('improve aerosol', 'BADL1', 'LCHF'),
+))
+def test_validate_input_raises(dataset, site, parameter):
+    with pytest.raises(InputError):
+        validate_input(dataset, site, parameter)
 
 
 @pytest.mark.parametrize('site_code,expect', (

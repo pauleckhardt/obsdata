@@ -77,6 +77,12 @@ def cli():
 
     args = parser.parse_args()
 
+    fed_data.validate_input(
+        args.dataset,
+        args.site_code,
+        args.parameter_code
+    )
+
     start_date = datetime.strptime(
         args.start_date, '%Y-%m-%d').date()
     end_date = datetime.strptime(
