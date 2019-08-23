@@ -5,15 +5,17 @@ from obsdata import fed_data
 
 
 def get_and_save_data(
-        site, parameter, start_date, end_date, out_dir):
+        dataset, site, parameter, start_date, end_date, out_dir):
 
-    site_info = fed_data.get_site_info(site)
+    site_info = fed_data.get_site_info(dataset, site)
 
-    parameter_info = fed_data.get_parameter_info(parameter)
+    parameter_info = fed_data.get_parameter_info(dataset, parameter)
 
     request_data = fed_data.set_request_data(
+        fed_data.datasets[dataset]["id"],
         site_info["ID"],
         parameter_info["ParameterID"],
+        fed_data.datasets[dataset]["df"],
         start_date,
         end_date
     )
@@ -30,9 +32,16 @@ def cli():
     # http://views.cira.colostate.edu/fed/QueryWizard/
     # and store the data in the 'World Data Centre' format
 
-    # ./get_fed_data.py BADL1 OCf 2017-01-01 2017-01-31 -q /tmp
+    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -q /tmp  # noqa
+    # ./get_fed_data.py "castnet" ABT147 O3 2014-01-01 2014-01-31 -q /tmp  # noqa
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "dataset",
+        metavar="dataset",
+        type=str,
+        help="fed dataset, e.g improveaerosol"
+    )
     parser.add_argument(
         "site_code",
         metavar="site-code",
@@ -74,6 +83,7 @@ def cli():
         args.end_date, '%Y-%m-%d').date()
 
     get_and_save_data(
+        args.dataset,
         args.site_code,
         args.parameter_code,
         start_date,

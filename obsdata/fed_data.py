@@ -11,18 +11,32 @@ DATADIR = pkg_resources.resource_filename(__name__, "")
 
 
 request_url = "http://views.cira.colostate.edu/fed/Reports/RawDataReport2.aspx"
-sites_file = os.path.join(DATADIR, "fedsites.csv")
-dataset_file = os.path.join(DATADIR, "dataset.csv")
+datasets = {
+    "improve aerosol": {
+        "id": 10001,
+        "df": "Daily",
+        "site_file": os.path.join(DATADIR, "fedsites_improve_aerosol.csv"),
+        "parameter_file": os.path.join(DATADIR, "dataset_improve_aerosol.csv"),
+    },
+    # castnet ozone hourly
+    "castnet": {
+        "id": 23005,
+        "df": "Hourly",
+        "site_file": os.path.join(DATADIR, "fedsites_castnet.csv"),
+        "parameter_file": os.path.join(DATADIR, "dataset_castnet.csv"),
+    }
+}
 
 
-def set_request_data(site_id, parameter_id, start_date, end_date):
+def set_request_data(
+        dataset_id, site_id, parameter_id, df, start_date, end_date):
     return {
         "agidse": 1,
         "dt": "{0}>{1}".format(
             start_date.strftime("%Y/%m/%d"),
             end_date.strftime("%Y/%m/%d")
         ),
-        "dsidse": 10001,
+        "dsidse": dataset_id,
         "op": [
             "OutputFormat-AsciiText",
             "OutputMedium-File",
@@ -46,15 +60,15 @@ def set_request_data(site_id, parameter_id, start_date, end_date):
         ],
         "siidse": site_id,
         "paidse": parameter_id,
-        "df": "Daily",
+        "df": df,
         "qscs": "load",
         "dttype": 1,
     }
 
 
-def get_site_info(site_code):
+def get_site_info(dataset, site_code):
     site_info = {}
-    with open(sites_file) as csv_file:
+    with open(datasets[dataset]["site_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for line_count, row in enumerate(csv_reader):
             if line_count == 0:
@@ -66,9 +80,9 @@ def get_site_info(site_code):
     return site_info
 
 
-def get_all_site_codes():
+def get_all_site_codes(dataset):
     site_codes = []
-    with open(sites_file) as csv_file:
+    with open(datasets[dataset]["site_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for line_count, row in enumerate(csv_reader):
             if line_count > 0:
@@ -76,9 +90,9 @@ def get_all_site_codes():
     return site_codes
 
 
-def get_parameter_info(parameter_code):
+def get_parameter_info(dataset, parameter_code):
     parameter_info = {}
-    with open(dataset_file) as csv_file:
+    with open(datasets[dataset]["parameter_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for line_count, row in enumerate(csv_reader):
             if line_count == 0:
@@ -127,9 +141,17 @@ def parse_fed_data(text):
         if index == 0:
             date_index = current_row.index("Date")
         if index > 0:
-            current_row[date_index] = (
-                datetime.strptime(current_row[date_index], '%m/%d/%Y').date()
-            )
+            try:
+                current_row[date_index] = (
+                    datetime.strptime(
+                        current_row[date_index], '%m/%d/%Y %H:%M:%S'
+                    )
+                )
+            except ValueError:
+                current_row[date_index] = (
+                    datetime.strptime(
+                        current_row[date_index], '%m/%d/%Y')
+                )
         data.append(current_row)
     dates = [row[date_index] for ind, row in enumerate(data) if ind > 0]
 

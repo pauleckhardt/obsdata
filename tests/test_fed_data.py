@@ -50,21 +50,22 @@ def netcdf_dataset(fed_data, tmp_dir):
     ('BADL1', '59'),
 ))
 def test_get_site_info(site_code, expect):
-    site_info = get_site_info(site_code)
+    site_info = get_site_info("improve aerosol", site_code)
     assert site_info["ID"] == expect
 
 
-@pytest.mark.parametrize('parameter_code,expect', (
-    ('ECf', '114'),
-    ('OCf', '141'),
+@pytest.mark.parametrize('dataset,parameter_code,expect', (
+    ('improve aerosol', 'ECf', '114'),
+    ('improve aerosol', 'OCf', '141'),
+    ('castnet', 'O3', '201'),
 ))
-def test_get_parameter_info(parameter_code, expect):
-    parameter_info = get_parameter_info(parameter_code)
+def test_get_parameter_info(dataset, parameter_code, expect):
+    parameter_info = get_parameter_info(dataset, parameter_code)
     assert parameter_info["ParameterID"] == expect
 
 
 def test_get_all_site_codes():
-    site_codes = get_all_site_codes()
+    site_codes = get_all_site_codes("improve aerosol")
     assert (
         len(site_codes) == 224 and
         site_codes[0] == 'ACAD1' and
@@ -73,16 +74,20 @@ def test_get_all_site_codes():
 
 
 def test_set_request_data_date():
+    dataset_id = 10001
     site_id = 1
     parameter_id = 114
+    df = "Daily"
     start_date = date(2017, 1, 1)
     end_date = date(2017, 1, 31)
     request_data = set_request_data(
-        site_id, parameter_id, start_date, end_date)
+        dataset_id, site_id, parameter_id, df, start_date, end_date)
     assert (
+        request_data["dsidse"] == dataset_id and
         request_data["dt"] == "2017/01/01>2017/01/31" and
         request_data["siidse"] == site_id and
-        request_data["paidse"] == parameter_id
+        request_data["paidse"] == parameter_id and
+        request_data["df"] == df
     )
 
 
@@ -112,8 +117,8 @@ def test_parse_metadata(fed_data, para, expect):
 
 @pytest.mark.parametrize('row,expect', (
     (0, ['Dataset', 'SiteCode', 'POC', 'Date', ':Value']),
-    (1, ['IMPFSPED', 'BADL1', '1', date(2017, 1, 1), '0.30555']),
-    (2, ['IMPFSPED', 'BADL1', '1', date(2017, 1, 4), '0.39832']),
+    (1, ['IMPFSPED', 'BADL1', '1', datetime(2017, 1, 1), '0.30555']),
+    (2, ['IMPFSPED', 'BADL1', '1', datetime(2017, 1, 4), '0.39832']),
 ))
 def test_rawdata(fed_data, row, expect):
     data = parse_fed_data(fed_data)
