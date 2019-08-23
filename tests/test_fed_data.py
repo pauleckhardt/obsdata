@@ -33,6 +33,18 @@ def expected_output_file():
         return file.read()
 
 
+@pytest.fixture
+def tmp_dir(tmpdir):
+    return tmpdir.mkdir("sub")
+
+
+@pytest.fixture
+def netcdf_dataset(fed_data, tmp_dir):
+    data = parse_fed_data(fed_data)
+    save_data_netcdf(tmp_dir, data)
+    return Dataset(tmp_dir.join("test.nc"), "r")
+
+
 @pytest.mark.parametrize('site_code,expect', (
     ('ACAD1', '1'),
     ('BADL1', '59'),
@@ -108,42 +120,31 @@ def test_rawdata(fed_data, row, expect):
     assert data["data"][row] == expect
 
 
-def test_save_data_txt(fed_data, expected_output_file):
-
+def test_save_data_txt(fed_data, tmp_dir, expected_output_file):
     data = parse_fed_data(fed_data)
-    outdir = "/tmp"
-    filename = "badl1_ocf_20170101.dat"
-    output_filename = os.path.join(outdir, filename)
-    if os.path.exists(output_filename):
-        os.remove(output_filename)
-    save_data_txt(outdir, data)
-    with open(output_filename, mode='r') as file:
+    save_data_txt(tmp_dir, data)
+    with open(tmp_dir.join("badl1_ocf_20170101.dat"), mode='r') as file:
         assert file.read() == expected_output_file
 
 
-def test_save_data_netcdf(fed_data):
-
-    data = parse_fed_data(fed_data)
-    outdir = "/tmp"
-    filename = "test.nc"
-    output_filename = os.path.join(outdir, filename)
-    if os.path.exists(output_filename):
-        os.remove(output_filename)
-    save_data_netcdf(outdir, data)
-    dataset = Dataset(output_filename, "r")
+def test_save_netcdf_attribute(netcdf_dataset):
     assert (
-        dataset.station_name == "Badlands NP"
-        and dataset.latitude == 43.74350
-        and dataset.longitude == -101.94120
-        and dataset.altitude == 736.0
+        netcdf_dataset.station_name == "Badlands NP"
+        and netcdf_dataset.latitude == 43.74350
+        and netcdf_dataset.longitude == -101.94120
+        and netcdf_dataset.altitude == 736.0
     )
 
+
+def test_save_netcdf_data(netcdf_dataset):
     expected_data = np.array([
         0.30555, 0.39832, 0.49467, 0.65754, 0.85112, 0.48262,
         0.77864, 0.43116, 0.17473, 0.21264, 0.21017
     ])
-    assert np.all(dataset["OCf"] == expected_data)
+    assert np.all(netcdf_dataset["OCf"] == expected_data)
 
+
+def test_save_netcdf_datetime(netcdf_dataset):
     expected_dates = np.array([
         datetime(2017, 1, 1, 0, 0),
         datetime(2017, 1, 4, 0, 0),
@@ -158,7 +159,11 @@ def test_save_data_netcdf(fed_data):
         datetime(2017, 1, 31, 0, 0)
     ])
     dates = [
-        num2date(time, dataset["time"].units, dataset["time"].calendar)
-        for time in dataset["time"]
+        num2date(
+            time,
+            netcdf_dataset["time"].units,
+            netcdf_dataset["time"].calendar
+        )
+        for time in netcdf_dataset["time"]
     ]
     assert np.all(dates == expected_dates)
