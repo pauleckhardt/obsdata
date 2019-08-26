@@ -134,14 +134,21 @@ def test_parse_metadata(fed_data, para, expect):
     assert data[para] == expect
 
 
-@pytest.mark.parametrize('row,expect', (
-    (0, ['Dataset', 'SiteCode', 'POC', 'Date', ':Value']),
-    (1, ['IMPFSPED', 'BADL1', '1', datetime(2017, 1, 1), '0.30555']),
-    (2, ['IMPFSPED', 'BADL1', '1', datetime(2017, 1, 4), '0.39832']),
+@pytest.mark.parametrize('parameter,row,expect', (
+    ('Dataset', 0, 'IMPFSPED'),
+    ('SiteCode', 0, 'BADL1'),
+    ('POC', 0, '1'),
+    ('Date', 0, datetime(2017, 1, 1)),
+    (':Value', 0, '0.30555'),
+    ('Dataset', 1, 'IMPFSPED'),
+    ('SiteCode', 1, 'BADL1'),
+    ('POC', 1, '1'),
+    ('Date', 1, datetime(2017, 1, 4)),
+    (':Value', 1, '0.39832'),
 ))
-def test_rawdata(fed_data, row, expect):
+def test_rawdata(fed_data, parameter, row, expect):
     data = parse_fed_data(fed_data)
-    assert data["data"][row] == expect
+    assert data["data"][parameter][row] == expect
 
 
 def test_save_data_txt(fed_data, tmp_dir, expected_output_file):

@@ -101,7 +101,14 @@ def set_request_data(
             "Site.SiteCode",
             "AirFact.POC",
             "AirFact.FactDate",
-            "AirFact.FactValue"
+            "AirFact.FactValue",
+            "AirFact.Unc",
+            "AirFact.StatusFlag",
+            "AirFact.Flag1",
+            "AirFact.Flag2",
+            "AirFact.Flag3",
+            "AirFact.Flag4",
+            "AirFact.Flag5",
         ],
         "siidse": site_id,
         "paidse": parameter_id,
@@ -164,63 +171,64 @@ def get_data(request_data):
 def parse_fed_data(text):
 
     def get_row_nr(rows, string):
-        return [
-            row_nr for row_nr, row in enumerate(rows) if row == string][0]
+        start_row_nr = [
+            row_nr for row_nr, row in enumerate(rows) if row == string
+        ][0] + 2
+        end_row_nr = start_row_nr + [
+            index for index, row in enumerate(rows[start_row_nr::]) if row == ''
+        ][0]
+        return (start_row_nr, end_row_nr)
 
     def get_data_dict(rows):
+        datarows = list(csv.reader(rows, delimiter=';'))
         datadict = {}
-        for item, value in zip(rows[0].split(';'), rows[1].split(';')):
-            datadict[item] = value
+        for column_nr in range(len(datarows[0])):
+            datadict[datarows[0][column_nr]] = [
+                row[column_nr] for index, row in enumerate(datarows)
+                if index > 0
+            ]
         return datadict
 
     rows = text.replace("\r", '').split("\n")
 
-    metadata = {}
-    for item in ["Datasets", "Sites", "Parameters"]:
-        row_nr = get_row_nr(rows, item)
-        metadata[item.lower()] = get_data_dict(rows[row_nr + 2: row_nr + 4])
+    data = {}
+    for item in ["Datasets", "Sites", "Parameters", "Status Flags", "Data"]:
+        (start_row_nr, end_row_nr) = get_row_nr(rows, item)
+        data[item.lower()] = get_data_dict(
+            rows[start_row_nr : end_row_nr])
 
-    data = []
-    for index, row in enumerate(rows[get_row_nr(rows, "Data") + 2 : -1]):
-        current_row = row.split(';')
-        if index == 0:
-            date_index = current_row.index("Date")
-        if index > 0:
-            try:
-                current_row[date_index] = (
-                    datetime.strptime(
-                        current_row[date_index], '%m/%d/%Y %H:%M:%S'
-                    )
-                )
-            except ValueError:
-                current_row[date_index] = (
-                    datetime.strptime(
-                        current_row[date_index], '%m/%d/%Y')
-                )
-        data.append(current_row)
-    dates = [row[date_index] for ind, row in enumerate(data) if ind > 0]
+    try:
+        data["data"]["Date"] = [
+            datetime.strptime(date_i, '%m/%d/%Y %H:%M:%S')
+            for date_i in data["data"]["Date"]
+        ]
+    except ValueError:
+        data["data"]["Date"] = [
+            datetime.strptime(date_i, '%m/%d/%Y')
+            for date_i in data["data"]["Date"]
+        ]
 
     return {
-        "frequency": metadata["datasets"]["Frequency"],
-        "dataset": metadata["datasets"]["Dataset"],
-        "site": metadata["sites"]["Site"],
-        "site_code": metadata["sites"]["Code"],
-        "state": metadata["sites"]["State"],
-        "county": metadata["sites"]["County"],
-        "latitude": metadata["sites"]["Latitude"],
-        "longitude": metadata["sites"]["Longitude"],
-        "elevation": metadata["sites"]["Elevation"],
-        "start_date": metadata["sites"]["StartDate"],
-        "end_date": metadata["sites"]["EndDate"],
-        "num_pocs": metadata["sites"]["NumPOCs"],
-        "dataset_id": metadata["parameters"]["DatasetID"],
-        "parameter": metadata["parameters"]["Parameter"],
-        "parameter_code": metadata["parameters"]["Code"],
-        "aqs_code": metadata["parameters"]["AQSCode"],
-        "units": metadata["parameters"]["Units"].replace("\xc2", ''),
-        "description": metadata["parameters"]["Description"],
-        "dates": dates,
-        "data": data
+        "frequency": data["datasets"]["Frequency"][0],
+        "dataset": data["datasets"]["Dataset"][0],
+        "site": data["sites"]["Site"][0],
+        "site_code": data["sites"]["Code"][0],
+        "state": data["sites"]["State"][0],
+        "county": data["sites"]["County"][0],
+        "latitude": data["sites"]["Latitude"][0],
+        "longitude": data["sites"]["Longitude"][0],
+        "elevation": data["sites"]["Elevation"][0],
+        "start_date": data["sites"]["StartDate"][0],
+        "end_date": data["sites"]["EndDate"][0],
+        "num_pocs": data["sites"]["NumPOCs"][0],
+        "dataset_id": data["parameters"]["DatasetID"][0],
+        "parameter": data["parameters"]["Parameter"][0],
+        "parameter_code": data["parameters"]["Code"][0],
+        "aqs_code": data["parameters"]["AQSCode"][0],
+        "units": data["parameters"]["Units"][0].replace("\xc2", ''),
+        "description": data["parameters"]["Description"][0],
+        "status_flags": data["status flags"],
+        "data": data["data"]
     }
 
 
@@ -245,7 +253,7 @@ def save_data_txt(out_dir, data):
         data["dataset"].lower().replace(' ', '_'),
         data["site_code"].lower(),
         data["parameter_code"].lower(),
-        data["dates"][0].strftime("%Y%m%d"),
+        data["data"]["Date"][0].strftime("%Y%m%d"),
         "dat"
     )
     data_format = "Version 1.0"  # ?
@@ -266,8 +274,8 @@ def save_data_txt(out_dir, data):
     contact_point = "?"  # what should we have here
     parameter = data["parameter_code"]
     covering_period = "{0} {1}".format(
-        data["dates"][0].strftime("%Y-%m-%d"),
-        data["dates"][-1].strftime("%Y-%m-%d")
+        data["data"]["Date"][0].strftime("%Y-%m-%d"),
+        data["data"]["Date"][-1].strftime("%Y-%m-%d")
     )
     time_interval = data["frequency"]
     measurement_unit = data["units"]
@@ -306,18 +314,25 @@ def save_data_txt(out_dir, data):
         "C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'",  # noqa
         "C30 COMMENT:",
         "C31",
-        "C32   DATE  TIME       DATE  TIME {}".format(parameter.rjust(11)),
+        "C32   DATE  TIME       DATE  TIME {0} {1} {2}".format(
+            parameter.rjust(11),
+            "Unc".rjust(11),
+            "SF".rjust(5)
+        ),
     ]
 
     with open(os.path.join(out_dir, file_name), mode='w') as outfile:
         for row in file_header_rows:
             outfile.write("{}\n".format(row))
 
-        for index, row in enumerate(data["data"]):
+        for index in range(len(data["data"]["Date"])):
             if index > 0:
                 outfile.write(
-                    "{0} 9999-99-99 99:99 {1}\n".format(
-                        row[3].strftime("%Y-%m-%d %H:%M"), row[4].rjust(11)
+                    "{0} 9999-99-99 99:99 {1} {2} {3}\n".format(
+                        data["data"]["Date"][index].strftime("%Y-%m-%d %H:%M"),
+                        data["data"][":Value"][index].rjust(11),
+                        data["data"][":Unc"][index].rjust(11),
+                        data["data"][":StatusFlag"][index].rjust(5),
                     )
                 )
 
@@ -330,7 +345,7 @@ def save_data_netcdf(out_dir, data):
         data["dataset"].lower().replace(' ', '_'),
         data["site_code"].lower(),
         data["parameter_code"].lower(),
-        data["dates"][0].strftime("%Y%m%d"),
+        data["data"]["Date"][0].strftime("%Y%m%d"),
         "nc"
     )
     output_file = os.path.join(out_dir, file_name)
@@ -345,8 +360,9 @@ def save_data_netcdf(out_dir, data):
 
     # dimensions
 
-    n = len(data["data"]) - 1
+    n = len(data["data"]["Date"])
     timedim = dataset.createDimension("time", n)
+    chardim = dataset.createDimension('nchar', 2)
 
     # time
 
@@ -358,23 +374,44 @@ def save_data_netcdf(out_dir, data):
     time.calendar = "gregorian"
     # times.bounds = "time_bnds"
     # times.cell_methods = "mean"
-    dates = [
-        datetime.combine(row[3],  datetime.min.time())
-        for i, row in enumerate(data["data"]) if i > 0
+    time[:] = [
+        date2num(date_i, time.units, calendar=time.calendar)
+        for date_i in data["data"]["Date"]
     ]
-    time[:] = date2num(dates, time.units, calendar=time.calendar)
-
-    # main parameter
 
     parameter = dataset.createVariable(
         data["parameter_code"], "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = data["parameter"]
     parameter.missing_value = -9999.
     parameter.units = data["units"]
+    parameter.description = data["description"]
     # parameter.ancillary_variables = "?"
     # parameter.cell_methods = "time: mean" ;
-    parameter[:] = [
-        row[4] for i, row in enumerate(data["data"]) if i > 0
-    ]
+    parameter[:] = data["data"][":Value"]
+
+    # uncertainty
+
+    parameter = dataset.createVariable(
+        "Unc", "f8", (timedim.name,), fill_value=-9999.)
+    parameter.standard_name = "Uncertainty"
+    parameter.missing_value = -9999.
+    parameter.units = data["units"]
+    # parameter.ancillary_variables = "?"
+    # parameter.cell_methods = "time: mean" ;
+    parameter[:] = data["data"][":Unc"]
+
+    # status flag
+
+    parameter = dataset.createVariable(
+        "SF", "c", (timedim.name, chardim.name))
+    parameter.standard_name = "StatusFlag"
+    description = ""
+    for index in range(len(data["status_flags"]['Status Flag'])):
+        description += "{0}: {1};".format(
+            data["status_flags"]["Status Flag"][index],
+            data["status_flags"]["Description"][index],
+        )
+    parameter.description = description
+    parameter[:] = data["data"][":StatusFlag"]
 
     dataset.close()

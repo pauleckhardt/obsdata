@@ -34,7 +34,7 @@ def cli():
     # http://views.cira.colostate.edu/fed/QueryWizard/
     # and store the data in the 'World Data Centre' format
 
-    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -q -e nc /tmp  # noqa
+    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp  # noqa
     # ./get_fed_data.py "castnet" ABT147 O3 2014-01-01 2014-01-31 -e nc -q /tmp  # noqa
 
     parser = argparse.ArgumentParser()
@@ -74,7 +74,7 @@ def cli():
         dest='data_format',
         type=str,
         default='nc',
-        help='data format for saving file (nc or data), default is nc (netcdf)',
+        help='data format for saving file (nc or dat), default is nc (netcdf)',
     )
     parser.add_argument(
         '-q',
