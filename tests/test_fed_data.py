@@ -45,7 +45,7 @@ def netcdf_dataset(fed_data, tmp_dir):
     data = parse_fed_data(fed_data)
     save_data_netcdf(tmp_dir, data)
     return Dataset(
-        tmp_dir.join("improve_aerosol_badl1_ocf_20170101.nc"),
+        tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.2017.nc"),
         "r"
     )
 
@@ -111,7 +111,7 @@ def test_set_request_data_date():
 
 
 @pytest.mark.parametrize('para,expect', (
-    ("time_interval",  "Daily"),
+    ("time_interval",  "daily"),
     ("station_name", "Badlands NP"),
     ("station_code", "BADL1"),
     ("dataset", 'IMPROVE Aerosol'),
@@ -148,7 +148,7 @@ def test_rawdata(fed_data, parameter, row, expect):
 def test_save_data_txt(fed_data, tmp_dir, expected_output_file):
     data = parse_fed_data(fed_data)
     save_data_txt(tmp_dir, data)
-    outfile = tmp_dir.join("improve_aerosol_badl1_ocf_20170101.dat")
+    outfile = tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.2017.dat")
     with open(outfile, mode='r') as file:
         assert file.read() == expected_output_file
 

@@ -32,6 +32,10 @@ class InputError(Exception):
     pass
 
 
+class NotImplementedError(Exception):
+    pass
+
+
 def validate_input(dataset, site, parameter):
 
     # dataset
@@ -209,7 +213,7 @@ def parse_fed_data(text):
         ]
 
     return {
-        "data_version": "",
+        "data_version": "",  # FIXME
         "station_name": data["sites"]["Site"][0],
         "station_code": data["sites"]["Code"][0],
         "station_category": "global",
@@ -217,31 +221,100 @@ def parse_fed_data(text):
             "Air sampling observation at a stationary platform"
         ),
         "country_territory": data["sites"]["State"][0],
-        "contributor": "",
+        "contributor": "improve",  # FIXME
         "latitude": data["sites"]["Latitude"][0],
         "longitude": data["sites"]["Longitude"][0],
         "altitude": data["sites"]["Elevation"][0],
         "nr_of_sampling_heights": "1",
-        "sampling_heights": "",
+        "sampling_heights": "",  # empty should be ok
         "contact_point": "nmhyslop@ucdavis.edu",
         "dataset": data["datasets"]["Dataset"][0],
         "parameter": data["parameters"]["Parameter"][0],
         "parameter_code": data["parameters"]["Code"][0],
-        "time_interval": data["datasets"]["Frequency"][0],
+        "time_interval": data["datasets"]["Frequency"][0].lower(),
         "measurement_unit": data["parameters"]["Units"][0].replace("\xc2", ''),
-        "measurement_method": "",
+        "measurement_method": "",  # empty should be ok
         "sampling_type": "continuous",
         "time_zone": "UTC",
-        "measurement_scale": "",
+        "measurement_scale": "",  # empty should be ok
         "status_flags": data["status flags"],
         "data": data["data"]
     }
 
 
-def get_output_filename(
-        dataset, site_code, parameter_code, date, extension):
-    return "{0}_{1}_{2}_{3}.{4}".format(
-        dataset, site_code, parameter_code, date, extension
+def get_output_filename(data, extension):
+
+    # [Station code].[Contributor].[Observation category].
+    # [Sampling type].[Parameter].[Auxiliary item].[Data type].
+    # [Data version].[Update date].dat
+    #
+    # ex: ryo239n00.jma.as.cn.cfc113.nl.hr2007.200706.20070806.dat
+    #
+    # [Observation category]
+    #   as: Air observation at a stationary platform
+    #   am: Air observation by a mobile platform
+    #   ap: Vertical profile observation of air
+    #   tc: Total column observation at a stationary platform
+    #   hy: Hydrographic observation by ships
+    #   ic: Ice core observation
+    #   sf: Observation of surface seawater and overlying air
+    if data["observation_category"] == (
+            "Air sampling observation at a stationary platform"):
+        observation_category = "as"
+    else:
+        raise(NotImplementedError)
+
+    # [Sampling type]
+    #   cn: Continuous or quasi-continuous in situ measurement
+    #   fl: Analysis of air samples in flasks
+    #   fi: Filter measurement
+    #   rs: Remote sensing
+    #   ic: Analysis of ice core samples
+    #   bo: Analysis of samples in bottles
+    #   ot Other
+    if data["sampling_type"] == "continuous":
+        sampling_type = "cs"
+    else:
+        raise(NotImplementedError)
+
+    # [Data type]
+    #   ev: Event sampling data
+    #   om: One-minute mean data
+    #   tm: Ten-minute mean data
+    #   hrxxxx: Hourly mean data observed in the year xxxx
+    #   da: Daily mean data
+    #   mo: Monthly mean data
+    if data["time_interval"] == "daily":
+        data_type = "da"
+    elif data["time_interval"] == "hourly":
+        data_type = "hr{0}".format(data["data"]["Date"][0].year)
+    else:
+        raise(NotImplementedError)
+
+    # [Auxiliary item]
+    #   If a data file is NOT identified uniquely with the codes above,
+    #   this field is filled with some characters to give a unique
+    #   filename.
+    #   nl: Null
+    #
+    # [Data version]
+    #   To specify the data version, this field indicates the
+    #   date when the data were replaced with newly recalculated data.
+    #
+    # [Update date]
+    #   This field indicates the date when the data file was updated.
+    return "{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}".format(
+        data["station_code"].lower(),
+        data["contributor"],
+        observation_category,
+        sampling_type,
+        data["parameter_code"].lower(),
+        "nl",
+        data_type,
+        data["data"]["Date"][0].year,
+        # data["data_version"],
+        # update_date,
+        extension
     )
 
 
@@ -267,13 +340,8 @@ def save_data_txt(out_dir, data):
     title = "{0} {1} mean data".format(
         data["parameter_code"], data["time_interval"])
 
-    file_name = get_output_filename(
-        data["dataset"].lower().replace(' ', '_'),
-        data["station_code"].lower(),
-        data["parameter_code"].lower(),
-        data["data"]["Date"][0].strftime("%Y%m%d"),
-        "dat"
-    )
+    file_name = get_output_filename(data, "dat")
+
     data_format = "Version 1.0"
     total_lines = header_lines + len(data["data"])
 
@@ -354,13 +422,9 @@ def save_data_netcdf(out_dir, data):
 
     # TODO: fix format (talk to dave)
 
-    file_name = get_output_filename(
-        data["dataset"].lower().replace(' ', '_'),
-        data["station_code"].lower(),
-        data["parameter_code"].lower(),
-        data["data"]["Date"][0].strftime("%Y%m%d"),
-        "nc"
-    )
+    file_name = get_output_filename(data, "nc")
+    print(file_name)
+
     output_file = os.path.join(out_dir, file_name)
     dataset = Dataset(output_file, "w", format="NETCDF4")
 
