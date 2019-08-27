@@ -111,23 +111,17 @@ def test_set_request_data_date():
 
 
 @pytest.mark.parametrize('para,expect', (
-    ("frequency",  "Daily"),
-    ("site", "Badlands NP"),
-    ("site_code", "BADL1"),
+    ("time_interval",  "Daily"),
+    ("station_name", "Badlands NP"),
+    ("station_code", "BADL1"),
     ("dataset", 'IMPROVE Aerosol'),
-    ("state", "SD"),
-    ("county", "46071"),
+    ("country_territory", "SD"),
     ("latitude", "43.74350"),
     ("longitude", "-101.94120"),
-    ("elevation", "736"),
-    ("start_date", "03/02/1988"),
-    ("end_date", "11/28/2018"),
-    ("num_pocs", "1"),
-    ("dataset_id", "10001"),
+    ("altitude", "736"),
     ("parameter", "Carbon, Organic Total (Fine)"),
     ("parameter_code", "OCf"),
-    ("aqs_code", "88320"),
-    ("units", "µg/m^3 LC"),
+    ("measurement_unit", "µg/m^3 LC"),
 ))
 def test_parse_metadata(fed_data, para, expect):
     data = parse_fed_data(fed_data)

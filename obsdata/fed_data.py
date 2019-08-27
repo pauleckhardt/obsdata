@@ -209,24 +209,30 @@ def parse_fed_data(text):
         ]
 
     return {
-        "frequency": data["datasets"]["Frequency"][0],
-        "dataset": data["datasets"]["Dataset"][0],
-        "site": data["sites"]["Site"][0],
-        "site_code": data["sites"]["Code"][0],
-        "state": data["sites"]["State"][0],
-        "county": data["sites"]["County"][0],
+        "data_version": "",
+        "station_name": data["sites"]["Site"][0],
+        "station_code": data["sites"]["Code"][0],
+        "station_category": "global",
+        "observation_category": (
+            "Air sampling observation at a stationary platform"
+        ),
+        "country_territory": data["sites"]["State"][0],
+        "contributor": "",
         "latitude": data["sites"]["Latitude"][0],
         "longitude": data["sites"]["Longitude"][0],
-        "elevation": data["sites"]["Elevation"][0],
-        "start_date": data["sites"]["StartDate"][0],
-        "end_date": data["sites"]["EndDate"][0],
-        "num_pocs": data["sites"]["NumPOCs"][0],
-        "dataset_id": data["parameters"]["DatasetID"][0],
+        "altitude": data["sites"]["Elevation"][0],
+        "nr_of_sampling_heights": "1",
+        "sampling_heights": "",
+        "contact_point": "nmhyslop@ucdavis.edu",
+        "dataset": data["datasets"]["Dataset"][0],
         "parameter": data["parameters"]["Parameter"][0],
         "parameter_code": data["parameters"]["Code"][0],
-        "aqs_code": data["parameters"]["AQSCode"][0],
-        "units": data["parameters"]["Units"][0].replace("\xc2", ''),
-        "description": data["parameters"]["Description"][0],
+        "time_interval": data["datasets"]["Frequency"][0],
+        "measurement_unit": data["parameters"]["Units"][0].replace("\xc2", ''),
+        "measurement_method": "",
+        "sampling_type": "continuous",
+        "time_zone": "UTC",
+        "measurement_scale": "",
         "status_flags": data["status flags"],
         "data": data["data"]
     }
@@ -244,81 +250,83 @@ def save_data_txt(out_dir, data):
         the 'World Data Centre' format is used,
         It has 32 header lines which describes the site and data,
         then the data-records.
-        # TODO: fix format (talk to dave)
+        # TODO: fix format (discussion with dave)
     """
+
+    nr_digits_date = 10
+    nr_digits_time = 5
+    nr_digits_data = 10
+    nr_digits_nd = 5
+    nr_digits_sd = 7
+    nr_digits_f = 5
+    nr_digits_cs = 2
+    nr_digits_rem = 9
+
     header_lines = 32
+
     title = "{0} {1} mean data".format(
-        data["parameter_code"], data["frequency"])
+        data["parameter_code"], data["time_interval"])
+
     file_name = get_output_filename(
         data["dataset"].lower().replace(' ', '_'),
-        data["site_code"].lower(),
+        data["station_code"].lower(),
         data["parameter_code"].lower(),
         data["data"]["Date"][0].strftime("%Y%m%d"),
         "dat"
     )
-    data_format = "Version 1.0"  # ?
+    data_format = "Version 1.0"
     total_lines = header_lines + len(data["data"])
-    data_version = "201405"  # ?
-    station_name = data["site"]
-    station_category = "global"  # ?
-    observation_category = (
-        "Air sampling observation at a stationary platform"
-    )
-    country = data["state"]  # this is state, not country
-    contributor = "NUI"
-    latitude = data["latitude"]
-    longitude = data["longitude"]
-    altitude = data["elevation"]
-    number_of_sampling_heights = "?"
-    sampling_heights = "?"
-    contact_point = "?"  # what should we have here
-    parameter = data["parameter_code"]
+
     covering_period = "{0} {1}".format(
         data["data"]["Date"][0].strftime("%Y-%m-%d"),
         data["data"]["Date"][-1].strftime("%Y-%m-%d")
     )
-    time_interval = data["frequency"]
-    measurement_unit = data["units"]
-    measurement_method = "Light absorption analysis (UV)"  # ?
-    sampling_type = "continuous"  # ?
-    measurement_scale = "National Physical Laboratory (UK)"  # ?
+
     file_header_rows = [
         "C01 TITLE: {}".format(title),
         "C02 FILE NAME: {}".format(file_name),
         "C03 DATA FORMAT: {}".format(data_format),
         "C04 TOTAL LINES: {}".format(total_lines),
         "C05 HEADER LINES: {}".format(header_lines),
-        "C06 DATA VERSION: {}".format(data_version),
-        "C07 STATION NAME: {}".format(station_name),
-        "C08 STATION CATEGORY: {}".format(station_category),
-        "C09 OBSERVATION CATEGORY: {}".format(observation_category),
-        "C10 COUNTRY/TERRITORY: {}".format(country),
-        "C11 CONTRIBUTOR: {}".format(contributor),
-        "C12 LATITUDE: {}".format(latitude),
-        "C13 LONGITUDE: {}".format(longitude),
-        "C14 ALTITUDE: {}".format(altitude),
-        "C15 NUMBER OF SAMPLING HEIGHTS: {}".format(number_of_sampling_heights),
-        "C16 SAMPLING HEIGHTS: {}".format(sampling_heights),
-        "C17 CONTACT POINT: {}".format(contact_point),
-        "C18 PARAMETER: {}".format(parameter),
+        "C06 DATA VERSION: {}".format(data["data_version"]),
+        "C07 STATION NAME: {}".format(data["station_name"]),
+        "C08 STATION CATEGORY: {}".format(data["station_category"]),
+        "C09 OBSERVATION CATEGORY: {}".format(data["observation_category"]),
+        "C10 COUNTRY/TERRITORY: {}".format(data["country_territory"]),
+        "C11 CONTRIBUTOR: {}".format(data["contributor"]),
+        "C12 LATITUDE: {}".format(data["latitude"]),
+        "C13 LONGITUDE: {}".format(data["longitude"]),
+        "C14 ALTITUDE: {}".format(data["altitude"]),
+        "C15 NUMBER OF SAMPLING HEIGHTS: {}".format(
+            data["nr_of_sampling_heights"]),
+        "C16 SAMPLING HEIGHTS: {}".format(data["sampling_heights"]),
+        "C17 CONTACT POINT: {}".format(data["contact_point"]),
+        "C18 PARAMETER: {}".format(data["parameter_code"]),
         "C19 COVERING PERIOD: {}".format(covering_period),
-        "C20 TIME INTERVAL: {}".format(time_interval),
-        "C21 MEASUREMENT UNIT: {}".format(measurement_unit),
-        "C22 MEASUREMENT METHOD: {}".format(measurement_method),
-        "C23 SAMPLING TYPE: {}".format(sampling_type),
-        "C24 TIME ZONE: UTC",
-        "C25 MEASUREMENT SCALE: {}".format(measurement_scale),
+        "C20 TIME INTERVAL: {}".format(data["time_interval"]),
+        "C21 MEASUREMENT UNIT: {}".format(data["measurement_unit"]),
+        "C22 MEASUREMENT METHOD: {}".format(data["measurement_method"]),
+        "C23 SAMPLING TYPE: {}".format(data["sampling_type"]),
+        "C24 TIME ZONE: {}".format(data["time_zone"]),
+        "C25 MEASUREMENT SCALE: {}".format(data["measurement_scale"]),
         "C26 CREDIT FOR USE: This is a formal notification for data users. 'For scientific purposes, access to these data is unlimited",  # noqa
         "C27 and provided without charge. By their use you accept that an offer of co-authorship will be made through personal contact",  # noqa
         "C28 with the data providers or owners whenever substantial use is made of their data. In all cases, an acknowledgement",  # noqa
         "C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'",  # noqa
         "C30 COMMENT:",
         "C31",
-        "C32   DATE  TIME       DATE  TIME {0} {1} {2}".format(
-            parameter.rjust(11),
-            "Unc".rjust(11),
-            "SF".rjust(5)
-        ),
+        "C32 {0} {1} {2} {3} {4} {5} {6} {7} {8} {9}".format(
+            "DATE".rjust(nr_digits_date - 4),
+            "TIME".rjust(nr_digits_time),
+            "DATE".rjust(nr_digits_date),
+            "TIME".rjust(nr_digits_time),
+            "DATA".rjust(nr_digits_data),
+            "ND".rjust(nr_digits_nd),
+            "SD".rjust(nr_digits_sd),
+            "F".rjust(nr_digits_f),
+            "CS".rjust(nr_digits_cs),
+            "REM".rjust(nr_digits_rem)
+        )
     ]
 
     with open(os.path.join(out_dir, file_name), mode='w') as outfile:
@@ -328,11 +336,16 @@ def save_data_txt(out_dir, data):
         for index in range(len(data["data"]["Date"])):
             if index > 0:
                 outfile.write(
-                    "{0} 9999-99-99 99:99 {1} {2} {3}\n".format(
+                    "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
                         data["data"]["Date"][index].strftime("%Y-%m-%d %H:%M"),
-                        data["data"][":Value"][index].rjust(11),
-                        data["data"][":Unc"][index].rjust(11),
-                        data["data"][":StatusFlag"][index].rjust(5),
+                        data["data"][":Value"][index][0:nr_digits_data].rjust(
+                            nr_digits_data),
+                        "-9999",
+                        data["data"][":Unc"][index][0:nr_digits_sd].rjust(
+                            nr_digits_sd),
+                        data["data"][":StatusFlag"][index].rjust(nr_digits_f),
+                        "-9",
+                        "-99999999",
                     )
                 )
 
@@ -343,7 +356,7 @@ def save_data_netcdf(out_dir, data):
 
     file_name = get_output_filename(
         data["dataset"].lower().replace(' ', '_'),
-        data["site_code"].lower(),
+        data["station_code"].lower(),
         data["parameter_code"].lower(),
         data["data"]["Date"][0].strftime("%Y%m%d"),
         "nc"
@@ -353,10 +366,10 @@ def save_data_netcdf(out_dir, data):
 
     # global attributes
 
-    dataset.station_name = data["site"]
+    dataset.station_name = data["station_name"]
     dataset.latitude = float(data["latitude"])
     dataset.longitude = float(data["longitude"])
-    dataset.altitude = float(data["elevation"])
+    dataset.altitude = float(data["altitude"])
 
     # dimensions
 
@@ -370,10 +383,7 @@ def save_data_netcdf(out_dir, data):
     time.standard_name = "time"
     time.long_name = "time of measurement"
     time.units = "days since 1900-01-01 00:00:00 UTC"
-    # times.axis = "T"
     time.calendar = "gregorian"
-    # times.bounds = "time_bnds"
-    # times.cell_methods = "mean"
     time[:] = [
         date2num(date_i, time.units, calendar=time.calendar)
         for date_i in data["data"]["Date"]
@@ -383,10 +393,7 @@ def save_data_netcdf(out_dir, data):
         data["parameter_code"], "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = data["parameter"]
     parameter.missing_value = -9999.
-    parameter.units = data["units"]
-    parameter.description = data["description"]
-    # parameter.ancillary_variables = "?"
-    # parameter.cell_methods = "time: mean" ;
+    parameter.units = data["measurement_unit"]
     parameter[:] = data["data"][":Value"]
 
     # uncertainty
@@ -395,9 +402,7 @@ def save_data_netcdf(out_dir, data):
         "Unc", "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = "Uncertainty"
     parameter.missing_value = -9999.
-    parameter.units = data["units"]
-    # parameter.ancillary_variables = "?"
-    # parameter.cell_methods = "time: mean" ;
+    parameter.units = data["measurement_unit"]
     parameter[:] = data["data"][":Unc"]
 
     # status flag
@@ -411,7 +416,6 @@ def save_data_netcdf(out_dir, data):
             data["status_flags"]["Status Flag"][index],
             data["status_flags"]["Description"][index],
         )
-    parameter.description = description
     parameter[:] = data["data"][":StatusFlag"]
 
     dataset.close()
