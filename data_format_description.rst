@@ -156,6 +156,94 @@ Records
 +-----------+------------+-----------------+--------------------------------+----------------------------------------+
 
 
+Example
+--------------------------
+
+
+C01 TITLE: OCf daily mean data
+
+C02 FILE NAME: badl1.improve.as.cs.ocf.nl.da.dat
+
+C03 DATA FORMAT: Version 1.0
+
+C04 TOTAL LINES: 44
+
+C05 HEADER LINES: 32
+
+C06 DATA VERSION: 
+
+C07 STATION NAME: Badlands NP
+
+C08 STATION CATEGORY: global
+
+C09 OBSERVATION CATEGORY: Air sampling observation at a stationary platform
+
+C10 COUNTRY/TERRITORY: SD
+
+C11 CONTRIBUTOR: improve
+
+C12 LATITUDE: 43.74350
+
+C13 LONGITUDE: -101.94120
+
+C14 ALTITUDE: 736
+
+C15 NUMBER OF SAMPLING HEIGHTS: 1
+
+C16 SAMPLING HEIGHTS: 
+
+C17 CONTACT POINT: nmhyslop@ucdavis.edu
+
+C18 PARAMETER: OCf
+
+C19 COVERING PERIOD: 2017-01-01 2017-01-31
+
+C20 TIME INTERVAL: daily
+
+C21 MEASUREMENT UNIT: µg/m^3 LC
+
+C22 MEASUREMENT METHOD: 
+
+C23 SAMPLING TYPE: continuous
+
+C24 TIME ZONE: UTC
+
+C25 MEASUREMENT SCALE: 
+
+C26 CREDIT FOR USE: This is a formal notification for data users. 'For scientific purposes, access to these data is unlimited
+
+C27 and provided without charge. By their use you accept that an offer of co-authorship will be made through personal contact
+
+C28 with the data providers or owners whenever substantial use is made of their data. In all cases, an acknowledgement
+
+C29 must be made to the data providers or owners and the data centre when these data are used within a publication.'
+
+C30 COMMENT:
+
+C31
+
+C32   DATE  TIME       DATE  TIME       DATA    ND      SD     F CS       REM
+
+2017-01-04 00:00 9999-99-99 99:99      0.398 -9999    0.09     8 -9 -99999999
+
+2017-01-07 00:00 9999-99-99 99:99      0.495 -9999    0.09     8 -9 -99999999
+
+2017-01-10 00:00 9999-99-99 99:99      0.658 -9999    0.10     8 -9 -99999999
+
+2017-01-13 00:00 9999-99-99 99:99      0.851 -9999    0.11     8 -9 -99999999
+
+2017-01-16 00:00 9999-99-99 99:99      0.483 -9999    0.09     8 -9 -99999999
+
+2017-01-19 00:00 9999-99-99 99:99      0.779 -9999    0.10     8 -9 -99999999
+
+2017-01-22 00:00 9999-99-99 99:99      0.431 -9999    0.09     8 -9 -99999999
+
+2017-01-25 00:00 9999-99-99 99:99      0.175 -9999    0.08     8 -9 -99999999
+
+2017-01-28 00:00 9999-99-99 99:99      0.213 -9999    0.08     8 -9 -99999999
+
+2017-01-31 00:00 9999-99-99 99:99      0.210 -9999    0.08     8 -9 -99999999
+
 
 File name convention 
 --------------------------

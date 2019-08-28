@@ -295,7 +295,7 @@ def get_output_filename(data, extension):
     if data["time_interval"] == "daily":
         data_type = "da"
     elif data["time_interval"] == "hourly":
-        data_type = "hr{0}".format(data["data"]["Date"][0].year)
+        data_type = "hr{}".format(data["data"]["Date"][0].year)
     else:
         raise(NotImplementedError)
 
@@ -396,14 +396,19 @@ def save_data_txt(out_dir, data):
 
         for index in range(len(data["data"]["Date"])):
             if index > 0:
+
+                value = data["data"][":Value"][index]
+                value = value if not value == '-999' else "-99999.999"
+
+                unc = data["data"][":Unc"][index]
+                unc = unc if not unc == '-999' else "-999.99"
+
                 outfile.write(
                     "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
                         data["data"]["Date"][index].strftime("%Y-%m-%d %H:%M"),
-                        data["data"][":Value"][index][0:nr_digits_data].rjust(
-                            nr_digits_data),
+                        "{:10.3f}".format(float(value)),
                         "-9999",
-                        data["data"][":Unc"][index][0:nr_digits_sd].rjust(
-                            nr_digits_sd),
+                        "{:7.2f}".format(float(unc)),
                         str(data["status_flags"]["Status Flag"].index(
                             data["data"][":StatusFlag"][index])).rjust(
                                 nr_digits_f),
@@ -418,7 +423,6 @@ def save_data_netcdf(out_dir, data):
     # TODO: fix format (talk to dave)
 
     file_name = get_output_filename(data, "nc")
-    print(file_name)
 
     output_file = os.path.join(out_dir, file_name)
     dataset = Dataset(output_file, "w", format="NETCDF4")
