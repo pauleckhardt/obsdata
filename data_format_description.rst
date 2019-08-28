@@ -3,13 +3,15 @@ Data format description
 ========================
 
 Tables below describes a data file format specified in GAW Report_ no. 188
-and this format is used here.
+and this format is used here. The file format consists of a
+header part and a data part and employs an ASCII encodeing.
 
 .. _Report: https://webcache.googleusercontent.com/search?q=cache:nGfgmcgU2l4J:https://library.wmo.int/pmb_ged/wmo-td_1507.pdf+&cd=2&hl=sv&ct=clnk&gl=se&client=ubuntu
 
 
 Header
 -----------------
+
 
 +-------+------------------------------+------------------------------------------------------+
 |Line   |  Header item                 |   Content                                            |
@@ -200,7 +202,7 @@ C19 COVERING PERIOD: 2017-01-01 2017-01-31
 
 C20 TIME INTERVAL: daily
 
-C21 MEASUREMENT UNIT: µg/m^3 LC
+C21 MEASUREMENT UNIT: ug/m^3 LC
 
 C22 MEASUREMENT METHOD: 
 
@@ -303,3 +305,52 @@ Most files have *nl* in this field, which means *NULL*.
 - hrxxxx: Hourly mean data observed in the year xxxx
 - da: Daily mean data
 - mo: Monthly mean data
+
+
+Status flags
+-------------------------------
+
+The description of the various status flags are dot described in the header of the data file.
+Table below describes status flages deployed by the *Federal Land Manager Environmental* Database_.
+
+.. _Database: http://views.cira.colostate.edu/fed/QueryWizard/
+
++------------+------------------------------------------------------------------------------------+
+|Status Flag | Description                                                                        |
++============+====================================================================================+
+|H1 / 0      | Historical data that have not been assessed or validated.                          |
++------------+------------------------------------------------------------------------------------+
+|I0 / 1      | Invalid value - unknown reason                                                     |
++------------+------------------------------------------------------------------------------------+
+|I1 / 2      | Invalid value - known reason                                                       |
++------------+------------------------------------------------------------------------------------+
+|I2 / 3      | Invalid value (-999), though sample-level flag seems valid (SEM)                   |
++------------+------------------------------------------------------------------------------------+
+|M1 / 4      | Missing value because no value is available                                        |
++------------+------------------------------------------------------------------------------------+
+|M2 / 5      | Missing value because invalidated by data originator                               |
++------------+------------------------------------------------------------------------------------+
+|M3 / 6      | Missing value due to clogged filter                                                |
++------------+------------------------------------------------------------------------------------+
+|NA / 7      | Not available from source data                                                     |
++------------+------------------------------------------------------------------------------------+
+|V0 / 8      | Valid value                                                                        |
++------------+------------------------------------------------------------------------------------+
+|V1 / 9      | Valid value but comprised wholly or partially of below detection limit data        |
++------------+------------------------------------------------------------------------------------+
+|V2 / 10     | Valid estimated value                                                              |
++------------+------------------------------------------------------------------------------------+
+|V3 / 11     | Valid interpolated value                                                           |
++------------+------------------------------------------------------------------------------------+
+|V4 / 12     | Valid value despite failing to meet some QC or statistical criteria                |
++------------+------------------------------------------------------------------------------------+
+|V5 / 13     | Valid value but qualified because of possible contamination                        |
++------------+------------------------------------------------------------------------------------+
+|V6 / 14     | Valid value but qualified due to non-standard sampling conditions                  |
++------------+------------------------------------------------------------------------------------+
+|V7 / 15     | Valid value set equal to the detection limit (DL) since the value was below the DL | 
++------------+------------------------------------------------------------------------------------+
+|VM / 16     | Valid modeled value                                                                |
++------------+------------------------------------------------------------------------------------+
+|VS / 17     | Valid substituted value                                                            |
++------------+------------------------------------------------------------------------------------+
