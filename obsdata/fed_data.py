@@ -246,9 +246,8 @@ def get_output_filename(data, extension):
 
     # [Station code].[Contributor].[Observation category].
     # [Sampling type].[Parameter].[Auxiliary item].[Data type].
-    # [Data version].[Update date].dat
     #
-    # ex: ryo239n00.jma.as.cn.cfc113.nl.hr2007.200706.20070806.dat
+    # ex: ryo239n00.jma.as.cn.cfc113.nl.hr2007.dat
     #
     # [Observation category]
     #   as: Air observation at a stationary platform
@@ -258,12 +257,7 @@ def get_output_filename(data, extension):
     #   hy: Hydrographic observation by ships
     #   ic: Ice core observation
     #   sf: Observation of surface seawater and overlying air
-    if data["observation_category"] == (
-            "Air sampling observation at a stationary platform"):
-        observation_category = "as"
-    else:
-        raise(NotImplementedError)
-
+    #
     # [Sampling type]
     #   cn: Continuous or quasi-continuous in situ measurement
     #   fl: Analysis of air samples in flasks
@@ -272,11 +266,7 @@ def get_output_filename(data, extension):
     #   ic: Analysis of ice core samples
     #   bo: Analysis of samples in bottles
     #   ot Other
-    if data["sampling_type"] == "continuous":
-        sampling_type = "cs"
-    else:
-        raise(NotImplementedError)
-
+    #
     # [Data type]
     #   ev: Event sampling data
     #   om: One-minute mean data
@@ -284,6 +274,24 @@ def get_output_filename(data, extension):
     #   hrxxxx: Hourly mean data observed in the year xxxx
     #   da: Daily mean data
     #   mo: Monthly mean data
+    #
+    # [Auxiliary item]
+    #   If a data file is NOT identified uniquely with the codes above,
+    #   this field is filled with some characters to give a unique
+    #   filename.
+    #   nl: Null
+
+    if data["observation_category"] == (
+            "Air sampling observation at a stationary platform"):
+        observation_category = "as"
+    else:
+        raise(NotImplementedError)
+
+    if data["sampling_type"] == "continuous":
+        sampling_type = "cs"
+    else:
+        raise(NotImplementedError)
+
     if data["time_interval"] == "daily":
         data_type = "da"
     elif data["time_interval"] == "hourly":
@@ -291,19 +299,7 @@ def get_output_filename(data, extension):
     else:
         raise(NotImplementedError)
 
-    # [Auxiliary item]
-    #   If a data file is NOT identified uniquely with the codes above,
-    #   this field is filled with some characters to give a unique
-    #   filename.
-    #   nl: Null
-    #
-    # [Data version]
-    #   To specify the data version, this field indicates the
-    #   date when the data were replaced with newly recalculated data.
-    #
-    # [Update date]
-    #   This field indicates the date when the data file was updated.
-    return "{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}".format(
+    return "{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}".format(
         data["station_code"].lower(),
         data["contributor"],
         observation_category,
@@ -311,9 +307,6 @@ def get_output_filename(data, extension):
         data["parameter_code"].lower(),
         "nl",
         data_type,
-        data["data"]["Date"][0].year,
-        # data["data_version"],
-        # update_date,
         extension
     )
 
@@ -411,7 +404,9 @@ def save_data_txt(out_dir, data):
                         "-9999",
                         data["data"][":Unc"][index][0:nr_digits_sd].rjust(
                             nr_digits_sd),
-                        data["data"][":StatusFlag"][index].rjust(nr_digits_f),
+                        str(data["status_flags"]["Status Flag"].index(
+                            data["data"][":StatusFlag"][index])).rjust(
+                                nr_digits_f),
                         "-9",
                         "-99999999",
                     )

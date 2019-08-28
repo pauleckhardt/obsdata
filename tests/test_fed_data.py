@@ -45,7 +45,7 @@ def netcdf_dataset(fed_data, tmp_dir):
     data = parse_fed_data(fed_data)
     save_data_netcdf(tmp_dir, data)
     return Dataset(
-        tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.2017.nc"),
+        tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.nc"),
         "r"
     )
 
@@ -140,7 +140,7 @@ def test_parse_metadata(fed_data, para, expect):
     ('Date', 1, datetime(2017, 1, 4)),
     (':Value', 1, '0.39832'),
 ))
-def test_rawdata(fed_data, parameter, row, expect):
+def test_parse_data(fed_data, parameter, row, expect):
     data = parse_fed_data(fed_data)
     assert data["data"][parameter][row] == expect
 
@@ -148,7 +148,7 @@ def test_rawdata(fed_data, parameter, row, expect):
 def test_save_data_txt(fed_data, tmp_dir, expected_output_file):
     data = parse_fed_data(fed_data)
     save_data_txt(tmp_dir, data)
-    outfile = tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.2017.dat")
+    outfile = tmp_dir.join("badl1.improve.as.cs.ocf.nl.da.dat")
     with open(outfile, mode='r') as file:
         assert file.read() == expected_output_file
 

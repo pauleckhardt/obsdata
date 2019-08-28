@@ -2,7 +2,7 @@
 Data format description
 ========================
 
-Tables below describes a data file format specified in GAW Report_ no 188
+Tables below describes a data file format specified in GAW Report_ no. 188
 and this format is used here.
 
 .. _Report: https://webcache.googleusercontent.com/search?q=cache:nGfgmcgU2l4J:https://library.wmo.int/pmb_ged/wmo-td_1507.pdf+&cd=2&hl=sv&ct=clnk&gl=se&client=ubuntu
@@ -154,3 +154,64 @@ Records
 |           |            |                 |                                | included. The definition is described  |
 |           |            |                 |                                | under “COMMENTS” of the header part.   |
 +-----------+------------+-----------------+--------------------------------+----------------------------------------+
+
+
+
+File name convention 
+--------------------------
+
+The following file naming convention is used (inspired by the GAW Report no. 188):
+
+**[Station code].[Contributor].[Observation category].[Sampling type].[Parameter].[Auxiliary item].[Data type].dat**
+
+An example is:
+
+*badl1.improve.as.cs.ocf.nl.da.dat*
+
+[**Station code**]:
+
+e.g. badl1 
+
+[**Contributor**]:
+
+e.g. improve
+
+[**Observation category**]:
+
+- as: Air observation at a stationary platform
+- am: Air observation by a mobile platform
+- ap: Vertical profile observation of air
+- tc: Total column observation at a stationary platform
+- hy: Hydrographic observation by ships
+- ic: Ice core observation
+- sf: Observation of surface seawater and overlying air
+
+[**Sampling type**]:
+
+- cn: Continuous or quasi-continuous in situ measurement
+- fl: Analysis of air samples in flasks
+- fi: Filter measurement
+- rs: Remote sensing
+- ic: Analysis of ice core samples
+- bo: Analysis of samples in bottles
+- ot: Other
+
+[**Parameter**]:
+
+e.g. ocf 
+
+[**Auxiliary item**]:
+
+If a data file is NOT identified uniquely with the codes above,
+this field is filled with some characters to give a unique filename.
+Most files have *nl* in this field, which means *NULL*.
+
+
+[**Data type**]:
+
+- ev: Event sampling data
+- om: One-minute mean data
+- tm: Ten-minute mean data
+- hrxxxx: Hourly mean data observed in the year xxxx
+- da: Daily mean data
+- mo: Monthly mean data
