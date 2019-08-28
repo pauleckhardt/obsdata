@@ -121,7 +121,7 @@ def test_set_request_data_date():
     ("altitude", "736"),
     ("parameter", "Carbon, Organic Total (Fine)"),
     ("parameter_code", "OCf"),
-    ("measurement_unit", "µg/m^3 LC"),
+    ("measurement_unit", "ug/m^3 LC"),
 ))
 def test_parse_metadata(fed_data, para, expect):
     data = parse_fed_data(fed_data)

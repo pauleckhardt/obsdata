@@ -212,6 +212,7 @@ def parse_fed_data(text):
             for date_i in data["data"]["Date"]
         ]
 
+    print(data["parameters"]["Units"][0])
     return {
         "data_version": "",  # FIXME
         "station_name": data["sites"]["Site"][0],
@@ -232,7 +233,7 @@ def parse_fed_data(text):
         "parameter": data["parameters"]["Parameter"][0],
         "parameter_code": data["parameters"]["Code"][0],
         "time_interval": data["datasets"]["Frequency"][0].lower(),
-        "measurement_unit": data["parameters"]["Units"][0].replace("\xc2", ''),
+        "measurement_unit": data["parameters"]["Units"][0].replace("µ", 'u'),
         "measurement_method": "",  # empty should be ok
         "sampling_type": "continuous",
         "time_zone": "UTC",
@@ -390,9 +391,10 @@ def save_data_txt(out_dir, data):
         )
     ]
 
-    with open(os.path.join(out_dir, file_name), mode='w') as outfile:
+    with open(os.path.join(out_dir, file_name), mode='wb') as outfile:
         for row in file_header_rows:
-            outfile.write("{}\n".format(row))
+            print(row)
+            outfile.write("{}\n".format(row).encode("ascii"))
 
         for index in range(len(data["data"]["Date"])):
             if index > 0:
@@ -414,7 +416,7 @@ def save_data_txt(out_dir, data):
                                 nr_digits_f),
                         "-9",
                         "-99999999",
-                    )
+                    ).encode("ascii")
                 )
 
 
