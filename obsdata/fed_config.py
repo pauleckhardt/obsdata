@@ -4,21 +4,21 @@ import csv
 from collections import namedtuple
 
 
-DATADIR = pkg_resources.resource_filename(__name__, "")
+DATADIR = pkg_resources.resource_filename(__name__, "fedfiles")
 
 
 datasets = {
     "improve aerosol": {
         "id": 10001,
         "time_interval": "Daily",
-        "site_file": os.path.join(DATADIR, "fedsites_improve_aerosol.csv"),
+        "site_file": os.path.join(DATADIR, "fedsites_10001.csv"),
         "parameter_file": os.path.join(DATADIR, "dataset_improve_aerosol.csv"),
     },
     # castnet ozone hourly
     "castnet": {
         "id": 23005,
         "time_interval": "Hourly",
-        "site_file": os.path.join(DATADIR, "fedsites_castnet.csv"),
+        "site_file": os.path.join(DATADIR, "fedsites_23005.csv"),
         "parameter_file": os.path.join(DATADIR, "dataset_castnet.csv"),
     }
 }

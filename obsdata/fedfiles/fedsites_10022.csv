@@ -1,0 +1,3 @@
+SiteID,SiteCode,SiteName,CT,ST,EPACode,Lat,Lon,Elev,Start,End
+415,ABBO1,Abbotsford,CA,BC, ,49.03,-122.37,0,04/20/94,06/17/95
+416,CHIL1,Chilliwack,CA,BC, ,49.12,-121.93,9,04/20/94,06/17/95

@@ -1,0 +1,13 @@
+SiteID,SiteCode,SiteName,CT,ST,EPACode,Lat,Lon,Elev,Start,End
+211,ALH557,Alhambra Visibility,US,IL, ,38.87,-89.62,164,10/25/93,03/30/94
+216,ARE528,Arendtsville Visibility,US,PA, ,39.92,-77.31,269,10/25/93,05/25/01
+223,BVL530,Bondville Visibility,US,IL, ,40.05,-88.37,212,10/25/93,12/27/01
+230,CDZ571,Cadiz Visibility,US,KY, ,36.79,-87.85,189,10/25/93,03/02/01
+240,CTH510,Connecticut Hill Visibility,US,NY, ,42.4,-76.65,501,10/25/93,05/31/01
+267,LIV573,Livonia Visibility,US,IN, ,38.53,-86.26,299,10/25/93,03/02/01
+275,MKG513,M.K. Goddard Visibility,US,PA, ,41.42,-80.14,384,10/31/93,05/31/01
+291,QAK272,Quaker City Collocated,US,OH, ,39.94,-81.34,372,02/04/94,05/31/01
+292,QAK572,Quaker City Visibility,US,OH, ,39.94,-81.34,372,10/25/93,05/31/01
+303,SHN518,Shenandoah NP - Big Meadows Visibility,US,VA, ,38.52,-78.44, ,11/09/93,11/18/95
+305,SIK270,Sikes Collocated,US,LA, ,32.06,-92.43, ,09/06/95,04/24/00
+306,SIK570,Sikes Visibility,US,LA, ,32.06,-92.43,68,10/25/93,02/24/01
