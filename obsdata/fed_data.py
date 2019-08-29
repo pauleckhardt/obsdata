@@ -123,6 +123,9 @@ def set_request_data(
 
 
 def get_site_info(dataset, site_code):
+    '''returns a dict with information of the site
+       as contained in the site file
+    '''
     site_info = {}
     with open(datasets[dataset]["site_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -137,6 +140,10 @@ def get_site_info(dataset, site_code):
 
 
 def get_all_site_codes(dataset):
+    '''returns a list of containing all site codes
+       (e.g. BADL1)
+       within the site file of the dataset
+    '''
     site_codes = []
     with open(datasets[dataset]["site_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -147,6 +154,9 @@ def get_all_site_codes(dataset):
 
 
 def get_parameter_info(dataset, parameter_code):
+    '''returns a dict with information of the parameter
+       as defined by the parameter file
+    '''
     parameter_info = {}
     with open(datasets[dataset]["parameter_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -161,7 +171,10 @@ def get_parameter_info(dataset, parameter_code):
 
 
 def get_data(request_data):
-
+    '''returns a dict of parsed data retrived from the
+       Federal Land Manager Environmental Database
+       http://views.cira.colostate.edu/fed/QueryWizard/
+    '''
     r = requests.post(request_url, data=request_data)
     soup = BeautifulSoup(r.content, 'html.parser')
     link = soup.find("a")
@@ -173,7 +186,8 @@ def get_data(request_data):
 
 
 def parse_fed_data(text):
-
+    '''returns a dict of parsed data
+    '''
     def get_row_nr(rows, string):
         start_row_nr = [
             row_nr for row_nr, row in enumerate(rows) if row == string
@@ -220,7 +234,7 @@ def parse_fed_data(text):
         "observation_category": (
             "Air sampling observation at a stationary platform"
         ),
-        "country_territory": data["sites"]["State"][0],
+        "country_territory": "",  # empty should be ok
         "contributor": data["datasets"]["Dataset"][0].split(' ')[0].lower(),
         "latitude": data["sites"]["Latitude"][0],
         "longitude": data["sites"]["Longitude"][0],
@@ -243,44 +257,45 @@ def parse_fed_data(text):
 
 
 def get_output_filename(data, extension):
+    '''returns a filename conating the follwoing parts
 
-    # [Station code].[Contributor].[Observation category].
-    # [Sampling type].[Parameter].[Auxiliary item].[Data type].
-    #
-    # ex: ryo239n00.jma.as.cn.cfc113.nl.hr2007.dat
-    #
-    # [Observation category]
-    #   as: Air observation at a stationary platform
-    #   am: Air observation by a mobile platform
-    #   ap: Vertical profile observation of air
-    #   tc: Total column observation at a stationary platform
-    #   hy: Hydrographic observation by ships
-    #   ic: Ice core observation
-    #   sf: Observation of surface seawater and overlying air
-    #
-    # [Sampling type]
-    #   cn: Continuous or quasi-continuous in situ measurement
-    #   fl: Analysis of air samples in flasks
-    #   fi: Filter measurement
-    #   rs: Remote sensing
-    #   ic: Analysis of ice core samples
-    #   bo: Analysis of samples in bottles
-    #   ot Other
-    #
-    # [Data type]
-    #   ev: Event sampling data
-    #   om: One-minute mean data
-    #   tm: Ten-minute mean data
-    #   hrxxxx: Hourly mean data observed in the year xxxx
-    #   da: Daily mean data
-    #   mo: Monthly mean data
-    #
-    # [Auxiliary item]
-    #   If a data file is NOT identified uniquely with the codes above,
-    #   this field is filled with some characters to give a unique
-    #   filename.
-    #   nl: Null
+       [Station code].[Contributor].[Observation category].
+       [Sampling type].[Parameter].[Auxiliary item].[Data type].
 
+       ex: ryo239n00.jma.as.cn.cfc113.nl.hr2007.dat
+
+       [Observation category]
+         as: Air observation at a stationary platform
+         am: Air observation by a mobile platform
+         ap: Vertical profile observation of air
+         tc: Total column observation at a stationary platform
+         hy: Hydrographic observation by ships
+         ic: Ice core observation
+         sf: Observation of surface seawater and overlying air
+
+       [Sampling type]
+         cn: Continuous or quasi-continuous in situ measurement
+         fl: Analysis of air samples in flasks
+         fi: Filter measurement
+         rs: Remote sensing
+         ic: Analysis of ice core samples
+         bo: Analysis of samples in bottles
+         ot Other
+
+       [Data type]
+         ev: Event sampling data
+         om: One-minute mean data
+         tm: Ten-minute mean data
+         hrxxxx: Hourly mean data observed in the year xxxx
+         da: Daily mean data
+         mo: Monthly mean data
+
+       [Auxiliary item]
+         If a data file is NOT identified uniquely with the codes above,
+         this field is filled with some characters to give a unique
+         filename.
+         nl: Null
+    '''
     if data["observation_category"] == (
             "Air sampling observation at a stationary platform"):
         observation_category = "as"
@@ -336,7 +351,7 @@ def save_data_txt(out_dir, data):
     file_name = get_output_filename(data, "dat")
 
     data_format = "Version 1.0"
-    total_lines = header_lines + len(data["data"])
+    total_lines = header_lines + len(data["data"]["Date"])
 
     covering_period = "{0} {1}".format(
         data["data"]["Date"][0].strftime("%Y-%m-%d"),

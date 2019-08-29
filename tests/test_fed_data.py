@@ -70,7 +70,7 @@ def test_validate_input_raises(dataset, site, parameter):
 ))
 def test_get_site_info(site_code, expect):
     site_info = get_site_info("improve aerosol", site_code)
-    assert site_info["ID"] == expect
+    assert site_info["SiteID"] == expect
 
 
 @pytest.mark.parametrize('dataset,parameter_code,expect', (
@@ -86,9 +86,9 @@ def test_get_parameter_info(dataset, parameter_code, expect):
 def test_get_all_site_codes():
     site_codes = get_all_site_codes("improve aerosol")
     assert (
-        len(site_codes) == 224 and
+        len(site_codes) == 259 and
         site_codes[0] == 'ACAD1' and
-        site_codes[-1] == 'ZICA1'
+        site_codes[-1] == 'ZION1'
     )
 
 
@@ -115,7 +115,7 @@ def test_set_request_data_date():
     ("station_name", "Badlands NP"),
     ("station_code", "BADL1"),
     ("dataset", 'IMPROVE Aerosol'),
-    ("country_territory", "SD"),
+    # ("country_territory", "US"),  # FIXME
     ("latitude", "43.74350"),
     ("longitude", "-101.94120"),
     ("altitude", "736"),

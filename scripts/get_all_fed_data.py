@@ -13,7 +13,7 @@ def get_and_save_data(
 
     request_data = fed_data.set_request_data(
         fed_data.datasets[dataset]["id"],
-        site_info["ID"],
+        site_info["SiteID"],
         parameter_info["ParameterID"],
         fed_data.datasets[dataset]["df"],
         start_date,
@@ -21,6 +21,7 @@ def get_and_save_data(
     )
 
     data = fed_data.get_data(request_data)
+    data["country_territory"] = site_info["CT"]
 
     if data["data"]["Date"] == []:
         return
@@ -33,7 +34,7 @@ def get_and_save_data(
 
 if __name__ == "__main__":
 
-    if 0:
+    if 1:
         dataset = "improve aerosol"
         parameter = "OCf"
         start_date = datetime(2010, 1, 1)

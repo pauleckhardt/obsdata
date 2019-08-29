@@ -13,7 +13,7 @@ def get_and_save_data(
 
     request_data = fed_data.set_request_data(
         fed_data.datasets[dataset]["id"],
-        site_info["ID"],
+        site_info["SiteID"],
         parameter_info["ParameterID"],
         fed_data.datasets[dataset]["df"],
         start_date,
@@ -21,6 +21,7 @@ def get_and_save_data(
     )
 
     data = fed_data.get_data(request_data)
+    data["country_territory"] = site_info["CT"]
     if data_format == "nc":
         fed_data.save_data_netcdf(out_dir, data)
     elif data_format == "dat":
