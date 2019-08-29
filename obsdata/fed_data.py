@@ -2,6 +2,38 @@ import requests
 import csv
 from datetime import datetime
 from bs4 import BeautifulSoup
+from collections import namedtuple
+
+
+FedData = namedtuple(
+    "FedData",
+    [
+        "data_version",
+        "station_name",
+        "station_code",
+        "station_category",
+        "observation_category",
+        "country_territory",
+        "contributor",
+        "latitude",
+        "longitude",
+        "altitude",
+        "nr_of_sampling_heights",
+        "sampling_heights",
+        "contact_point",
+        "dataset",
+        "parameter",
+        "parameter_code",
+        "time_interval",
+        "measurement_unit",
+        "measurement_method",
+        "sampling_type",
+        "time_zone",
+        "measurement_scale",
+        "status_flags",
+        "data",
+    ]
+)
 
 
 def set_request_data(
@@ -50,7 +82,8 @@ def set_request_data(
 
 
 def get_data(request_data):
-    '''returns a dict of parsed data retrived from the
+    '''returns an instance of FedData where data are
+       retrived from the
        Federal Land Manager Environmental Database
        http://views.cira.colostate.edu/fed/QueryWizard/
     '''
@@ -66,7 +99,7 @@ def get_data(request_data):
 
 
 def parse_fed_data(text):
-    '''returns a dict of parsed data
+    '''returns an instance of FedData
     '''
     def get_row_nr(rows, string):
         start_row_nr = [
@@ -106,31 +139,31 @@ def parse_fed_data(text):
             for date_i in data["data"]["Date"]
         ]
 
-    return {
-        "data_version": "",  # FIXME
-        "station_name": data["sites"]["Site"][0],
-        "station_code": data["sites"]["Code"][0],
-        "station_category": "global",
-        "observation_category": (
+    return FedData(
+        data_version="",  # FIXME
+        station_name=data["sites"]["Site"][0],
+        station_code=data["sites"]["Code"][0],
+        station_category="global",
+        observation_category=(
             "Air sampling observation at a stationary platform"
         ),
-        "country_territory": "",  # empty should be ok
-        "contributor": data["datasets"]["Dataset"][0].split(' ')[0].lower(),
-        "latitude": data["sites"]["Latitude"][0],
-        "longitude": data["sites"]["Longitude"][0],
-        "altitude": data["sites"]["Elevation"][0],
-        "nr_of_sampling_heights": "1",
-        "sampling_heights": "",  # empty should be ok
-        "contact_point": "nmhyslop@ucdavis.edu",
-        "dataset": data["datasets"]["Dataset"][0],
-        "parameter": data["parameters"]["Parameter"][0],
-        "parameter_code": data["parameters"]["Code"][0],
-        "time_interval": data["datasets"]["Frequency"][0].lower(),
-        "measurement_unit": data["parameters"]["Units"][0].replace("Âµ", 'u'),
-        "measurement_method": "",  # empty should be ok
-        "sampling_type": "continuous",
-        "time_zone": "UTC",
-        "measurement_scale": "",  # empty should be ok
-        "status_flags": data["status flags"],
-        "data": data["data"]
-    }
+        country_territory="",  # empty should be ok
+        contributor=data["datasets"]["Dataset"][0].split(' ')[0].lower(),
+        latitude=data["sites"]["Latitude"][0],
+        longitude=data["sites"]["Longitude"][0],
+        altitude=data["sites"]["Elevation"][0],
+        nr_of_sampling_heights="1",
+        sampling_heights="",  # empty should be ok
+        contact_point="nmhyslop@ucdavis.edu",
+        dataset=data["datasets"]["Dataset"][0],
+        parameter=data["parameters"]["Parameter"][0],
+        parameter_code=data["parameters"]["Code"][0],
+        time_interval=data["datasets"]["Frequency"][0].lower(),
+        measurement_unit=data["parameters"]["Units"][0].replace("Âµ", 'u'),
+        measurement_method="",  # empty should be ok
+        sampling_type="continuous",
+        time_zone="UTC",
+        measurement_scale="",  # empty should be ok
+        status_flags=data["status flags"],
+        data=data["data"]
+    )

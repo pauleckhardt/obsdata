@@ -59,7 +59,7 @@ def test_set_request_data_date():
 ))
 def test_parse_metadata(fed_data, para, expect):
     data = parse_fed_data(fed_data)
-    assert data[para] == expect
+    assert getattr(data, para) == expect
 
 
 @pytest.mark.parametrize('parameter,row,expect', (
@@ -76,4 +76,4 @@ def test_parse_metadata(fed_data, para, expect):
 ))
 def test_parse_data(fed_data, parameter, row, expect):
     data = parse_fed_data(fed_data)
-    assert data["data"][parameter][row] == expect
+    assert getattr(data, "data")[parameter][row] == expect

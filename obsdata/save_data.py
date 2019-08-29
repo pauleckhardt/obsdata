@@ -46,30 +46,30 @@ def get_output_filename(data, extension):
          filename.
          nl: Null
     '''
-    if data["observation_category"] == (
+    if data.observation_category == (
             "Air sampling observation at a stationary platform"):
         observation_category = "as"
     else:
         raise(NotImplementedError)
 
-    if data["sampling_type"] == "continuous":
+    if data.sampling_type == "continuous":
         sampling_type = "cs"
     else:
         raise(NotImplementedError)
 
-    if data["time_interval"] == "daily":
+    if data.time_interval == "daily":
         data_type = "da"
-    elif data["time_interval"] == "hourly":
-        data_type = "hr{}".format(data["data"]["Date"][0].year)
+    elif data.time_interval == "hourly":
+        data_type = "hr{}".format(data.data["Date"][0].year)
     else:
         raise(NotImplementedError)
 
     return "{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}".format(
-        data["station_code"].lower(),
-        data["contributor"],
+        data.station_code.lower(),
+        data.contributor,
         observation_category,
         sampling_type,
-        data["parameter_code"].lower(),
+        data.parameter_code.lower(),
         "nl",
         data_type,
         extension
@@ -96,16 +96,16 @@ def save_data_txt(out_dir, data):
     header_lines = 32
 
     title = "{0} {1} mean data".format(
-        data["parameter_code"], data["time_interval"])
+        data.parameter_code, data.time_interval)
 
     file_name = get_output_filename(data, "dat")
 
     data_format = "Version 1.0"
-    total_lines = header_lines + len(data["data"]["Date"])
+    total_lines = header_lines + len(data.data["Date"])
 
     covering_period = "{0} {1}".format(
-        data["data"]["Date"][0].strftime("%Y-%m-%d"),
-        data["data"]["Date"][-1].strftime("%Y-%m-%d")
+        data.data["Date"][0].strftime("%Y-%m-%d"),
+        data.data["Date"][-1].strftime("%Y-%m-%d")
     )
 
     file_header_rows = [
@@ -114,27 +114,27 @@ def save_data_txt(out_dir, data):
         "C03 DATA FORMAT: {}".format(data_format),
         "C04 TOTAL LINES: {}".format(total_lines),
         "C05 HEADER LINES: {}".format(header_lines),
-        "C06 DATA VERSION: {}".format(data["data_version"]),
-        "C07 STATION NAME: {}".format(data["station_name"]),
-        "C08 STATION CATEGORY: {}".format(data["station_category"]),
-        "C09 OBSERVATION CATEGORY: {}".format(data["observation_category"]),
-        "C10 COUNTRY/TERRITORY: {}".format(data["country_territory"]),
-        "C11 CONTRIBUTOR: {}".format(data["contributor"]),
-        "C12 LATITUDE: {}".format(data["latitude"]),
-        "C13 LONGITUDE: {}".format(data["longitude"]),
-        "C14 ALTITUDE: {}".format(data["altitude"]),
+        "C06 DATA VERSION: {}".format(data.data_version),
+        "C07 STATION NAME: {}".format(data.station_name),
+        "C08 STATION CATEGORY: {}".format(data.station_category),
+        "C09 OBSERVATION CATEGORY: {}".format(data.observation_category),
+        "C10 COUNTRY/TERRITORY: {}".format(data.country_territory),
+        "C11 CONTRIBUTOR: {}".format(data.contributor),
+        "C12 LATITUDE: {}".format(data.latitude),
+        "C13 LONGITUDE: {}".format(data.longitude),
+        "C14 ALTITUDE: {}".format(data.altitude),
         "C15 NUMBER OF SAMPLING HEIGHTS: {}".format(
-            data["nr_of_sampling_heights"]),
-        "C16 SAMPLING HEIGHTS: {}".format(data["sampling_heights"]),
-        "C17 CONTACT POINT: {}".format(data["contact_point"]),
-        "C18 PARAMETER: {}".format(data["parameter_code"]),
+            data.nr_of_sampling_heights),
+        "C16 SAMPLING HEIGHTS: {}".format(data.sampling_heights),
+        "C17 CONTACT POINT: {}".format(data.contact_point),
+        "C18 PARAMETER: {}".format(data.parameter_code),
         "C19 COVERING PERIOD: {}".format(covering_period),
-        "C20 TIME INTERVAL: {}".format(data["time_interval"]),
-        "C21 MEASUREMENT UNIT: {}".format(data["measurement_unit"]),
-        "C22 MEASUREMENT METHOD: {}".format(data["measurement_method"]),
-        "C23 SAMPLING TYPE: {}".format(data["sampling_type"]),
-        "C24 TIME ZONE: {}".format(data["time_zone"]),
-        "C25 MEASUREMENT SCALE: {}".format(data["measurement_scale"]),
+        "C20 TIME INTERVAL: {}".format(data.time_interval),
+        "C21 MEASUREMENT UNIT: {}".format(data.measurement_unit),
+        "C22 MEASUREMENT METHOD: {}".format(data.measurement_method),
+        "C23 SAMPLING TYPE: {}".format(data.sampling_type),
+        "C24 TIME ZONE: {}".format(data.time_zone),
+        "C25 MEASUREMENT SCALE: {}".format(data.measurement_scale),
         "C26 CREDIT FOR USE: This is a formal notification for data users. 'For scientific purposes, access to these data is unlimited",  # noqa
         "C27 and provided without charge. By their use you accept that an offer of co-authorship will be made through personal contact",  # noqa
         "C28 with the data providers or owners whenever substantial use is made of their data. In all cases, an acknowledgement",  # noqa
@@ -160,23 +160,23 @@ def save_data_txt(out_dir, data):
             print(row)
             outfile.write("{}\n".format(row).encode("ascii"))
 
-        for index in range(len(data["data"]["Date"])):
+        for index in range(len(data.data["Date"])):
             if index > 0:
 
-                value = data["data"][":Value"][index]
+                value = data.data[":Value"][index]
                 value = value if not value == '-999' else "-99999.999"
 
-                unc = data["data"][":Unc"][index]
+                unc = data.data[":Unc"][index]
                 unc = unc if not unc == '-999' else "-999.99"
 
                 outfile.write(
                     "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
-                        data["data"]["Date"][index].strftime("%Y-%m-%d %H:%M"),
+                        data.data["Date"][index].strftime("%Y-%m-%d %H:%M"),
                         "{:10.3f}".format(float(value)),
                         "-9999",
                         "{:7.2f}".format(float(unc)),
-                        str(data["status_flags"]["Status Flag"].index(
-                            data["data"][":StatusFlag"][index])).rjust(
+                        str(data.status_flags["Status Flag"].index(
+                            data.data[":StatusFlag"][index])).rjust(
                                 nr_digits_f),
                         "-9",
                         "-99999999",
@@ -195,14 +195,14 @@ def save_data_netcdf(out_dir, data):
 
     # global attributes
 
-    dataset.station_name = data["station_name"]
-    dataset.latitude = float(data["latitude"])
-    dataset.longitude = float(data["longitude"])
-    dataset.altitude = float(data["altitude"])
+    dataset.station_name = data.station_name
+    dataset.latitude = float(data.latitude)
+    dataset.longitude = float(data.longitude)
+    dataset.altitude = float(data.altitude)
 
     # dimensions
 
-    n = len(data["data"]["Date"])
+    n = len(data.data["Date"])
     timedim = dataset.createDimension("time", n)
     chardim = dataset.createDimension('nchar', 2)
 
@@ -215,15 +215,15 @@ def save_data_netcdf(out_dir, data):
     time.calendar = "gregorian"
     time[:] = [
         date2num(date_i, time.units, calendar=time.calendar)
-        for date_i in data["data"]["Date"]
+        for date_i in data.data["Date"]
     ]
 
     parameter = dataset.createVariable(
-        data["parameter_code"], "f8", (timedim.name,), fill_value=-9999.)
-    parameter.standard_name = data["parameter"]
+        data.parameter_code, "f8", (timedim.name,), fill_value=-9999.)
+    parameter.standard_name = data.parameter
     parameter.missing_value = -9999.
-    parameter.units = data["measurement_unit"]
-    parameter[:] = data["data"][":Value"]
+    parameter.units = data.measurement_unit
+    parameter[:] = data.data[":Value"]
 
     # uncertainty
 
@@ -231,8 +231,8 @@ def save_data_netcdf(out_dir, data):
         "Unc", "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = "Uncertainty"
     parameter.missing_value = -9999.
-    parameter.units = data["measurement_unit"]
-    parameter[:] = data["data"][":Unc"]
+    parameter.units = data.measurement_unit
+    parameter[:] = data.data[":Unc"]
 
     # status flag
 
@@ -240,11 +240,11 @@ def save_data_netcdf(out_dir, data):
         "SF", "c", (timedim.name, chardim.name))
     parameter.standard_name = "StatusFlag"
     description = ""
-    for index in range(len(data["status_flags"]['Status Flag'])):
+    for index in range(len(data.status_flags['Status Flag'])):
         description += "{0}: {1};".format(
-            data["status_flags"]["Status Flag"][index],
-            data["status_flags"]["Description"][index],
+            data.status_flags["Status Flag"][index],
+            data.status_flags["Description"][index],
         )
-    parameter[:] = data["data"][":StatusFlag"]
+    parameter[:] = data.data[":StatusFlag"]
 
     dataset.close()
