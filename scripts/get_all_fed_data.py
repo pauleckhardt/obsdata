@@ -1,35 +1,37 @@
 #!/usr/bin/env python3
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from obsdata import fed_data
+from obsdata import (
+    fed_config,
+    fed_data,
+    save_data
+)
 
 
 def get_and_save_data(
         dataset, site, parameter, start_date, end_date, data_format, out_dir):
 
-    site_info = fed_data.get_site_info(dataset, site)
+    site_info = fed_config.get_site_info(dataset, site)
 
-    parameter_info = fed_data.get_parameter_info(dataset, parameter)
+    parameter_info = fed_config.get_parameter_info(dataset, parameter)
 
     request_data = fed_data.set_request_data(
-        fed_data.datasets[dataset]["id"],
+        fed_config.datasets[dataset]["id"],
         site_info["SiteID"],
         parameter_info["ParameterID"],
-        fed_data.datasets[dataset]["df"],
+        fed_config.datasets[dataset]["df"],
         start_date,
         end_date
     )
 
     data = fed_data.get_data(request_data)
-    data["country_territory"] = site_info["CT"]
-
     if data["data"]["Date"] == []:
         return
-
+    data["country_territory"] = site_info["CT"]
     if data_format == "nc":
-        fed_data.save_data_netcdf(out_dir, data)
+        save_data.save_data_netcdf(out_dir, data)
     elif data_format == "dat":
-        fed_data.save_data_txt(out_dir, data)
+        save_data.save_data_txt(out_dir, data)
 
 
 if __name__ == "__main__":
