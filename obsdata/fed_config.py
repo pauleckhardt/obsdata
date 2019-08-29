@@ -1,6 +1,7 @@
 import os
 import pkg_resources
 import csv
+from collections import namedtuple
 
 
 DATADIR = pkg_resources.resource_filename(__name__, "")
@@ -9,18 +10,40 @@ DATADIR = pkg_resources.resource_filename(__name__, "")
 datasets = {
     "improve aerosol": {
         "id": 10001,
-        "df": "Daily",
+        "time_interval": "Daily",
         "site_file": os.path.join(DATADIR, "fedsites_improve_aerosol.csv"),
         "parameter_file": os.path.join(DATADIR, "dataset_improve_aerosol.csv"),
     },
     # castnet ozone hourly
     "castnet": {
         "id": 23005,
-        "df": "Hourly",
+        "time_interval": "Hourly",
         "site_file": os.path.join(DATADIR, "fedsites_castnet.csv"),
         "parameter_file": os.path.join(DATADIR, "dataset_castnet.csv"),
     }
 }
+
+
+SiteInfo = namedtuple(
+    "SiteInfo",
+    [
+        "id",
+        "code",
+        "name",
+        "country",
+        "state",
+        "latitude",
+        "longitude",
+        "elevation",
+        "start",
+        "end",
+    ]
+)
+
+
+ParameterInfo = namedtuple(
+    "ParameterInfo", ["id", "code", "name"]
+)
 
 
 class InputError(Exception):
@@ -28,26 +51,34 @@ class InputError(Exception):
 
 
 def get_site_info(dataset, site_code):
-    '''returns a dict with information of the site
+    '''returns an instance of SiteInfo with data
        as contained in the site file
     '''
-    site_info = {}
     with open(datasets[dataset]["site_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
-        for line_count, row in enumerate(csv_reader):
-            if line_count == 0:
-                header = row
-            else:
-                if row[1] == site_code:
-                    for item, value in zip(header, row):
-                        site_info[item] = value
-    return site_info
+        for row in csv_reader:
+            if row[1] == site_code:
+                return SiteInfo(
+                    id=row[0],
+                    code=row[1],
+                    name=row[2],
+                    country=row[3],
+                    state=row[4],
+                    latitude=row[6],
+                    longitude=row[7],
+                    elevation=row[8],
+                    start=row[9],
+                    end=row[10],
+                )
+    print("site_code {0} not found for dataset {1}".format(
+        site_code, dataset))
+    raise(InputError)
 
 
 def get_all_site_codes(dataset):
-    '''returns a list of containing all site codes
+    '''returns a list containing all site codes
        (e.g. BADL1)
-       within the site file of the dataset
+       of the site file of the dataset
     '''
     site_codes = []
     with open(datasets[dataset]["site_file"]) as csv_file:
@@ -59,24 +90,26 @@ def get_all_site_codes(dataset):
 
 
 def get_parameter_info(dataset, parameter_code):
-    '''returns a dict with information of the parameter
+    '''returns an instance of ParameterInfo
        as defined by the parameter file
     '''
-    parameter_info = {}
     with open(datasets[dataset]["parameter_file"]) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
-        for line_count, row in enumerate(csv_reader):
-            if line_count == 0:
-                header = row
-            else:
-                if row[2] == parameter_code:
-                    for item, value in zip(header, row):
-                        parameter_info[item] = value
-    return parameter_info
+        for row in csv_reader:
+            if row[2] == parameter_code:
+
+                return ParameterInfo(
+                    id=row[3],
+                    code=row[2],
+                    name=row[1]
+                )
+    print("parameter_code {0} not found for dataset {1}".format(
+        parameter_code, dataset))
+    raise(InputError)
 
 
 def validate_input(dataset, site, parameter):
-
+    '''checks that input is valid'''
     # dataset
     if dataset not in datasets.keys():
         print(
@@ -87,30 +120,10 @@ def validate_input(dataset, site, parameter):
             print("'{}'".format(dataset))
         raise(InputError)
 
-    # site
-    site_info = get_site_info(dataset, site)
-    if not site_info:
-        print(
-            'site-code {} is not available.\n'.format(site) +
-            'available sites are:'
-        )
-        site_codes = get_all_site_codes(dataset)
-        for site_code in site_codes:
-            site_info = get_site_info(dataset, site_code)
-            print("{}: {}".format(site_code, site_info))
-        raise(InputError)
+    # get_site_info raises if site not found
+    get_site_info(dataset, site)
 
-    # parameter
-    parameter_info = get_parameter_info(dataset, parameter)
-    if not parameter_info:
-        print(
-            'parameter-code {} is not available.\n'.format(parameter) +
-            'available parameters are:'
-        )
-        with open(datasets[dataset]["parameter_file"]) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            for row in csv_reader:
-                print(row)
-        raise(InputError)
+    # get_parameter_info raises if site not found
+    get_parameter_info(dataset, parameter)
 
     return True

@@ -49,7 +49,6 @@ def test_set_request_data_date():
     ("station_name", "Badlands NP"),
     ("station_code", "BADL1"),
     ("dataset", 'IMPROVE Aerosol'),
-    # ("country_territory", "US"),  # FIXME
     ("latitude", "43.74350"),
     ("longitude", "-101.94120"),
     ("altitude", "736"),
@@ -63,17 +62,13 @@ def test_parse_metadata(fed_data, para, expect):
 
 
 @pytest.mark.parametrize('parameter,row,expect', (
-    ('Dataset', 0, 'IMPFSPED'),
-    ('SiteCode', 0, 'BADL1'),
-    ('POC', 0, '1'),
-    ('Date', 0, datetime(2017, 1, 1)),
-    (':Value', 0, '0.30555'),
-    ('Dataset', 1, 'IMPFSPED'),
-    ('SiteCode', 1, 'BADL1'),
-    ('POC', 1, '1'),
-    ('Date', 1, datetime(2017, 1, 4)),
-    (':Value', 1, '0.39832'),
+    ('datetime', 0, datetime(2017, 1, 1)),
+    ('value', 0, 0.30555),
+    ('status', 0, 8),
+    ('nr_of_samples', 0, -999),
+    ('datetime', 1, datetime(2017, 1, 4)),
+    ('value', 1, 0.39832),
 ))
 def test_parse_data(fed_data, parameter, row, expect):
     data = parse_fed_data(fed_data)
-    assert getattr(data, "data")[parameter][row] == expect
+    assert getattr(data.records[row], parameter) == expect

@@ -81,7 +81,8 @@ def save_data_txt(out_dir, data):
         the 'World Data Centre' format is used,
         It has 32 header lines which describes the site and data,
         then the data-records.
-        # TODO: fix format (discussion with dave)
+        see document data_format_description.rst
+        for more information
     """
 
     nr_digits_date = 10
@@ -100,19 +101,16 @@ def save_data_txt(out_dir, data):
 
     file_name = get_output_filename(data, "dat")
 
-    data_format = "Version 1.0"
-    total_lines = header_lines + len(data.data["Date"])
-
     covering_period = "{0} {1}".format(
-        data.data["Date"][0].strftime("%Y-%m-%d"),
-        data.data["Date"][-1].strftime("%Y-%m-%d")
+        data.records[0].datetime.strftime("%Y-%m-%d"),
+        data.records[-1].datetime.strftime("%Y-%m-%d")
     )
 
     file_header_rows = [
         "C01 TITLE: {}".format(title),
         "C02 FILE NAME: {}".format(file_name),
-        "C03 DATA FORMAT: {}".format(data_format),
-        "C04 TOTAL LINES: {}".format(total_lines),
+        "C03 DATA FORMAT: {}".format("Version 1.0"),
+        "C04 TOTAL LINES: {}".format(header_lines + len(data.records)),
         "C05 HEADER LINES: {}".format(header_lines),
         "C06 DATA VERSION: {}".format(data.data_version),
         "C07 STATION NAME: {}".format(data.station_name),
@@ -160,28 +158,30 @@ def save_data_txt(out_dir, data):
             print(row)
             outfile.write("{}\n".format(row).encode("ascii"))
 
-        for index in range(len(data.data["Date"])):
-            if index > 0:
+        for record in data.records:
 
-                value = data.data[":Value"][index]
-                value = value if not value == '-999' else "-99999.999"
+            value = record.value if not record.value == -999 else -99999.999
+            unc = (
+                record.uncertainty if not record.uncertainty == -999
+                else -999.99
+            )
+            status_flag = record.status if not record.status == -999 else -9999
+            nr_of_samples = (
+                record.nr_of_samples if not record.nr_of_samples == -999
+                else -9999
+            )
 
-                unc = data.data[":Unc"][index]
-                unc = unc if not unc == '-999' else "-999.99"
-
-                outfile.write(
-                    "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
-                        data.data["Date"][index].strftime("%Y-%m-%d %H:%M"),
-                        "{:10.3f}".format(float(value)),
-                        "-9999",
-                        "{:7.2f}".format(float(unc)),
-                        str(data.status_flags["Status Flag"].index(
-                            data.data[":StatusFlag"][index])).rjust(
-                                nr_digits_f),
-                        "-9",
-                        "-99999999",
-                    ).encode("ascii")
-                )
+            outfile.write(
+                "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
+                    record.datetime.strftime("%Y-%m-%d %H:%M"),
+                    "{:10.3f}".format(value),
+                    "{:5}".format(nr_of_samples),
+                    "{:7.2f}".format(unc),
+                    "{:5}".format(status_flag),
+                    "-9",
+                    "-99999999",
+                ).encode("ascii")
+            )
 
 
 def save_data_netcdf(out_dir, data):
@@ -202,8 +202,7 @@ def save_data_netcdf(out_dir, data):
 
     # dimensions
 
-    n = len(data.data["Date"])
-    timedim = dataset.createDimension("time", n)
+    timedim = dataset.createDimension("time", len(data.records))
     chardim = dataset.createDimension('nchar', 2)
 
     # time
@@ -214,8 +213,8 @@ def save_data_netcdf(out_dir, data):
     time.units = "days since 1900-01-01 00:00:00 UTC"
     time.calendar = "gregorian"
     time[:] = [
-        date2num(date_i, time.units, calendar=time.calendar)
-        for date_i in data.data["Date"]
+        date2num(record.datetime, time.units, calendar=time.calendar)
+        for record in data.records
     ]
 
     parameter = dataset.createVariable(
@@ -223,7 +222,7 @@ def save_data_netcdf(out_dir, data):
     parameter.standard_name = data.parameter
     parameter.missing_value = -9999.
     parameter.units = data.measurement_unit
-    parameter[:] = data.data[":Value"]
+    parameter[:] = [record.value for record in data.records]
 
     # uncertainty
 
@@ -232,7 +231,7 @@ def save_data_netcdf(out_dir, data):
     parameter.standard_name = "Uncertainty"
     parameter.missing_value = -9999.
     parameter.units = data.measurement_unit
-    parameter[:] = data.data[":Unc"]
+    parameter[:] = [record.uncertainty for record in data.records]
 
     # status flag
 
@@ -245,6 +244,6 @@ def save_data_netcdf(out_dir, data):
             data.status_flags["Status Flag"][index],
             data.status_flags["Description"][index],
         )
-    parameter[:] = data.data[":StatusFlag"]
+    parameter[:] = [record.status_flag for record in data.records]
 
     dataset.close()

@@ -31,13 +31,26 @@ FedData = namedtuple(
         "time_zone",
         "measurement_scale",
         "status_flags",
-        "data",
+        "records",
+    ]
+)
+
+
+Record = namedtuple(
+    "Record",
+    [
+        "datetime",
+        "value",
+        "uncertainty",
+        "status",
+        "status_flag",
+        "nr_of_samples",
     ]
 )
 
 
 def set_request_data(
-        dataset_id, site_id, parameter_id, df, start_date, end_date):
+        dataset_id, site_id, parameter_id, time_interval, start_date, end_date):
     return {
         "agidse": 1,
         "dt": "{0}>{1}".format(
@@ -75,7 +88,7 @@ def set_request_data(
         ],
         "siidse": site_id,
         "paidse": parameter_id,
-        "df": df,
+        "df": time_interval,
         "qscs": "load",
         "dttype": 1,
     }
@@ -96,6 +109,29 @@ def get_data(request_data):
     url_txt = url_base + href
     r_txt = requests.get(url_txt)
     return parse_fed_data(r_txt.text)
+
+
+def status_flag_to_number(status_flag):
+    return [
+        "H1",  # Historical data that have not been assessed or validated
+        "I0",  # Invalid value - unknown reason
+        "I1",  # Invalid value - known reason
+        "I2",  # noqa Invalid value (-999), though sample-level flag seems valid (SEM)
+        "M1",  # Missing value because no value is available
+        "M2",  # Missing value because invalidated by data originator
+        "M3",  # Missing value due to clogged filter
+        "NA",  # Not available from source data
+        "V0",  # Valid value
+        "V1",  # noqa Valid value but comprised wholly or partially of below detection limit data
+        "V2",  # Valid estimated value
+        "V3",  # Valid interpolated value
+        "V4",  # noqa Valid value despite failing to meet some QC or statistical criteria
+        "V5",  # Valid value but qualified because of possible contamination
+        "V6",  # noqa Valid value but qualified due to non-standard sampling conditions
+        "V7",  # noqa Valid value set equal to the detection limit (DL) since the value was below the DL
+        "VM",  # Valid modeled value
+        "VS",  # Valid substituted value
+    ].index(status_flag)
 
 
 def parse_fed_data(text):
@@ -120,24 +156,42 @@ def parse_fed_data(text):
             ]
         return datadict
 
+    def get_records(rows):
+        records = []
+        for row_nr, row in enumerate(csv.reader(rows, delimiter=';')):
+            if row_nr == 0:
+                date_index = row.index('Date')
+                value_index = row.index(':Value')
+                unc_index = row.index(':Unc')
+                status_index = row.index(':StatusFlag')
+            else:
+                try:
+                    date_i = datetime.strptime(
+                        row[date_index], '%m/%d/%Y %H:%M:%S')
+                except ValueError:
+                    date_i = datetime.strptime(
+                        row[date_index], '%m/%d/%Y')
+
+                records.append(Record(
+                    datetime=date_i,
+                    value=float(row[value_index]),
+                    uncertainty=float(row[unc_index]),
+                    status=status_flag_to_number(row[status_index]),
+                    status_flag=row[status_index],
+                    nr_of_samples=-999
+                ))
+        return records
+
     rows = text.replace("\r", '').split("\n")
 
     data = {}
-    for item in ["Datasets", "Sites", "Parameters", "Status Flags", "Data"]:
+    for item in ["Datasets", "Sites", "Parameters", "Status Flags"]:
         (start_row_nr, end_row_nr) = get_row_nr(rows, item)
         data[item.lower()] = get_data_dict(
             rows[start_row_nr : end_row_nr])
 
-    try:
-        data["data"]["Date"] = [
-            datetime.strptime(date_i, '%m/%d/%Y %H:%M:%S')
-            for date_i in data["data"]["Date"]
-        ]
-    except ValueError:
-        data["data"]["Date"] = [
-            datetime.strptime(date_i, '%m/%d/%Y')
-            for date_i in data["data"]["Date"]
-        ]
+    (start_row_nr, end_row_nr) = get_row_nr(rows, "Data")
+    records = get_records(rows[start_row_nr : end_row_nr])
 
     return FedData(
         data_version="",  # FIXME
@@ -165,5 +219,5 @@ def parse_fed_data(text):
         time_zone="UTC",
         measurement_scale="",  # empty should be ok
         status_flags=data["status flags"],
-        data=data["data"]
+        records=records
     )

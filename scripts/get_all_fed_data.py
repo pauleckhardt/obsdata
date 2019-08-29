@@ -17,9 +17,9 @@ def get_and_save_data(
 
     request_data = fed_data.set_request_data(
         fed_config.datasets[dataset]["id"],
-        site_info["SiteID"],
-        parameter_info["ParameterID"],
-        fed_config.datasets[dataset]["df"],
+        site_info.id,
+        parameter_info.id,
+        fed_config.datasets[dataset]["time_interval"],
         start_date,
         end_date
     )
@@ -27,7 +27,7 @@ def get_and_save_data(
     data = fed_data.get_data(request_data)
     if data.data["Date"] == []:
         return
-    data = data._replace(country_territory=site_info["CT"])
+    data = data._replace(country_territory=site_info.country)
     if data_format == "nc":
         save_data.save_data_netcdf(out_dir, data)
     elif data_format == "dat":

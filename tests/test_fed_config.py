@@ -30,7 +30,7 @@ def test_validate_input_raises(dataset, site, parameter):
 ))
 def test_get_site_info(site_code, expect):
     site_info = get_site_info("improve aerosol", site_code)
-    assert site_info["SiteID"] == expect
+    assert getattr(site_info, "id") == expect
 
 
 @pytest.mark.parametrize('dataset,parameter_code,expect', (
@@ -39,8 +39,8 @@ def test_get_site_info(site_code, expect):
     ('castnet', 'O3', '201'),
 ))
 def test_get_parameter_info(dataset, parameter_code, expect):
-    parameter_info = get_parameter_info(dataset, parameter_code)
-    assert parameter_info["ParameterID"] == expect
+    info = get_parameter_info(dataset, parameter_code)
+    assert getattr(info, "id") == expect
 
 
 def test_get_all_site_codes():
