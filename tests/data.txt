@@ -17,8 +17,8 @@ Badlands NP;BADL1;IMPFSPED;SD;46071;43.74350;-101.94120;736;03/02/1988;11/28/201
 Parameters
 
 DatasetID;Parameter;Code;AQSCode;Units;Description
-10001;Carbon, Organic Total (Fine);OCf;88320;µg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
-10001;Carbon, Organic Total (Fine);OCf;88320;µg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
+10001;Carbon, Organic Total (Fine);OCf;88320;Âµg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
+10001;Carbon, Organic Total (Fine);OCf;88320;Âµg/m^3 LC;From TOR carbon fractions (OC1+OC2+OC3+OC4+OP)
 
 Site History
 

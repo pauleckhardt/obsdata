@@ -212,7 +212,6 @@ def parse_fed_data(text):
             for date_i in data["data"]["Date"]
         ]
 
-    print(data["parameters"]["Units"][0])
     return {
         "data_version": "",  # FIXME
         "station_name": data["sites"]["Site"][0],
@@ -222,7 +221,7 @@ def parse_fed_data(text):
             "Air sampling observation at a stationary platform"
         ),
         "country_territory": data["sites"]["State"][0],
-        "contributor": "improve",  # FIXME
+        "contributor": data["datasets"]["Dataset"][0].split(' ')[0].lower(),
         "latitude": data["sites"]["Latitude"][0],
         "longitude": data["sites"]["Longitude"][0],
         "altitude": data["sites"]["Elevation"][0],
@@ -233,7 +232,7 @@ def parse_fed_data(text):
         "parameter": data["parameters"]["Parameter"][0],
         "parameter_code": data["parameters"]["Code"][0],
         "time_interval": data["datasets"]["Frequency"][0].lower(),
-        "measurement_unit": data["parameters"]["Units"][0].replace("µ", 'u'),
+        "measurement_unit": data["parameters"]["Units"][0].replace("Âµ", 'u'),
         "measurement_method": "",  # empty should be ok
         "sampling_type": "continuous",
         "time_zone": "UTC",
