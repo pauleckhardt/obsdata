@@ -16,7 +16,7 @@ def get_and_save_data(
     parameter_info = fed_config.get_parameter_info(dataset, parameter)
 
     request_data = fed_data.set_request_data(
-        fed_config.datasets[dataset]["id"],
+        dataset,
         site_info.id,
         parameter_info.id,
         fed_config.datasets[dataset]["time_interval"],
@@ -25,7 +25,7 @@ def get_and_save_data(
     )
 
     data = fed_data.get_data(request_data)
-    if data.data["Date"] == []:
+    if len(data.records) == 0:
         return
     data = data._replace(country_territory=site_info.country)
     if data_format == "nc":
@@ -37,7 +37,7 @@ def get_and_save_data(
 if __name__ == "__main__":
 
     if 1:
-        dataset = "improve aerosol"
+        dataset = "10001"
         parameter = "OCf"
         start_date = datetime(2010, 1, 1)
         end_date = datetime(2015, 12, 31)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         data_format = "dat"
         out_dir = "/tmp"
     else:
-        dataset = "castnet"
+        dataset = "23005"
         parameter = "O3"
         start_date = datetime(2011, 1, 1)
         end_date = datetime(2015, 12, 31)
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         data_format = "dat"
         out_dir = "/tmp"
 
-    site_codes = fed_data.get_all_site_codes(dataset)
+    site_codes = fed_config.get_all_site_codes(dataset)
     for site_code in site_codes:
         date_i = start_date
         while date_i < end_date:

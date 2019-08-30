@@ -9,17 +9,17 @@ from obsdata import (
 
 
 def get_and_save_data(
-        dataset, site, parameter, start_date, end_date, data_format, out_dir):
+        data_id, site, parameter, start_date, end_date, data_format, out_dir):
 
-    site_info = fed_config.get_site_info(dataset, site)
+    site_info = fed_config.get_site_info(data_id, site)
 
-    parameter_info = fed_config.get_parameter_info(dataset, parameter)
+    parameter_info = fed_config.get_parameter_info(data_id, parameter)
 
     request_data = fed_data.set_request_data(
-        fed_config.datasets[dataset]["id"],
+        data_id,
         site_info.id,
         parameter_info.id,
-        fed_config.datasets[dataset]["time_interval"],
+        fed_config.datasets[data_id]["time_interval"],
         start_date,
         end_date
     )
@@ -39,21 +39,21 @@ def cli():
     # http://views.cira.colostate.edu/fed/QueryWizard/
     # and store the data in the 'World Data Centre' format
 
-    # ./get_fed_data.py "improve aerosol" BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp  # noqa
-    # ./get_fed_data.py "castnet" ABT147 O3 2014-01-01 2014-01-31 -e nc -q /tmp  # noqa
+    # ./get_fed_data.py 10001 BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp  # noqa
+    # ./get_fed_data.py 23005 ABT147 O3 2014-01-01 2014-01-31 -e nc -q /tmp  # noqa
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "dataset",
-        metavar="dataset",
+        "dataset_id",
+        metavar="dataset_id",
         type=str,
-        help="fed dataset, e.g 'improve aerosol'"
+        help="fed dataset id , e.g 10001 for 'IMPROVE Aerosol'"
     )
     parser.add_argument(
         "site_code",
         metavar="site-code",
         type=str,
-        help="fed site code, e.g BADL1"
+        help="fed site code, e.g BADL1 for 'Badlands NP'"
     )
     parser.add_argument(
         "parameter_code",
@@ -93,7 +93,7 @@ def cli():
     args = parser.parse_args()
 
     fed_config.validate_input(
-        args.dataset,
+        args.dataset_id,
         args.site_code,
         args.parameter_code
     )
@@ -104,7 +104,7 @@ def cli():
         args.end_date, '%Y-%m-%d').date()
 
     get_and_save_data(
-        args.dataset,
+        args.dataset_id,
         args.site_code,
         args.parameter_code,
         start_date,
