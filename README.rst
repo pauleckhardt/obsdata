@@ -97,7 +97,7 @@ and the usage is described below:
 
 .. code-block:: bash
 
-  usage: get_fed_data.py [-h] [-e DATA_FORMAT] [-q OUT_DIR]
+  usage: get_fed_data  [-h] [-e DATA_FORMAT] [-q OUT_DIR]
                          dataset_id site-code parameter-code start-date end-date
 
   positional arguments:

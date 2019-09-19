@@ -153,6 +153,9 @@ def save_data_txt(out_dir, data):
         )
     ]
 
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     with open(os.path.join(out_dir, file_name), mode='wb') as outfile:
         for row in file_header_rows:
             print(row)
@@ -191,6 +194,9 @@ def save_data_netcdf(out_dir, data):
     file_name = get_output_filename(data, "nc")
 
     output_file = os.path.join(out_dir, file_name)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     dataset = Dataset(output_file, "w", format="NETCDF4")
 
     # global attributes

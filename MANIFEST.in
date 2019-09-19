@@ -4,4 +4,4 @@ include *.py
 include *.txt
 include *.ini
 include *.in
-
+recursive-include data *.csv
