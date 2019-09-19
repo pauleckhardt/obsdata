@@ -119,7 +119,7 @@ The program can for instance be invoked by:
 
 .. code-block:: bash
 
-    get_fed_data.py 10001 BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp
+    get_fed_data 10001 BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp
 
 and then one month of OCf data from Badlands NP will be collected
 and stored the /tmp directory (dataset-id, site-code, and parameter-code
@@ -214,7 +214,7 @@ to make these requests, and these are described below.
 
 Data from the Federal Land Manager Environmental Database
 are organized in different datasets, e.g. the IMPROVE Aerosol dataset.
-The obsdata package contains a csv file (obsdata/fedfiles/datasets.csv),
+The obsdata package contains a csv file (data/datasets.csv),
 that describes the id of 50 available datasets, and the first
 rows of the file are shown below:
 
@@ -246,7 +246,7 @@ rows of the file are shown below:
 
 A specific set of sites are associated to each dataset,
 and the obsdata package contains a csv file for each
-dataset (e.g obsdata/fedfiles/fedsites_10001.csv
+dataset (e.g data/fedsites_10001.csv
 for the IMPROVE Aerosol dataset).
 The fedsites_10001.csv contains information on
 the 259 sites associated to the IMPROVE Aerosol dataset,
