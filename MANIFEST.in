@@ -1,0 +1,7 @@
+include *.rst
+include *.txt
+include *.py
+include *.txt
+include *.ini
+include *.in
+

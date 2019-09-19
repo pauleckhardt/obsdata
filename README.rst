@@ -74,12 +74,13 @@ and if yoy want to change back:
 	
     deactivate
 
-The dependecies of obsdata package can be installed by:
+The obsdata package can be installed by:
 
 .. code-block:: bash
 
     workon optimal-interpolation
     pip install -r requirements/requirements.txt
+    python3 setup.py install
 
 	
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/install.html
@@ -163,6 +164,16 @@ and creates yearly files between 2010 and 2015 for all sites.
         }
     ]
 
+
+The obsdata package can also be used interactively
+
+.. code-block:: python
+
+    from obsdata import fed_config
+
+    # print available datasets
+    for dataset in fed_config.datasets:
+       print(dataset, fed_config.datasets[dataset].name)
 
 
 dataset-id, site-code, and parameter-code

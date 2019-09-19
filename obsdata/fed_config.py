@@ -1,10 +1,12 @@
 import os
-import pkg_resources
 import csv
 from collections import namedtuple
 
 
-DATADIR = pkg_resources.resource_filename(__name__, "fedfiles")
+DATADIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data"
+)
 
 
 SiteInfo = namedtuple(
@@ -52,9 +54,13 @@ def get_datasets():
                     name=row[1],
                     time_interval=row[2],
                     site_file=os.path.join(
-                        DATADIR, "fedsites_{}.csv".format(row[0])),
+                        DATADIR,
+                        "fedsites_{}.csv".format(row[0])
+                    ),
                     parameter_file=os.path.join(
-                        DATADIR, "parameters_{}.csv".format(row[0])),
+                        DATADIR,
+                        "parameters_{}.csv".format(row[0])
+                    ),
                 )
     return datasets
 
