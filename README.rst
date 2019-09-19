@@ -90,7 +90,7 @@ The obsdata package can be installed by:
 Usage
 ------------------
 
-The package contains two executable programa
+The package contains two executable programs
 for retrieving data from the
 Federal Land Manager Environmental Database,
 and the usage is described below:
@@ -169,11 +169,39 @@ The obsdata package can also be used interactively
 
 .. code-block:: python
 
-    from obsdata import fed_config
+    >>> from obsdata import fed_config
 
-    # print available datasets
-    for dataset in fed_config.datasets:
-       print(dataset, fed_config.datasets[dataset].name)
+    # print available datasets (ids and names)
+    >>>for dataset in fed_config.datasets:
+    ...   print(dataset, fed_config.datasets[dataset].name)
+    ... 
+    54001 Air Sciences Speciated Aerosol
+    20070 ARS Ozone - Hourly
+    23007 CASTNET Dry Deposition - Annual
+    23001 CASTNet Dry Chemistry - Weekly Filter Pack Concentrations
+    23005 CASTNet Ozone - Hourly
+    ....
+    10001 IMPROVE Aerosol
+
+    # get all site codes for a specific dataset
+    >>>site_codes = fed_config.get_all_site_codes('10001')
+    >>>site_codes 
+    ['ACAD1', 'ADPI1', 'AGTI1', 'AMBL1', 'ARCH1', ... ]
+
+    # get site information
+    >>>site_info = fed_config.get_site_info('10001', 'ACAD1') 
+    >>>site_info
+    SiteInfo(id='1', code='ACAD1', name='Acadia NP', country='US', state='ME',
+             latitude='44.38', longitude='-68.26', elevation='157')
+
+    # get parameter information
+    >>>parameters = fed_config.get_all_parameters('10001')
+    >>>parameters
+    [
+        ParameterInfo(id='101', code='ALf'),
+        ParameterInfo(id='136', code='NH4f'),
+        ...
+    ]
 
 
 dataset-id, site-code, and parameter-code

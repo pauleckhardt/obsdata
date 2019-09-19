@@ -119,10 +119,7 @@ def get_parameter_info(dataset_id, parameter_code):
         for row in csv_reader:
             if row[0] == parameter_code:
 
-                return ParameterInfo(
-                    id=row[1],
-                    code=row[0]
-                )
+                return ParameterInfo(id=row[1], code=row[0])
         print("parameter_code {0} not found for dataset {1}".format(
             parameter_code, datasets[dataset_id].name))
     with open(datasets[dataset_id].parameter_file) as csv_file:
@@ -132,6 +129,21 @@ def get_parameter_info(dataset_id, parameter_code):
             if row_nr > 0:
                 print("{}".format(row[0]))
     raise(InputError)
+
+
+def get_all_parameters(dataset_id):
+    '''returns a list of ParameterInfo
+       as defined by the parameter file
+    '''
+    parameters = []
+    with open(datasets[dataset_id].parameter_file) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for line_count, row in enumerate(csv_reader):
+            if line_count > 0:
+                parameters.append(
+                    ParameterInfo(id=row[1], code=row[0])
+                )
+    return parameters
 
 
 def validate_input(dataset_id, site, parameter):

@@ -5,7 +5,10 @@ from setuptools import setup
 setup(
     name='obsdata',
     version='1.0',
-    description='Package for getting data from Federal Land Manager Database',
+    description=(
+        'Package for getting data from Federal Land Manager' +
+        ' Environmental Database'
+    ),
     author='Bengt Rydberg',
     author_email='bengt.rydberg@molflow.com',
     entry_points={"console_scripts": [

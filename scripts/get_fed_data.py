@@ -25,6 +25,8 @@ def get_and_save_data(
     )
 
     data = fed_data.get_data(request_data)
+    if not site_info.country == '\xa0':
+        data = data._replace(country_territory=site_info.country)
     data = data._replace(country_territory=site_info.country)
     if data_format == "nc":
         save_data.save_data_netcdf(out_dir, data)

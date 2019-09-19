@@ -27,7 +27,8 @@ def get_and_save_data(
     data = fed_data.get_data(request_data)
     if len(data.records) == 0:
         return
-    data = data._replace(country_territory=site_info.country)
+    if not site_info.country == '\xa0':
+        data = data._replace(country_territory=site_info.country)
     if data_format == "nc":
         save_data.save_data_netcdf(out_dir, data)
     elif data_format == "dat":
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         }
     ]
     for dataset in datasets_to_retrieve:
-        if dataset["id"] == "10001":
+        if dataset["id"] == "23005":
             continue
         site_codes = fed_config.get_all_site_codes(dataset["id"])
         for site_code in site_codes:
