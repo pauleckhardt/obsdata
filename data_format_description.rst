@@ -1,3 +1,267 @@
+==================
+Observational-Data
+==================
+
+This is observational-data (obsdata), a Python package developed
+in order to retrieve and store data from the
+Federal Land Manager Environmental Database_,
+into a specific data format described in this document.
+
+.. _ Database: http://views.cira.colostate.edu/fed/QueryWizard/
+
+	
+Prerequisites
+--------------------
+
+The obsdata package has dependencies on a number of Python
+packages:
+
+  requests_: is an elegant and simple HTTP library for Python,
+
+  bs4_: Beautiful Soup is a Python library for pulling data out of HTML and XML files.
+
+  netcdf4_: a Python interface to the netCDF C library
+
+  numpy_: the fundamental package for scientific computing with Python.
+
+and these packages are available at PyPI_.
+
+.. _requests: https://2.python-requests.org/en/master/
+.. _bs4: https://pypi.org/project/beautifulsoup4/
+.. _netcdf4: http://unidata.github.io/netcdf4-python/
+.. _numpy: http://www.numpy.org/
+.. _PyPI: https://pypi.org/
+
+Installation
+-------------------
+	
+Python packages should almost never be installed on the host
+Python environment, in order to avoid problems that can arise
+due to dependencies on different versions of packages.
+The obsdata package is prefarbely installed
+in a virtualenv_. A suitable virtualenv for the optimal-interpolation
+package can be created by first installing the package
+virtualenvwrapper_ on the host (so check that you are not
+in a virutalenv before installing)
+	
+.. code-block:: bash
+	
+    sudo pip install virtualenvwrapper
+	
+Also add this to your shell startup file:
+	
+.. code-block:: bash
+	
+    export WORKON_HOME=$HOME/.virtualenvs  # The virtualenvs are stored here.
+    export PROJECT_HOME=$HOME/Devel  # Location of your development project directories
+    source /usr/local/bin/virtualenvwrapper.sh
+	
+Then you can create a virtualenv by:
+	
+.. code-block:: bash	
+	
+    mkvirtualenv --python=/usr/bin/python3.6 obsdata
+	
+and change to this envorinment by:
+	
+.. code-block:: bash
+	  
+    workon obsdata
+	
+and if yoy want to change back:
+	
+.. code-block:: bash
+	
+    deactivate
+
+The dependecies of obsdata package can be installed by:
+
+.. code-block:: bash
+
+    workon optimal-interpolation
+    pip install -r requirements/requirements.txt
+
+	
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/install.html
+.. _virtualenv: https://virtualenv.pypa.io/en/latest/
+
+
+Usage
+------------------
+
+The package contains two executable programa
+for retrieving data from the
+Federal Land Manager Environmental Database,
+and the usage is described below:
+
+.. code-block:: bash
+
+  usage: get_fed_data.py [-h] [-e DATA_FORMAT] [-q OUT_DIR]
+                         dataset_id site-code parameter-code start-date end-date
+
+  positional arguments:
+    dataset_id            fed dataset id , e.g 10001 for 'IMPROVE Aerosol'
+    site-code             fed site code, e.g BADL1 for 'Badlands NP'
+    parameter-code        parameter code e.g. OCf
+    start-date            start date, format YYYY-MM-DD
+    end-date              end date, format YYYY-MM-DD
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -e DATA_FORMAT, --data-format DATA_FORMAT
+                          data format for saving file (dat or nc), default is dat
+    -q OUT_DIR, --datadir-for-save OUT_DIR
+                          data directory for saving output, default is /tmp
+
+
+The program can for instance be invoked by:
+
+.. code-block:: bash
+
+    get_fed_data.py 10001 BADL1 OCf 2017-01-01 2017-01-31 -e dat -q /tmp
+
+and then one month of OCf data from Badlands NP will be collected
+and stored the /tmp directory (dataset-id, site-code, and parameter-code
+are described in the following section).
+
+
+The package also contains a script called get_all_fed_data.py,
+which wraps around the get_fed_data.py script.
+There is no user friendly interface to this script,
+but the script can quite easily be modified
+in order to retrieve desired data within a desired time period.
+The code snippet found below is found within this script
+and the meaning of the parameter should hopefully be understandable.
+In this case the get_all_fed_data.py script retrieves
+OCf data (from IMPROVE Aerosol dataset) at all sites and
+between 2010-01-01 and 2015-12-31,
+and creates a single file for each site.
+The script also retrives O3 data (from the CASTNet Ozone - Hourly dataset),
+and creates yearly files between 2010 and 2015 for all sites.
+
+
+.. code-block:: python
+
+    datasets_to_retrieve = [
+        {
+            "id": "10001",
+            "parameter": "OCf",
+            "start_date": datetime(2010, 1, 1),
+            "end_date": datetime(2015, 12, 31),
+            "timedelta_month": -1,
+            "data_format": "dat",
+            "out_dir": "/tmp",
+        },
+        {
+            "id": "23005",
+            "parameter": "O3",
+            "start_date": datetime(2010, 1, 1),
+            "end_date": datetime(2015, 12, 31),
+            "timedelta_month": 12,
+            "data_format": "dat",
+            "out_dir": "/tmp",
+        }
+    ]
+
+
+
+dataset-id, site-code, and parameter-code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Data are retrieved by making requests to the Federal Land
+Manager Environmental Database_.
+Knowledge of a number of different ids are required
+to make these requests, and these are described below.
+
+Data from the Federal Land Manager Environmental Database
+are organized in different datasets, e.g. the IMPROVE Aerosol dataset.
+The obsdata package contains a csv file (obsdata/fedfiles/datasets.csv),
+that describes the id of 50 available datasets, and the first
+rows of the file are shown below:
+
+.. code-block:: bash
+
+  ID;Name;Frequency
+  54001;Air Sciences Speciated Aerosol;Daily
+  20070;ARS Ozone - Hourly;Hourly
+  23007;CASTNET Dry Deposition - Annual;Annual
+  23001;CASTNet Dry Chemistry - Weekly Filter Pack Concentrations;Weekly
+  23005;CASTNet Ozone - Hourly;Hourly
+  23006;CASTNET Total Deposition By Pollutant - Annual;Annual
+  23002;CASTNet Visibility Chemistry;Daily
+  20009;EPA Carbon Monoxide (CO) - Hourly;Hourly
+  20008;EPA Nitrogen Dioxide (NO2) - Hourly;Hourly
+  20007;EPA Ozone - Hourly;Hourly
+  20006;EPA PM10 Mass (81102) - Daily;Daily
+  20005;EPA PM10 Mass (81102) - Hourly;Hourly
+  20004;EPA PM2.5 Mass (88502) - Daily;Hourly
+  20003;EPA PM2.5 Mass (88502) - Hourly;Hourly
+  20001;EPA PM2.5 Mass FRM (88101) - Daily;Daily
+  20011;EPA PM2.5 Mass FRM (88101) - Hourly;Hourly
+  20002;EPA PM2.5 Speciation (CSN) - Daily;Daily
+  20010;EPA Sulfur Dioxide (SO2) - Hourly;Hourly
+  53001;Guelph Aerosol and Visibility Monitoring Program;Daily
+  10001;IMPROVE Aerosol;Daily
+  ...
+  
+
+A specific set of sites are associated to each dataset,
+and the obsdata package contains a csv file for each
+dataset (e.g obsdata/fedfiles/fedsites_10001.csv
+for the IMPROVE Aerosol dataset).
+The fedsites_10001.csv contains information on
+the 259 sites associated to the IMPROVE Aerosol dataset,
+and the first rows of this file are shown below:
+
+.. code-block:: bash
+
+  SiteID,SiteCode,SiteName,CT,ST,EPACode,Lat,Lon,Elev,Start,End
+  1,ACAD1,Acadia NP,US,ME,230090103,44.38,-68.26,157,03/02/88,11/28/18
+  144,ADPI1,Addison Pinnacle,US,NY,361019000,42.09,-77.21,512,04/04/01,06/28/10
+  100,AGTI1,Agua Tibia,US,CA,060659000,33.46,-116.97,508,12/20/00,11/28/18
+  524,AMBL1,Ambler,US,AK,021889000,67.1,-157.86,78,09/03/03,11/29/04
+  167,ARCH1,Arches NP,US,UT,490190101,38.78,-109.58,1722,03/02/88,12/29/99
+  138,AREN1,Arendtsville,US,PA,420019000,39.92,-77.31,267,04/04/01,12/31/10
+  25531,ATLA1,South Dekalb,US,GA,130890002,33.69,-84.29,243,03/01/04,11/28/18
+  59,BADL1,Badlands NP,US,SD,460710001,43.74,-101.94,736,03/02/88,11/28/18
+  ...
+ 
+Each dataset is also associated to a specific set of parameters,
+and the obsdata package contains a parameter csv file for each dataset
+(e.g. parameters_10001.csv for the IMPROVE Aerosol dataset).
+The parameters_10001.csv file contains ids for 115 parameters,
+and the first rows of this file are shown below:
+
+.. code-block:: bash
+
+  Code,ID
+  ALf,101
+  ...
+  EC1f,115
+  EC2f,116
+  EC3f,117
+  ECf,114
+  EC_UCD,3778
+  OC1f,142
+  OC2f,143
+  OC3f,144
+  OC4f,145
+  OMCf,3016
+  OPf,146
+  OPTf,3699
+  OCf,141
+  ...
+
+ 
+If data from another dataset are to be handled, the dataset dictionary
+must be updated. fedsites files are available for all datasets
+within the obsdata package but parameter files are not.
+The parameter file are only required to contain information on the
+parameter of interest.
+
+
+.. _ Database: http://views.cira.colostate.edu/fed/QueryWizard/
+
 
 Data format description
 ========================

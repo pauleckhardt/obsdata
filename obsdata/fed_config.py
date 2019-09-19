@@ -7,22 +7,6 @@ from collections import namedtuple
 DATADIR = pkg_resources.resource_filename(__name__, "fedfiles")
 
 
-datasets = {
-    "10001": {
-        "name": "IMPROVE Aerosol",
-        "time_interval": "Daily",
-        "site_file": os.path.join(DATADIR, "fedsites_10001.csv"),
-        "parameter_file": os.path.join(DATADIR, "parameters_10001.csv"),
-    },
-    "23005": {
-        "name": "CASTNet Ozone - Hourly",
-        "time_interval": "Hourly",
-        "site_file": os.path.join(DATADIR, "fedsites_23005.csv"),
-        "parameter_file": os.path.join(DATADIR, "parameters_23005.csv"),
-    }
-}
-
-
 SiteInfo = namedtuple(
     "SiteInfo",
     [
@@ -45,15 +29,41 @@ ParameterInfo = namedtuple(
 )
 
 
+DatasetConfig = namedtuple(
+    "DatasetConfig",
+    ["name", "time_interval", "site_file", "parameter_file"]
+)
+
+
 class InputError(Exception):
     pass
+
+
+def get_datasets():
+    '''return a dictionary of all fed datasets
+    '''
+    dataset_file = os.path.join(DATADIR, 'datasets.csv')
+    datasets = {}
+    with open(dataset_file, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=';')
+        for line_count, row in enumerate(csv_reader):
+            if line_count > 0:
+                datasets[row[0]] = DatasetConfig(
+                    name=row[1],
+                    time_interval=row[2],
+                    site_file=os.path.join(
+                        DATADIR, "fedsites_{}.csv".format(row[0])),
+                    parameter_file=os.path.join(
+                        DATADIR, "parameters_{}.csv".format(row[0])),
+                )
+    return datasets
 
 
 def get_site_info(dataset, site_code):
     '''returns an instance of SiteInfo with data
        as contained in the site file
     '''
-    with open(datasets[dataset]["site_file"]) as csv_file:
+    with open(datasets[dataset].site_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             if row[1] == site_code:
@@ -71,7 +81,7 @@ def get_site_info(dataset, site_code):
                 )
     print("site_code {0} not found for dataset {1}".format(
         site_code, dataset))
-    with open(datasets[dataset]["site_file"]) as csv_file:
+    with open(datasets[dataset].site_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         print("available sites are:")
         for row in csv_reader:
@@ -86,7 +96,7 @@ def get_all_site_codes(dataset_id):
        of the site file of the dataset
     '''
     site_codes = []
-    with open(datasets[dataset_id]["site_file"]) as csv_file:
+    with open(datasets[dataset_id].site_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for line_count, row in enumerate(csv_reader):
             if line_count > 0:
@@ -98,7 +108,7 @@ def get_parameter_info(dataset_id, parameter_code):
     '''returns an instance of ParameterInfo
        as defined by the parameter file
     '''
-    with open(datasets[dataset_id]["parameter_file"]) as csv_file:
+    with open(datasets[dataset_id].parameter_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             if row[0] == parameter_code:
@@ -108,8 +118,8 @@ def get_parameter_info(dataset_id, parameter_code):
                     code=row[0]
                 )
         print("parameter_code {0} not found for dataset {1}".format(
-            parameter_code, datasets[dataset_id]["name"]))
-    with open(datasets[dataset_id]["parameter_file"]) as csv_file:
+            parameter_code, datasets[dataset_id].name))
+    with open(datasets[dataset_id].parameter_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         print("available parameters are:")
         for row_nr, row in enumerate(csv_reader):
@@ -129,7 +139,7 @@ def validate_input(dataset_id, site, parameter):
         for dataset in datasets.keys():
             print("{} for '{}'".format(
                 dataset,
-                datasets[dataset]["name"]))
+                datasets[dataset].name))
         raise(InputError)
 
     # get_site_info raises if site not found
@@ -139,3 +149,6 @@ def validate_input(dataset_id, site, parameter):
     get_parameter_info(dataset_id, parameter)
 
     return True
+
+
+datasets = get_datasets()

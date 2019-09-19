@@ -60,7 +60,7 @@ def get_output_filename(data, extension):
     if data.time_interval == "daily":
         data_type = "da"
     elif data.time_interval == "hourly":
-        data_type = "hr{}".format(data.data["Date"][0].year)
+        data_type = "hr{}".format(data.records[0].datetime.year)
     else:
         raise(NotImplementedError)
 

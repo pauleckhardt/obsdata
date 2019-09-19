@@ -19,7 +19,7 @@ def get_and_save_data(
         data_id,
         site_info.id,
         parameter_info.id,
-        fed_config.datasets[data_id]["time_interval"],
+        fed_config.datasets[data_id].time_interval,
         start_date,
         end_date
     )
@@ -78,8 +78,8 @@ def cli():
         '--data-format',
         dest='data_format',
         type=str,
-        default='nc',
-        help='data format for saving file (nc or dat), default is nc (netcdf)',
+        default='dat',
+        help='data format for saving file (nc or dat), default is dat',
     )
     parser.add_argument(
         '-q',

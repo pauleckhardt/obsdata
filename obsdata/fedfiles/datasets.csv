@@ -1,51 +1,50 @@
-id,dataset
-54001,Air Sciences Speciated Aerosol
-20070,ARS Ozone - Hourly
-23001,CASTNet Dry Chemistry - Weekly Filter Pack Concentrations
-23007,CASTNET Dry Deposition - Annual
-23005,CASTNet Ozone - Hourly
-23006,CASTNET Total Deposition By Pollutant - Annual
-23002,CASTNet Visibility Chemistry
-20009,EPA Carbon Monoxide (CO) - Hourly
-20008,EPA Nitrogen Dioxide (NO2) - Hourly
-20007,EPA Ozone - Hourly
-20006,EPA PM10 Mass (81102) - Daily
-20005,EPA PM10 Mass (81102) - Hourly
-20004,EPA PM2.5 Mass (88502) - Daily
-20003,EPA PM2.5 Mass (88502) - Hourly
-20001,EPA PM2.5 Mass FRM (88101) - Daily
-20011,EPA PM2.5 Mass FRM (88101) - Hourly
-20002,EPA PM2.5 Speciation (CSN) - Daily
-20010,EPA Sulfur Dioxide (SO2) - Hourly
-53001,Guelph Aerosol and Visibility Monitoring Program
-10001,IMPROVE Aerosol
-10005,IMPROVE Aerosol, Preliminary
-10010,IMPROVE Aerosol, Regional Haze Rule II (New Equation), with substituted data
-10006,IMPROVE Aerosol, Regional Haze Rule III (DRAFT - Preliminary Most Impaired Days dataset)
-10301,IMPROVE Fine Total Carbon Source Contribution Study
-10012,IMPROVE Natural Conditions Estimates II
-10002,IMPROVE Nephelometer
-10020,Measurement of Haze and Visual Effects (MOHAVE)
-52004,NADP Ambient Ammonia Monitoring Network (AMoN)
-52002,NADP Atmospheric Integrated Research Monitoring Network
-52003,NADP Mercury Deposition Network
-52014,NADP National Trends Network (NTN) - Precipitation-Weighted Means (µeq/L)
-52016,NADP National Trends Network (NTN) - Precipitation-Weighted Means (mg/L)
-52015,NADP National Trends Network (NTN) - Total Wet Deposition
-52001,NADP National Trends Network - Weekly Concentration Data
-70006,NPS Gaseous Pollutant Monitoring Program (GPMP)
-71008,NPS Ozone 8-Hour Average Daily Max
-70005,NPS Ozone Daily 8hr Max
-70007,NPS Ozone Statistics - Calculated by Ozone Season
-70001,NPS Ozone Statistics for Conditions and Trends
-70010,NPS Ozone Statistics for Conditions and Trends, New Method
-70008,NPS Ozone Sum60
-10025,NPS Stacked Filter Unit Network (SFU)
-70004,NPS W126 Ozone Metrics
-10021,Pacific Northwest Regional Visibility Experiment Using Natural Tracers (PREVENT)
-10022,Regional Visibility Experimental Assessment in the Lower Fraser Valley (REVEAL)
-50001,SEARCH All Variables
-50002,SEARCH Best Estimate
-50003,SEARCH FRM
-10023,Southeastern Aerosol and Visibility Study (SEAVS)
-92085,WRAP/WAQS 2014 Shakeout v1 Model-to-Obs
+ID;Name;Frequency
+54001;Air Sciences Speciated Aerosol;Daily
+20070;ARS Ozone - Hourly;Hourly
+23007;CASTNET Dry Deposition - Annual;Annual
+23001;CASTNet Dry Chemistry - Weekly Filter Pack Concentrations;Weekly
+23005;CASTNet Ozone - Hourly;Hourly
+23006;CASTNET Total Deposition By Pollutant - Annual;Annual
+23002;CASTNet Visibility Chemistry;Daily
+20009;EPA Carbon Monoxide (CO) - Hourly;Hourly
+20008;EPA Nitrogen Dioxide (NO2) - Hourly;Hourly
+20007;EPA Ozone - Hourly;Hourly
+20006;EPA PM10 Mass (81102) - Daily;Daily
+20005;EPA PM10 Mass (81102) - Hourly;Hourly
+20004;EPA PM2.5 Mass (88502) - Daily;Hourly
+20003;EPA PM2.5 Mass (88502) - Hourly;Hourly
+20001;EPA PM2.5 Mass FRM (88101) - Daily;Daily
+20011;EPA PM2.5 Mass FRM (88101) - Hourly;Hourly
+20002;EPA PM2.5 Speciation (CSN) - Daily;Daily
+20010;EPA Sulfur Dioxide (SO2) - Hourly;Hourly
+53001;Guelph Aerosol and Visibility Monitoring Program;Daily
+10001;IMPROVE Aerosol;Daily
+10005;IMPROVE Aerosol, Preliminary;Daily
+10010;IMPROVE Aerosol, Regional Haze Rule II (New Equation), with substituted data;Daily
+10006;IMPROVE Aerosol, Regional Haze Rule III (DRAFT - Preliminary Most Impaired Days dataset);Daily
+10301;IMPROVE Fine Total Carbon Source Contribution Study;Daily
+10012;IMPROVE Natural Conditions Estimates II;N/A
+10002;IMPROVE Nephelometer;Hourly
+10020;Measurement of Haze and Visual Effects (MOHAVE);Daily
+52004;NADP Ambient Ammonia Monitoring Network (AMoN);2 weeks
+52002;NADP Atmospheric Integrated Research Monitoring Network;Weekly
+52003;NADP Mercury Deposition Network;Weekly
+52014;NADP National Trends Network (NTN) - Precipitation-Weighted Means (µeq/L);Annual
+52016;NADP National Trends Network (NTN) - Precipitation-Weighted Means (mg/L);Annual
+52015;NADP National Trends Network (NTN) - Total Wet Deposition;Annual,Seasonal
+52001;NADP National Trends Network - Weekly Concentration Data;Weekly
+70006;NPS Gaseous Pollutant Monitoring Program (GPMP);Hourly
+70010;NPS Ozone Statistics for Conditions and Trends, New Method;Annual
+71008;NPS Ozone 8-Hour Average Daily Max;Daily
+70005;NPS Ozone Daily 8hr Max;Daily
+70001;NPS Ozone Statistics for Conditions and Trends;Annual
+70007;NPS Ozone Statistics - Calculated by Ozone Season;Annual
+70008;NPS Ozone Sum60;Annual
+10025;NPS Stacked Filter Unit Network (SFU);Daily
+70004;NPS W126 Ozone Metrics;Daily
+10021;Pacific Northwest Regional Visibility Experiment Using Natural Tracers (PREVENT);Daily
+10022;Regional Visibility Experimental Assessment in the Lower Fraser Valley (REVEAL);Daily
+50001;SEARCH All Variables;Daily
+50002;SEARCH Best Estimate;Daily
+50003;SEARCH FRM;Daily
+10023;Southeastern Aerosol and Visibility Study (SEAVS);Daily

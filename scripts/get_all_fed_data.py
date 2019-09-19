@@ -19,7 +19,7 @@ def get_and_save_data(
         dataset,
         site_info.id,
         parameter_info.id,
-        fed_config.datasets[dataset]["time_interval"],
+        fed_config.datasets[dataset].time_interval,
         start_date,
         end_date
     )
@@ -36,41 +36,52 @@ def get_and_save_data(
 
 if __name__ == "__main__":
 
-    if 1:
-        dataset = "10001"
-        parameter = "OCf"
-        start_date = datetime(2010, 1, 1)
-        end_date = datetime(2015, 12, 31)
-        timedelta_month = 12 * 6
-        data_format = "dat"
-        out_dir = "/tmp"
-    else:
-        dataset = "23005"
-        parameter = "O3"
-        start_date = datetime(2011, 1, 1)
-        end_date = datetime(2015, 12, 31)
-        timedelta_month = 12
-        data_format = "dat"
-        out_dir = "/tmp"
-
-    site_codes = fed_config.get_all_site_codes(dataset)
-    for site_code in site_codes:
-        date_i = start_date
-        while date_i < end_date:
-            date_j = (
-                date_i +
-                relativedelta(months=timedelta_month) -
-                relativedelta(days=1)
-            )
-            print(site_code, date_i, date_j)
-            get_and_save_data(
-                 dataset,
-                 site_code,
-                 parameter,
-                 date_i,
-                 date_j,
-                 data_format,
-                 out_dir
-            )
-            date_i += relativedelta(months=timedelta_month)
-        exit(0)
+    datasets_to_retrieve = [
+        {
+            "id": "10001",
+            "parameter": "OCf",
+            "start_date": datetime(2010, 1, 1),
+            "end_date": datetime(2015, 12, 31),
+            "timedelta_month": -1,
+            "data_format": "dat",
+            "out_dir": "/tmp",
+        },
+        {
+            "id": "23005",
+            "parameter": "O3",
+            "start_date": datetime(2010, 1, 1),
+            "end_date": datetime(2015, 12, 31),
+            "timedelta_month": 12,
+            "data_format": "dat",
+            "out_dir": "/tmp",
+        }
+    ]
+    for dataset in datasets_to_retrieve:
+        if dataset["id"] == "10001":
+            continue
+        site_codes = fed_config.get_all_site_codes(dataset["id"])
+        for site_code in site_codes:
+            date_i = dataset["start_date"]
+            while date_i < dataset["end_date"]:
+                if not dataset["timedelta_month"] == -1:
+                    date_j = (
+                        date_i +
+                        relativedelta(months=dataset["timedelta_month"]) -
+                        relativedelta(days=1)
+                    )
+                else:
+                    date_j = dataset["end_date"]
+                print(dataset["id"], site_code, date_i, date_j)
+                get_and_save_data(
+                     dataset["id"],
+                     site_code,
+                     dataset["parameter"],
+                     date_i,
+                     date_j,
+                     dataset["data_format"],
+                     dataset["out_dir"]
+                )
+                if not dataset["timedelta_month"] == -1:
+                    date_i += relativedelta(months=dataset["timedelta_month"])
+                else:
+                    break
