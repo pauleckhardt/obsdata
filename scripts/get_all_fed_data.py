@@ -58,8 +58,6 @@ if __name__ == "__main__":
         }
     ]
     for dataset in datasets_to_retrieve:
-        if dataset["id"] == "23005":
-            continue
         site_codes = fed_config.get_all_site_codes(dataset["id"])
         for site_code in site_codes:
             date_i = dataset["start_date"]
