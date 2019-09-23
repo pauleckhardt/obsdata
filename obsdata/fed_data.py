@@ -2,51 +2,7 @@ import requests
 import csv
 from datetime import datetime
 from bs4 import BeautifulSoup
-from collections import namedtuple
-
-
-FedData = namedtuple(
-    "FedData",
-    [
-        "data_version",
-        "station_name",
-        "station_code",
-        "station_category",
-        "observation_category",
-        "country_territory",
-        "contributor",
-        "latitude",
-        "longitude",
-        "altitude",
-        "nr_of_sampling_heights",
-        "sampling_heights",
-        "contact_point",
-        "dataset",
-        "parameter",
-        "parameter_code",
-        "time_interval",
-        "measurement_unit",
-        "measurement_method",
-        "sampling_type",
-        "time_zone",
-        "measurement_scale",
-        "status_flags",
-        "records",
-    ]
-)
-
-
-Record = namedtuple(
-    "Record",
-    [
-        "datetime",
-        "value",
-        "uncertainty",
-        "status",
-        "status_flag",
-        "nr_of_samples",
-    ]
-)
+from obsdata.save_data import ObsData, Record
 
 
 def set_request_data(
@@ -193,7 +149,7 @@ def parse_fed_data(text):
     (start_row_nr, end_row_nr) = get_row_nr(rows, "Data")
     records = get_records(rows[start_row_nr : end_row_nr])
 
-    return FedData(
+    return ObsData(
         data_version="",  # FIXME
         station_name=data["sites"]["Site"][0],
         station_code=data["sites"]["Code"][0],

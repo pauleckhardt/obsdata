@@ -1,5 +1,50 @@
 import os
 from netCDF4 import Dataset, date2num
+from collections import namedtuple
+
+
+ObsData = namedtuple(
+    "ObsData",
+    [
+        "data_version",
+        "station_name",
+        "station_code",
+        "station_category",
+        "observation_category",
+        "country_territory",
+        "contributor",
+        "latitude",
+        "longitude",
+        "altitude",
+        "nr_of_sampling_heights",
+        "sampling_heights",
+        "contact_point",
+        "dataset",
+        "parameter",
+        "parameter_code",
+        "time_interval",
+        "measurement_unit",
+        "measurement_method",
+        "sampling_type",
+        "time_zone",
+        "measurement_scale",
+        "status_flags",
+        "records",
+    ]
+)
+
+
+Record = namedtuple(
+    "Record",
+    [
+        "datetime",
+        "value",
+        "uncertainty",
+        "status",
+        "status_flag",
+        "nr_of_samples",
+    ]
+)
 
 
 class NotImplementedError(Exception):
@@ -59,6 +104,8 @@ def get_output_filename(data, extension):
 
     if data.time_interval == "daily":
         data_type = "da"
+    elif data.time_interval == "monthly":
+        data_type = "mo"
     elif data.time_interval == "hourly":
         data_type = "hr{}".format(data.records[0].datetime.year)
     else:

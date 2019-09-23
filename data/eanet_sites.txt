@@ -1,0 +1,78 @@
+Country            Site                            Code    Classification  Latitude    Longitude    Altitude 
+Cambodia
+                   Phnom Penh                      KHA001  Urban           11°33'18"N  104°56'20"E  12 
+China
+                   Chongqing - Guanyinqiao         CNA002  Urban           29°35' N    106°32' E    262
+                   Chongqing - Haifu               CNA003  Urban           29°37'30"N  106°30'34"E  300
+                   Chongqing - Jinyunshan          CNA004  Rural           29°49'42"N  106°22'43"E  403
+                   Xi’an - Shizhan                 CNA005  Urban           34°14'33"N  108°57'10"E  419
+                   Xi’an - Weishuiyuan             CNA006  Rural           34°22' N    108°52' E    360
+                   Xi’an - Jiwozi                  CNA007  Remote          33°51'06"N  108°48'52"E  2198
+                   Xiamen - Hongwen                CNA008  Urban           24°28'47"N  118°09'47"E  39
+                   Xiamen - Xiaoping               CNA009  Remote          24°51'23"N  118°02'55"E  530
+                   Zhuhai - Xiang Zhou             CNA010  Urban           22°16'22"N  113°31'46"E  40
+                   Zhuhai - Zhuxiandong            CNA011  Urban           22°12'24"N  113°30'60"E  50
+                   Zhuhai - Haibin-Park            CNA012  Urban           22°15'40"N  113°34'25"E  30
+Indonesia
+                   Jakarta                         IDA001  Urban           06°09'22"S  106°50'32"E  7
+                   Serpong                         IDA002  Rural           06°21'02"S  109°40'04"E  64
+                   Kototabang                      IDA003  Remote          00°12'08"S  100°19'05"E  845
+                   Bandung                         IDA004  Urban           06°53'41"S  107°35'11"E  753
+                   Maros                           IDA005  Rural           04°59'50"S  119°34'17"E  1
+Japan
+                   Rishiri                         JPA001  Remote          45°07'30"N  141°14'30"E  40
+                   Ochiishi                        JPA002  Remote          43°09'43"N  145°29'50"E  49
+                   Tappi                           JPA003  Remote          41°15'06"N  140°21'01"E  106
+                   Sado-seki                       JPA004  Remote          38°15'02"N  138°24'01"E  129
+                   Happo                           JPA005  Remote          36°41'48"N  137°47'53"E  1850
+                   Ijira                           JPA006  Rural           35°34'14"N  136°41'51"E  140
+                   Oki                             JPA007  Remote          36°17'19"N  133°11'06"E  90
+                   Banryu                          JPA008  Urban           34°40'54"N  131°47'59"E  53
+                   Yusuhara                        JPA009  Remote          33°22'46"N  132°56'06"E  790
+                   Hedo                            JPA010  Remote          26°51'58"N  128°14'55"E  60
+                   Ogasawara                       JPA011  Remote          27°05'32"N  142°13'02"E  212
+                   Tokyo                           JPA012  Urban           35°41'30"N  139°45'10"E  26
+Lao PDR
+                   Vientiane                       LAA001  Urban           17°59'88"N  102°34'93"E  175
+Malaysia
+                   Petaling Jaya                   MYA001  Urban           03°06'07"N  101°38'42"E  51
+                   Tanah Rata                      MYA002  Rural           04°29'03"N  101°22'17"E  1545
+                   Danum Valley                    MYA003  Remote          04°58'53"N  117°50'37"E  438
+                   Kuching                         MYA004  Urban           01°29'25"N  110°21'09"E  20
+Mongolia
+                   Ulaanbaatar                     MNA001  Urban           47°55'13"N  106°54'43"E  1303
+                   Terelj                          MNA002  Remote          47°58'59"N  107°27'04"E  1557
+Myanmar
+                   Yangon                          MMA001  Urban           16°51'53"N  96°09'13"E   21
+                   Mandalay                        MMA002  Urban           21°54'46"N  96°03'51"E   70
+Philippines
+                   Metro Manila                    PHA001  Urban           14°38'09"N  121°04'43"E  55
+                   Los Baños                       PHA002  Rural           14°09'53"N  121°15'00"E  25
+                   Mt. Sto. Tomas                  PHA003  Remote          16°25' N    120°36' E    1500
+Republic of Korea
+                   Kanghwa                         KRA001  Rural           37°42'32"N  126°16'26"E  60
+                   Cheju                           KRA002  Remote          33°17'32"N  126°09'43"E  37
+                   Imsil                           KRA003  Rural           35°36'09"N  127°10'53"E  217
+Russia
+                   Mondy                           RUA001  Remote          51°37'18"N  100°55'10"E  1996
+                   Listvyanka                      RUA002  Rural           51°50'47"N  104°53'34"E  646
+                   Irkutsk                         RUA003  Urban           52°14'53"N  104°15'33"E  495
+                   Primorskaya                     RUA004  Rural           43°37'45"N  132°14'13"E  85
+Thailand
+                   Bangkok                         THA001  Urban           13°47'04"N  100°32'22"E  5
+                   Samutprakarn                    THA002  Urban           13°39'58"N  100°36'21"E  4
+                   Pathumthani                     THA003  Rural           14°02'46"N  100°42'43"E  6
+                   Khanchanaburi                   THA004  Remote          14°47'05"N  98°36'05"E   130
+                   Chiang Mai - Mae Hia            THA005  Rural           18°45'40"N  98°55'54"E   349
+                   Chiang Mai - Chang Phueak       THA006  Urban           18°50'26"N  98°58'11"E   329
+                   Chiang Mai - Si Phum            THA007  Urban           18°47'27"N  98°59'24"E   313
+                   Nakhon Ratchasima - Sakaerat    THA008  Rural           14°28'04"N  101°54'05"E  409
+                   Nakhon Ratchasima - Nai Mueang  THA009  Urban           14°58'46"N  102°05'53"E  184
+Vietnam
+                   Hanoi                           VNA001  Urban           21°03'24"N  105°43'36"E  6 
+                   Hoa Binh                        VNA002  Rural           20°50'12"N  105°20'32"E  23
+                   Cuc Phuong                      VNA003  Remote          20°18'01"N  105°41'38"E  155
+                   Da Nang                         VNA004  Urban           16°02'35"N  108°12'24"E  5
+                   Can Tho                         VNA005  Rural           10°05'18"N  105°41'45"E  2
+                   Ho Chi Minh                     VNA006  Urban           10°47'04"N  106°42'00"E  5
+                   Yen Bai                         VNA007  Rural           21°42'28"N  104°52'29"E  56
