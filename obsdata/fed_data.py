@@ -8,7 +8,7 @@ from obsdata.save_data import ObsData, Record
 def set_request_data(
         dataset_id, site_id, parameter_id, time_interval, start_date, end_date):
     return {
-        "agidse": 1,
+        "agidse": 3 if time_interval == 'Annual' else 1,
         "dt": "{0}>{1}".format(
             start_date.strftime("%Y/%m/%d"),
             end_date.strftime("%Y/%m/%d")
@@ -93,6 +93,7 @@ def status_flag_to_number(status_flag):
 def parse_fed_data(text):
     '''returns an instance of FedData
     '''
+
     def get_row_nr(rows, string):
         start_row_nr = [
             row_nr for row_nr, row in enumerate(rows) if row == string

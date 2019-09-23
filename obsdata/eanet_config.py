@@ -23,6 +23,21 @@ EanetSite = namedtuple(
 )
 
 
+Datasets = [{
+    "name": "Wet Monthly",
+    "id": 1,
+    "parameters": [
+        "SO2", "HNO3", "HCl", "NH3", "NO", "NO2",
+        "NOx", "O3", "PM10", "PM25", "SO42-", "NO3-",
+        "Cl-", "NH4+", "Na+", "K+", "Mg2+", "Ca2+"
+    ]
+}]
+
+
+class InputError(Exception):
+    pass
+
+
 def coordinates_to_decimal_form(latitude, longitude):
     def get_decimal_value(x):
         integer_part = int(x.split('°')[0])
@@ -70,6 +85,24 @@ def get_site_information():
                     altitude=sline[5]
                 ))
     return sites
+
+
+def validate_input(dataset_id, site_code, parameter):
+    if dataset_id not in ['1']:
+        print('Only dataset_id 1: "Dry Monthly" is implemented')
+        raise(InputError)
+    if parameter not in Datasets[0]["parameters"]:
+        print("Dataset only contains the following parameters: {}".format(
+            Datasets[0]["parameters"]
+        ))
+        raise(InputError)
+    if site_code not in [s.code for s in eanet_sites] and site_code != 'all':
+        print('no metadata is found for site {}.'.format(site_code))
+        print('available sites are:')
+        for site in eanet_sites:
+            print(site)
+        raise(InputError)
+    return True
 
 
 eanet_sites = get_site_information()

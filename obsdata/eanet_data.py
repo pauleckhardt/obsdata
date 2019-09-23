@@ -4,10 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import numpy as np
-from obsdata.eanet_config import eanet_sites
-from obsdata.save_data import (
-    save_data_txt, ObsData, Record
-)
+from obsdata.save_data import ObsData, Record
 
 
 class EanetSheetExtractor:
@@ -57,7 +54,8 @@ class EanetSheetExtractor:
                     # if comments below site name
                     continue
                 stations[counter] = {
-                    "site": value.strip().replace('1', ''),
+                    "site": value.strip().replace('1', '').split(
+                        '*')[0].strip(),
                     "row_start": index,
                     "row_end": index + 3,
                     "column": column_site,
@@ -219,40 +217,3 @@ def get_xlsfiles(datadir, dataset, start_year, end_year):
             retrieve_file(url, datadir, dataset, year)
         xlsfiles.append(xlsfile)
     return xlsfiles
-
-
-if __name__ == "__main__":
-
-    start_year = 2001
-    end_year = 2017
-    dataset = "Dry Monthly"
-    parameter = "SO2"
-    download = False
-    datadir = "/home/bengt/Downloads/eanet/"
-    outdir = "/tmp"
-
-    xlsfiles = get_xlsfiles(datadir, dataset, start_year, end_year)
-
-    # for these sites we have needed meta data
-    list_of_eanet_sites = np.array([s.site for s in eanet_sites])
-
-    list_of_sheets = [
-        pd.read_excel(xlsfile, sheet_name=parameter)
-        for xlsfile in xlsfiles
-    ]
-
-    # sheets = pd.read_excel(xlsfile, sheet_name=None).keys()
-    list_of_sites_all_sheets = get_all_sites(list_of_sheets)
-    for site in list_of_sites_all_sheets:
-
-        if not np.any(list_of_eanet_sites == site):
-            # if we not have meta data for this site
-            continue
-
-        eanet_site = eanet_sites[
-            np.nonzero(list_of_eanet_sites == site)[0][0]]
-
-        eanet_data = merge_data(
-            list_of_sheets, eanet_site, dataset, parameter)
-
-        save_data_txt(outdir, eanet_data)

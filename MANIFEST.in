@@ -5,3 +5,4 @@ include *.txt
 include *.ini
 include *.in
 recursive-include data *.csv
+recursive-include data *.txt

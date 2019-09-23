@@ -106,6 +106,8 @@ def get_output_filename(data, extension):
         data_type = "da"
     elif data.time_interval == "monthly":
         data_type = "mo"
+    elif data.time_interval == "annual":
+        data_type = "ye"
     elif data.time_interval == "hourly":
         data_type = "hr{}".format(data.records[0].datetime.year)
     else:
