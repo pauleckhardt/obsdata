@@ -86,12 +86,11 @@ class EanetSheetExtractor:
         headers = ["date"] + headers
         year = self.get_year()
         records = []
-        if record[2] != -999 and record[3] != -999:
-            uncertainty = (record[2] - record[3]) / 2
-        else:
-            uncertainty = -999
-
         for index, record in enumerate(records_no_date):
+            if record[2] != -999 and record[3] != -999:
+                uncertainty = (record[2] - record[3]) / 2
+            else:
+                uncertainty = -999
             records.append(Record(
                 datetime=datetime(year, index + 1, 1),
                 value=record[0],
