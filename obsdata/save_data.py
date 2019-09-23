@@ -107,7 +107,7 @@ def get_output_filename(data, extension):
     elif data.time_interval == "monthly":
         data_type = "mo"
     elif data.time_interval == "annual":
-        data_type = "ye"
+        data_type = "an"
     elif data.time_interval == "hourly":
         data_type = "hr{}".format(data.records[0].datetime.year)
     else:
@@ -258,7 +258,8 @@ def save_data_netcdf(out_dir, data):
     # dimensions
 
     timedim = dataset.createDimension("time", len(data.records))
-    chardim = dataset.createDimension('nchar', 2)
+    if not data.status_flags == "?":
+        chardim = dataset.createDimension('nchar', 2)
 
     # time
 
@@ -275,7 +276,7 @@ def save_data_netcdf(out_dir, data):
     parameter = dataset.createVariable(
         data.parameter_code, "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = data.parameter
-    parameter.missing_value = -9999.
+    parameter.missing_value = -999
     parameter.units = data.measurement_unit
     parameter[:] = [record.value for record in data.records]
 
@@ -284,21 +285,22 @@ def save_data_netcdf(out_dir, data):
     parameter = dataset.createVariable(
         "Unc", "f8", (timedim.name,), fill_value=-9999.)
     parameter.standard_name = "Uncertainty"
-    parameter.missing_value = -9999.
+    parameter.missing_value = -999
     parameter.units = data.measurement_unit
     parameter[:] = [record.uncertainty for record in data.records]
 
     # status flag
-
-    parameter = dataset.createVariable(
-        "SF", "c", (timedim.name, chardim.name))
-    parameter.standard_name = "StatusFlag"
-    description = ""
-    for index in range(len(data.status_flags['Status Flag'])):
-        description += "{0}: {1};".format(
-            data.status_flags["Status Flag"][index],
-            data.status_flags["Description"][index],
-        )
-    parameter[:] = [record.status_flag for record in data.records]
+    if not data.status_flags == "?":
+        parameter = dataset.createVariable(
+            "SF", "c", (timedim.name, chardim.name))
+        parameter.standard_name = "StatusFlag"
+        description = ""
+        for index in range(len(data.status_flags['Status Flag'])):
+            description += "{0}: {1};".format(
+                data.status_flags["Status Flag"][index],
+                data.status_flags["Description"][index],
+            )
+        parameter[:] = [
+            record.status_flag for record in data.records]
 
     dataset.close()

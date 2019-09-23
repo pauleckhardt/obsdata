@@ -14,10 +14,8 @@ def get_eanet_data(
         dataset, site, parameter, start_date, end_date,
         data_format, out_dir, xls_dir):
 
-    datadir = "/home/bengt/Downloads/eanet/"
-
     xlsfiles = eanet_data.get_xlsfiles(
-        datadir, dataset, start_date.year, end_date.year)
+        xls_dir, dataset, start_date.year, end_date.year)
 
     # for these sites we have needed meta data
     list_of_eanet_sites = np.array([s.site for s in eanet_config.eanet_sites])
@@ -47,7 +45,10 @@ def get_eanet_data(
         data = eanet_data.merge_data(
             list_of_sheets, eanet_site, dataset, parameter)
 
-        save_data.save_data_txt(out_dir, data)
+        if data_format == "nc":
+            save_data.save_data_netcdf(out_dir, data)
+        elif data_format == "dat":
+            save_data.save_data_txt(out_dir, data)
 
 
 def cli():
@@ -79,7 +80,10 @@ def cli():
         "parameter_code",
         metavar="parameter-code",
         type=str,
-        help="parameter code e.g. SO2",
+        help=(
+            "parameter code e.g. SO2, " +
+            " use 'all' for getting data from all available parameters"
+        )
     )
     parser.add_argument(
         "start_date",
@@ -125,6 +129,15 @@ def cli():
     end_date = datetime.strptime(
         args.end_date, '%Y-%m-%d').date()
 
+    if start_date < datetime(2001, 1, 1).date():
+        print('start_date must be greater or equal to {}'.format(
+            datetime(2001, 1, 1).date()))
+        exit(1)
+    if end_date > datetime(2017, 12, 31).date():
+        print('end_date must be smaller or equal to {}'.format(
+            datetime(2017, 12, 31).date()))
+        exit(1)
+
     eanet_config.validate_input(
         args.dataset_id,
         args.site_code,
@@ -133,16 +146,22 @@ def cli():
     if args.dataset_id == "1":
         dataset = "Dry Monthly"
 
-    get_eanet_data(
-        dataset,
-        args.site_code,
-        args.parameter_code,
-        start_date,
-        end_date,
-        args.data_format,
-        args.out_dir,
-        args.xls_dir
-    )
+    if args.parameter_code == 'all':
+        parameters = eanet_config.Datasets[0]["parameters"]
+    else:
+        parameters = [args.parameter_code]
+
+    for parameter in parameters:
+        get_eanet_data(
+            dataset,
+            args.site_code,
+            parameter,
+            start_date,
+            end_date,
+            args.data_format,
+            args.out_dir,
+            args.xls_dir
+        )
 
 
 if __name__ == "__main__":

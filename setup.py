@@ -13,10 +13,11 @@ setup(
     author_email='bengt.rydberg@molflow.com',
     entry_points={"console_scripts": [
         "get_fed_data = scripts.get_fed_data:cli",
+        "get_eanet_data = scripts.get_eanet_data:cli",
     ]},
     packages=['obsdata', 'scripts', 'data'],
     package_data={
-      '': ['*.csv'],
+      '': ['*.csv', '*.txt'],
     },
     include_package_data=True,
 )

@@ -91,7 +91,7 @@ def validate_input(dataset_id, site_code, parameter):
     if dataset_id not in ['1']:
         print('Only dataset_id 1: "Dry Monthly" is implemented')
         raise(InputError)
-    if parameter not in Datasets[0]["parameters"]:
+    if parameter not in Datasets[0]["parameters"] and parameter != 'all':
         print("Dataset only contains the following parameters: {}".format(
             Datasets[0]["parameters"]
         ))

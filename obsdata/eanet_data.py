@@ -195,7 +195,10 @@ def retrieve_file(url, datadir, dataset, year):
     '''download file (if not already exists) and returns full filename'''
     xlsfile = os.path.join(
         datadir, '{}-{}.xls'.format(dataset, year))
-    print(os.path.isfile(xlsfile))
+
+    if not os.path.exists(datadir):
+        os.makedirs(datadir)
+
     if not os.path.isfile(xlsfile):
         r = requests.get(url, stream=True)
         with open(xlsfile, 'wb') as f:

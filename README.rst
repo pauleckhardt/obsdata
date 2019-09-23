@@ -4,11 +4,12 @@ Observational-Data
 
 This is observational-data (obsdata), a Python package developed
 in order to retrieve and store data from the
-Federal Land Manager Environmental Database_,
+Federal Land Manager Environmental Database_
+and The Acid Deposition Monitoring Network in East Asia (EANET_)
 into a specific data format described in this document.
 
-.. _ Database: http://views.cira.colostate.edu/fed/QueryWizard/
-
+.. _Database: http://views.cira.colostate.edu/fed/QueryWizard/
+.. _EANET: https://monitoring.eanet.asia/
 	
 Prerequisites
 --------------------
@@ -24,12 +25,18 @@ packages:
 
   numpy_: the fundamental package for scientific computing with Python.
 
+  pandas_: is a Python data analysis library, and can be used to rad Microsoft Excel files.
+
+  xlrd_: Library for developers to extract data from Microsoft Excel spreadsheet files.
+
 and these packages are available at PyPI_.
 
 .. _requests: https://2.python-requests.org/en/master/
 .. _bs4: https://pypi.org/project/beautifulsoup4/
 .. _netcdf4: http://unidata.github.io/netcdf4-python/
 .. _numpy: http://www.numpy.org/
+.. _pandas: https://pandas.pydata.org/
+.. _xlrd: https://pypi.org/project/xlrd/
 .. _PyPI: https://pypi.org/
 
 Installation
@@ -89,6 +96,11 @@ The obsdata package can be installed by:
 
 Usage
 ------------------
+
+
+Federal Land Manager Environmental Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 The package contains two executable programs
 for retrieving data from the
@@ -292,14 +304,65 @@ and the first rows of this file are shown below:
   ...
 
  
-If data from another dataset are to be handled, the dataset dictionary
-must be updated. fedsites files are available for all datasets
-within the obsdata package but parameter files are not.
-The parameter file are only required to contain information on the
-parameter of interest.
 
 
 .. _ Database: http://views.cira.colostate.edu/fed/QueryWizard/
+
+
+The Acid Deposition Monitoring Network in East Asia (EANET)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The package contains an executable script for getting data from
+EANET, and the usage is described below:
+
+.. code-block:: bash
+
+  usage: get_eanet_data    [-h] [-e DATA_FORMAT] [-q OUT_DIR] [-x XLS_DIR]
+                           dataset_id site-code parameter-code start-date
+                           end-date
+
+  positional arguments:
+    dataset_id            dataset_id: 1 for 'Dry Monthly'
+    site-code             eanet site code, e.g JPA001 for 'Rishiri', use 'all'
+                          for getting data from all available sites
+    parameter-code        parameter code e.g. SO2, use 'all' for getting data
+                          from all available parameters
+    start-date            start date, format YYYY-MM-DD
+    end-date              end date, format YYYY-MM-DD
+ 
+  optional arguments:
+    -h, --help            show this help message and exit
+    -e DATA_FORMAT, --data-format DATA_FORMAT
+                          data format for saving file (nc or dat), default is
+                          dat
+    -q OUT_DIR, --datadir-for-save OUT_DIR
+                          data directory for saving output, default is /tmp
+    -x XLS_DIR, --datadir-for-xls XLS_DIR
+                          data directory for saving eanet xls files, default is
+                          /tmp
+
+
+and the script can e.g. be invoked by:
+ 
+.. code-block:: bash
+
+   get_eanet_data 1 JPA001 SO2 2001-01-01 2017-12-31 -e dat -q /tmp -x /tmp
+
+So far only the 'Dry Monthly' dataset is handled, but this will be extended.
+The script downloads an Excel file for each year (this file is common for
+all parameters within the dataset), and the -x parameter determines
+where these files are stored.
+If the file already exists in the data directory (from a previous
+run of the program) the file is not downloaded
+again, and hence the exceution of the script is much faster.
+Data found within the Excel files are then merged into a data
+format described in the following section.
+
+The data directory of the package contains a file
+named 'eanet_sites.txt' that contains data about the location
+of the sites. This information is not provided in the
+Excel sheets, and information from the eanet_sites.txt 
+are used to produce the output data.
 
 
 Data format description
@@ -608,7 +671,7 @@ Most files have *nl* in this field, which means *NULL*.
 - hrxxxx: Hourly mean data observed in the year xxxx
 - da: Daily mean data
 - mo: Monthly mean data
-
+- an: Annual mean data
 
 Status flags
 -------------------------------
