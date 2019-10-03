@@ -37,7 +37,8 @@ ObsData = namedtuple(
 Record = namedtuple(
     "Record",
     [
-        "datetime",
+        "start_datetime",
+        "end_datetime",
         "value",
         "uncertainty",
         "status",
@@ -109,7 +110,7 @@ def get_output_filename(data, extension):
     elif data.time_interval == "annual":
         data_type = "an"
     elif data.time_interval == "hourly":
-        data_type = "hr{}".format(data.records[0].datetime.year)
+        data_type = "hr{}".format(data.records[0].start_datetime.year)
     else:
         raise(NotImplementedError)
 
@@ -151,8 +152,8 @@ def save_data_txt(out_dir, data):
     file_name = get_output_filename(data, "dat")
 
     covering_period = "{0} {1}".format(
-        data.records[0].datetime.strftime("%Y-%m-%d"),
-        data.records[-1].datetime.strftime("%Y-%m-%d")
+        data.records[0].start_datetime.strftime("%Y-%m-%d"),
+        data.records[-1].start_datetime.strftime("%Y-%m-%d")
     )
 
     file_header_rows = [
@@ -213,19 +214,28 @@ def save_data_txt(out_dir, data):
         for record in data.records:
 
             value = record.value if not record.value == -999 else -99999.999
+
             unc = (
                 record.uncertainty if not record.uncertainty == -999
                 else -999.99
             )
+
             status_flag = record.status if not record.status == -999 else -9999
+
             nr_of_samples = (
                 record.nr_of_samples if not record.nr_of_samples == -999
                 else -9999
             )
 
+            try:
+                end_datetime = record.end_datetime.strftime("%Y-%m-%d %H:%M")
+            except AttributeError:
+                end_datetime = "9999-99-99 99:99"
+
             outfile.write(
-                "{0} 9999-99-99 99:99 {1} {2} {3} {4} {5} {6}\n".format(
-                    record.datetime.strftime("%Y-%m-%d %H:%M"),
+                "{0} {1} {2} {3} {4} {5} {6} {7}\n".format(
+                    record.start_datetime.strftime("%Y-%m-%d %H:%M"),
+                    end_datetime,
                     "{:10.3f}".format(value),
                     "{:5}".format(nr_of_samples),
                     "{:7.2f}".format(unc),
