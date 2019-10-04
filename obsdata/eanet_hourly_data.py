@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -10,21 +11,35 @@ from obsdata.save_data import ObsData, Record, save_data_txt
 from obsdata.eanet_config import eanet_sites
 
 
+class InputError(Exception):
+    pass
+
+
 class EanetWetDataExtractor:
 
     def __init__(self, csvfile, parameter):
         self.parameter = parameter
         self.csvfile = csvfile
+        if self.parameter_in_dataset():
+            self.df = self.get_dataset()
+        else:
+            self.df = pd.read_csv(self.csvfile)
+
+    def parameter_in_dataset(self):
+        '''returns true if csvfile contains
+           a column of data for the target parameter'''
         table_locations = self._get_table_locations()
         index = self._get_first_table_with_target(table_locations)
-        if index == -1:
-            print("target data not found in file")
-            exit(0)
+        return True if index > -1  else False
+
+    def get_dataset(self):
+        table_locations = self._get_table_locations()
+        index = self._get_first_table_with_target(table_locations)
         usecols = range(
             table_locations[index]["start"],
             table_locations[index]["end"]
         )
-        self.df = pd.read_csv(csvfile, skiprows=9, usecols=usecols)
+        return pd.read_csv(self.csvfile, skiprows=9, usecols=usecols)
 
     def _get_table_locations(self):
         '''these csv files are non standard and typically
@@ -101,7 +116,7 @@ class EanetWetDataExtractor:
             )
         return records
 
-    def get_value(self,index):
+    def get_value(self, index):
         value = float(self.df[self.parameter][index])
         if np.isnan(value):
             value = -999
@@ -120,7 +135,8 @@ class EanetWetDataExtractor:
         )
 
     def get_unit(self):
-        return self.df[self.parameter][1]
+        unit = self.df[self.parameter][1]
+        return unit if pd.notnull(unit) else "?"
 
 
 class EanetDryDataExtractor:
@@ -129,6 +145,14 @@ class EanetDryDataExtractor:
         self.csvfile = csvfile
         self.parameter = parameter
         self.df = pd.read_csv(csvfile, skiprows=1)
+
+    def parameter_in_dataset(self):
+        '''returns true if csvfile contains
+           a column of data for the target parameter'''
+        return (
+            True if self.parameter in self.get_products()
+            else False
+        )
 
     def get_records(self):
         records = []
@@ -140,7 +164,7 @@ class EanetDryDataExtractor:
             records.append(
                 Record(
                     start_datetime=self.get_start_date(index),
-                    end_datetime=-999,
+                    end_datetime=self.get_end_date(index),
                     value=self.get_value(index),
                     uncertainty=-999,
                     status=-999,
@@ -151,12 +175,30 @@ class EanetDryDataExtractor:
         return records
 
     def get_start_date(self, index):
-        return datetime(
-            self.df["Year"][index],
-            self.df["Month"][index],
-            self.df["Day"][index],
-            self.df["Hour"][index]
-        )
+        # format varies between files, so we try to ways
+        try:
+            start_date = datetime(
+                self.df["Year"][index],
+                self.df["Month"][index],
+                self.df["Day"][index],
+                self.df["Hour"][index]
+            )
+        except KeyError:
+            start_date = datetime.strptime(
+                '{}T{}'.format(self.df["Date"][index], self.df["Time"][index]),
+                '%Y/%m/%dT%H:%M'
+            )
+        return start_date
+
+    def get_end_date(self, index):
+        try:
+            end_date = datetime.strptime(
+                '{}T{}'.format(self.df["Date.1"][index], self.df["Time.1"][index]),
+                '%Y/%m/%dT%H:%M'
+            )
+        except KeyError:
+            end_date = -999
+        return end_date
 
     def get_products(self):
         no_product = ["Country", "Site", "Year", "Month", "Day", "Hour", "Memo"]
@@ -164,7 +206,8 @@ class EanetDryDataExtractor:
 
     def get_unit(self):
         df = pd.read_csv(self.csvfile, nrows=2, header=None)
-        return df[self.df.columns.tolist().index(self.parameter)][0]
+        unit = df[self.df.columns.tolist().index(self.parameter)][0]
+        return unit if pd.notnull(unit) else "?"
 
     def get_value(self,index):
         value = float(self.df[self.parameter][index])
@@ -220,6 +263,24 @@ def get_payload(dataset, station_code, year):
     }
 
 
+def get_login_payload():
+    eanet_configfile = os.path.join(os.environ['HOME'], '.eanetconfig')
+    if not os.path.isfile(eanet_configfile):
+        print(
+            'You need to a eanet config file with credentials.\n' +
+            'Check the README file for instructions!'
+        )
+        exit(1)
+
+    with open(eanet_configfile) as json_file:
+        login_data = json.load(json_file)
+
+    return {
+        "email": login_data["user"],
+        "passwd": login_data["password"],
+        "submitBtn": "Sign+In",
+    }
+
 
 def download_csvfile(datadir, dataset, station, year):
     '''download file (if not already exists) and returns full filename'''
@@ -237,25 +298,26 @@ def download_csvfile(datadir, dataset, station, year):
     if os.path.isfile(csvfile):
         return csvfile
 
-    login_payload = {
-        "email": "bengt.rydberg@molflow.com",
-        "passwd": "M6R9XM9g",
-        "submitBtn": "Sign+In",
-    }
-
+    login_payload = get_login_payload()
     payload = get_payload(dataset, station, year)
 
     with requests.Session() as session:
-        p = session.post(url_base + "/document/signin/index", data=login_payload)
-        # print the html returned or something more intelligent
-        # to see if it's a successful login page.
-        #
-        # An authorised request.
-        r = session.post(url_base + "/document/menu/index", data=payload)
-        if "doctype html" in r.text:
-            print('data not found')
-            exit(0)
+        # login
+        login_url = url_base + "/document/signin/index"
+        p = session.post(login_url, data=login_payload)
+        if 'Set-Cookie' in p.headers and 'HttpOnly' in p.headers['Set-Cookie']:
+            print('not able to login on {},\n is your credentials valid?'.format(login_url))
+            exit(1)
 
+        # download data
+        data_url = url_base + "/document/menu/index"
+        r = session.post(data_url, data=payload)
+
+        if "doctype html" in r.text:
+            print('requested data not found on {}'.format(data_url))
+            exit(1)
+
+    # save csvdata locally
     with open(csvfile, 'wb') as f:
         for chunk in r.iter_content():
             f.write(chunk)
@@ -272,12 +334,20 @@ def get_data():
     else:
         data_extractor = EanetDryDataExtractor(csvfile, parameter)
 
-    records = data_extractor.get_records()
+    if data_extractor.parameter_in_dataset():
+        records = data_extractor.get_records()
+    else:
+        print(
+            '{} not found in data.\n'.format(parameter) +
+            'available products:'
+        )
+        print(data_extractor.get_products())
+        exit(1)
+        records = []
 
     eanet_site = eanet_sites[
         [s.code for s in eanet_sites].index(station)
     ]
-
     return ObsData(
         data_version="?",
         station_name=eanet_site.site.replace('ñ', 'n'),
@@ -311,13 +381,14 @@ if __name__ == "__main__":
 
     datadir = '/home/bengt/Downloads/'
     parameters = ["SO42-", "nss-SO42-", "NO3-", "Cl-", "NH4+", "Na+", "K+", "Ca2+", "nss-Ca2+", "Mg2+", "H+", "pH", "EC"]
-    parameter = 'SO42-'
-    station = "CNA004"
-    year = 2005
+    parameter = 'SO2'
+    station = "IDA001"
+    year = 2007
     # parameter = "SO2"
     dataset = "wet_deposition"
-    # dataset = "dry_deposition_auto"
-
+    dataset = "dry_deposition_auto"
+    dataset = "dry_deposition_filter_pack"
+    dataset = "dry_deposition_passive_sampler"
     obs_data = get_data()
     save_data_txt(datadir, obs_data)
 
