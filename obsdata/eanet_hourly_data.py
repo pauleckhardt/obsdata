@@ -3,9 +3,7 @@ import requests
 import json
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-from collections import namedtuple
-from itertools import product
+from datetime import datetime
 
 from obsdata.save_data import ObsData, Record, save_data_txt
 from obsdata.eanet_config import eanet_sites
@@ -30,7 +28,20 @@ class EanetWetDataExtractor:
            a column of data for the target parameter'''
         table_locations = self._get_table_locations()
         index = self._get_first_table_with_target(table_locations)
-        return True if index > -1  else False
+        return True if index > -1 else False
+
+    def get_products(self):
+        '''reurns a list with data cloumn headers'''
+        table_locations = self._get_table_locations()
+        products = []
+        for table in table_locations:
+            columns = self._get_columns_in_table(
+                table_locations[table]["start"],
+                table_locations[table]["end"]
+            )
+            for column in columns:
+                products.append(column)
+        return products
 
     def get_dataset(self):
         table_locations = self._get_table_locations()
@@ -79,7 +90,10 @@ class EanetWetDataExtractor:
         )
         columns = [
             column for column in df.columns
-            if not column.startswith("Unnamed")]
+            if (not column.startswith("Unnamed")
+                and not column.startswith("Samp")
+                and not column.startswith("Date")
+                and not column.startswith("Method"))]
 
         return [
             column for column in columns
@@ -193,7 +207,10 @@ class EanetDryDataExtractor:
     def get_end_date(self, index):
         try:
             end_date = datetime.strptime(
-                '{}T{}'.format(self.df["Date.1"][index], self.df["Time.1"][index]),
+                '{}T{}'.format(
+                    self.df["Date.1"][index],
+                    self.df["Time.1"][index]
+                ),
                 '%Y/%m/%dT%H:%M'
             )
         except KeyError:
@@ -202,14 +219,15 @@ class EanetDryDataExtractor:
 
     def get_products(self):
         no_product = ["Country", "Site", "Year", "Month", "Day", "Hour", "Memo"]
-        return [product for product in self.df.columns if product not in no_product]
+        return [
+            product for product in self.df.columns if product not in no_product]
 
     def get_unit(self):
         df = pd.read_csv(self.csvfile, nrows=2, header=None)
         unit = df[self.df.columns.tolist().index(self.parameter)][0]
         return unit if pd.notnull(unit) else "?"
 
-    def get_value(self,index):
+    def get_value(self, index):
         value = float(self.df[self.parameter][index])
         if np.isnan(value):
             value = -999
@@ -306,7 +324,10 @@ def download_csvfile(datadir, dataset, station, year):
         login_url = url_base + "/document/signin/index"
         p = session.post(login_url, data=login_payload)
         if 'Set-Cookie' in p.headers and 'HttpOnly' in p.headers['Set-Cookie']:
-            print('not able to login on {},\n is your credentials valid?'.format(login_url))
+            print(
+                'not able to login on {},\n'.format(login_url) +
+                'is your credentials valid?'
+            )
             exit(1)
 
         # download data
@@ -380,15 +401,14 @@ def get_data():
 if __name__ == "__main__":
 
     datadir = '/home/bengt/Downloads/'
-    parameters = ["SO42-", "nss-SO42-", "NO3-", "Cl-", "NH4+", "Na+", "K+", "Ca2+", "nss-Ca2+", "Mg2+", "H+", "pH", "EC"]
     parameter = 'SO2'
-    station = "IDA001"
-    year = 2007
+
+    station = "CNA007"
+    year = 2005
     # parameter = "SO2"
     dataset = "wet_deposition"
-    dataset = "dry_deposition_auto"
-    dataset = "dry_deposition_filter_pack"
-    dataset = "dry_deposition_passive_sampler"
+    # dataset = "dry_deposition_auto"
+    # dataset = "dry_deposition_filter_pack"
+    # dataset = "dry_deposition_passive_sampler"
     obs_data = get_data()
     save_data_txt(datadir, obs_data)
-

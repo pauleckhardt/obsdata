@@ -279,7 +279,7 @@ def save_data_netcdf(out_dir, data):
     time.units = "days since 1900-01-01 00:00:00 UTC"
     time.calendar = "gregorian"
     time[:] = [
-        date2num(record.datetime, time.units, calendar=time.calendar)
+        date2num(record.start_datetime, time.units, calendar=time.calendar)
         for record in data.records
     ]
 

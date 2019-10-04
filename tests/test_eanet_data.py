@@ -51,10 +51,10 @@ def test_sheet_extractor_get_sites(sheet, index, expect):
 
 
 @pytest.mark.parametrize('index, parameter, expect', (
-    (0, "datetime", datetime(2005, 1, 1)),
+    (0, "start_datetime", datetime(2005, 1, 1)),
     (0, "value", 42.5027),
     (0, "uncertainty", 7.6041),
-    (11, "datetime", datetime(2005, 12, 1)),
+    (11, "start_datetime", datetime(2005, 12, 1)),
     (11, "value", 40.2384),
     (11, "uncertainty",  5.8258),
 
@@ -64,7 +64,7 @@ def test_sheet_extractor_get_records(sheet, index, parameter, expect):
     site = {"site": "Rishiri", "row_start": 3, "row_end": 6, "column": 1}
     _, records = record_extractor.get_records(site)
     assert len(records) == 12
-    if parameter == "datetime":
+    if parameter == "start_datetime":
         assert getattr(records[index], parameter) == expect
     else:
         assert getattr(records[index], parameter) == pytest.approx(

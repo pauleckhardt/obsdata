@@ -90,7 +90,8 @@ class EanetSheetExtractor:
             else:
                 uncertainty = -999
             records.append(Record(
-                datetime=datetime(year, index + 1, 1),
+                start_datetime=datetime(year, index + 1, 1),
+                end_datetime=-999,
                 value=record[0],
                 uncertainty=uncertainty,
                 status=-999,

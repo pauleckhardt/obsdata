@@ -130,7 +130,8 @@ def parse_fed_data(text):
                         row[date_index], '%m/%d/%Y')
 
                 records.append(Record(
-                    datetime=date_i,
+                    start_datetime=date_i,
+                    end_datetime=-999,
                     value=float(row[value_index]),
                     uncertainty=float(row[unc_index]),
                     status=status_flag_to_number(row[status_index]),

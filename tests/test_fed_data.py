@@ -62,11 +62,11 @@ def test_parse_metadata(fed_data, para, expect):
 
 
 @pytest.mark.parametrize('parameter,row,expect', (
-    ('datetime', 0, datetime(2017, 1, 1)),
+    ('start_datetime', 0, datetime(2017, 1, 1)),
     ('value', 0, 0.30555),
     ('status', 0, 8),
     ('nr_of_samples', 0, -999),
-    ('datetime', 1, datetime(2017, 1, 4)),
+    ('start_datetime', 1, datetime(2017, 1, 4)),
     ('value', 1, 0.39832),
 ))
 def test_parse_data(fed_data, parameter, row, expect):
