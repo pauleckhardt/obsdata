@@ -93,7 +93,8 @@ class EanetWetDataExtractor:
             if (not column.startswith("Unnamed")
                 and not column.startswith("Samp")
                 and not column.startswith("Date")
-                and not column.startswith("Method"))]
+                and not column.startswith("Method")
+                and not column.startswith("Note"))]
 
         return [
             column for column in columns
@@ -218,7 +219,9 @@ class EanetDryDataExtractor:
         return end_date
 
     def get_products(self):
-        no_product = ["Country", "Site", "Year", "Month", "Day", "Hour", "Memo"]
+        no_product = [
+            "Country", "Site", "Year", "Month", "Day", "Hour", "Memo",
+            "Time", "Date", "Time.1", "Date.1"]
         return [
             product for product in self.df.columns if product not in no_product]
 
