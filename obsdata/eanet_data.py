@@ -1,3 +1,8 @@
+"""
+   This module contains classes and functions
+   that downloads and imports data from the
+   public dry monthly EANET dataset
+"""
 import pandas as pd
 from datetime import datetime
 import requests
@@ -194,8 +199,7 @@ def get_datafile_url(year, dataset):
 
 def retrieve_file(url, datadir, dataset, year):
     '''download file (if not already exists) and returns full filename'''
-    xlsfile = os.path.join(
-        datadir, '{}-{}.xls'.format(dataset, year))
+    xlsfile = get_xls_filename(datadir, dataset, year)
 
     if not os.path.exists(datadir):
         os.makedirs(datadir)
@@ -214,10 +218,16 @@ def get_xlsfiles(datadir, dataset, start_year, end_year):
     '''
     xlsfiles = []
     for year in range(start_year, end_year + 1):
-        xlsfile = os.path.join(
-            datadir, '{}-{}.xls'.format(dataset, year))
+        xlsfile = get_xls_filename(datadir, dataset, year)
         if not os.path.isfile(xlsfile):
             url = get_datafile_url(year, dataset)
             retrieve_file(url, datadir, dataset, year)
         xlsfiles.append(xlsfile)
     return xlsfiles
+
+
+def get_xls_filename(datadir, dataset, year):
+    return os.path.join(
+        datadir,
+        '{}-{}.xls'.format(dataset.lower().replace(" ", "_"), year)
+    )

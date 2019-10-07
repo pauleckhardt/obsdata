@@ -23,15 +23,102 @@ EanetSite = namedtuple(
 )
 
 
-Datasets = [{
-    "name": "Wet Monthly",
-    "id": 1,
-    "parameters": [
-        "SO2", "HNO3", "HCl", "NH3", "NO", "NO2",
-        "NOx", "O3", "PM10", "PM25", "SO42-", "NO3-",
-        "Cl-", "NH4+", "Na+", "K+", "Mg2+", "Ca2+"
-    ]
-}]
+Datasets = [
+    {
+        "name": "wet_monthly",
+        "id": 1,
+        "parameters": [
+            "Ca2+",
+            "Cl-",
+            "HCl",
+            "HNO3",
+            "K+",
+            "Mg2+",
+            "Na+",
+            "NH3",
+            "NH4+",
+            "NO",
+            "NOx",
+            "NO2",
+            "NO3-",
+            "O3",
+            "PM10",
+            "PM25",
+            "SO2",
+            "SO42-",
+        ],
+    },
+    {
+        "name": "wet_deposition",
+        "id": 2,
+        "parameters": [
+            'Anion',
+            'Cation',
+            'Ca2+',
+            'CH3COO-',
+            'Cl-',
+            'C+A',
+            'EC',
+            'F-',
+            'HCOO-',
+            'HCO3-',
+            'H+',
+            'K+',
+            'Mg2+',
+            'Na+',
+            'NH4+',
+            'NO3-',
+            'nss-Ca2+',
+            'nss-SO42-',
+            'pH',
+            'PO43-',
+            'Req.R1',
+            'Req.R2',
+            'R1',
+            'R2',
+            'SO42-',
+        ]
+    },
+    {
+        "name": "dry_deposition_auto",
+        "id": 3,
+        "parameters": [
+            "NO",
+            "NO2",
+            "NOx*",
+            "O3",
+            "PM10",
+            "PM2.5",
+            "SO2"
+        ],
+    },
+    {
+        "name": "dry_deposition_filter_pack",
+        "id": 4,
+        "parameters": [
+            'Ca2+',
+            'Cl-',
+            'HCl',
+            'HNO3',
+            'K+',
+            'Mg2+',
+            'Na+',
+            'NH3',
+            'NO3-',
+            'NH4+',
+            'SO2',
+            'SO42-',
+        ],
+    },
+    {
+        "name": "dry_deposition_passive_sampler",
+        "id": 5,
+        "parameters": [
+            'SO2',
+            'NO2'
+        ],
+    }
+]
 
 
 class InputError(Exception):
@@ -88,12 +175,15 @@ def get_site_information():
 
 
 def validate_input(dataset_id, site_code, parameter):
-    if dataset_id not in ['1']:
-        print('Only dataset_id 1: "Dry Monthly" is implemented')
+    if int(dataset_id) not in [dataset["id"] for dataset in Datasets]:
+        print('Only the following datasets are implemented:')
+        for dataset in Datasets:
+            print('{}: {}'.format(dataset["id"], dataset["name"]))
         raise(InputError)
-    if parameter not in Datasets[0]["parameters"] and parameter != 'all':
+    index = [dataset["id"] for dataset in Datasets].index(int(dataset_id))
+    if parameter not in Datasets[index]["parameters"] and parameter != 'all':
         print("Dataset only contains the following parameters: {}".format(
-            Datasets[0]["parameters"]
+            Datasets[index]["parameters"]
         ))
         raise(InputError)
     if site_code not in [s.code for s in eanet_sites] and site_code != 'all':

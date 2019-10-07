@@ -6,11 +6,12 @@ import numpy as np
 from obsdata import (
     eanet_config,
     eanet_data,
+    eanet_hourly_data,
     save_data
 )
 
 
-def get_eanet_data(
+def get_eanet_monthly_data(
         dataset, site, parameter, start_date, end_date,
         data_format, out_dir, xls_dir):
 
@@ -51,6 +52,40 @@ def get_eanet_data(
             save_data.save_data_txt(out_dir, data)
 
 
+def get_eanet_hourly_data(
+        dataset_id, site, parameter, start_date, end_date,
+        data_format, out_dir, csv_dir):
+
+    dataset = eanet_config.Datasets[[
+        dataset["id"] for dataset in eanet_config.Datasets
+    ].index(int(dataset_id))]["name"]
+
+    if site == "all":
+        sites = [s.code for s in eanet_config.eanet_sites]
+    else:
+        sites = [site]
+
+    for site_i in sites:
+        for year in range(start_date.year, end_date.year + 1):
+
+            print(
+                "\n\n processing dataset:{} ".format(dataset) +
+                "site:{} ".format(site_i) +
+                "parameter:{} ".format(parameter) +
+                "year:{} \n\n".format(year)
+            )
+
+            obs_data = eanet_hourly_data.get_data(
+                dataset, site_i, parameter, year, csv_dir)
+
+            if len(obs_data.records) > 0:
+
+                if data_format == "nc":
+                    save_data.save_data_netcdf(out_dir, obs_data)
+                elif data_format == "dat":
+                    save_data.save_data_txt(out_dir, obs_data)
+
+
 def cli():
 
     # example showing how to retrieve data from
@@ -65,7 +100,7 @@ def cli():
         "dataset_id",
         metavar="dataset_id",
         type=str,
-        help="dataset_id: 1 for 'Dry Monthly'"
+        help="dataset_id. e.g 1 for 'Dry Monthly'"
     )
     parser.add_argument(
         "site_code",
@@ -143,26 +178,41 @@ def cli():
         args.site_code,
         args.parameter_code
     )
-    if args.dataset_id == "1":
-        dataset = "Dry Monthly"
 
     if args.parameter_code == 'all':
-        parameters = eanet_config.Datasets[0]["parameters"]
+        parameters = eanet_config.Datasets[[
+            dataset["id"] for dataset in eanet_config.Datasets
+        ].index(int(args.dataset_id))]["parameters"]
+
     else:
         parameters = [args.parameter_code]
 
     for parameter in parameters:
-        get_eanet_data(
-            dataset,
-            args.site_code,
-            parameter,
-            start_date,
-            end_date,
-            args.data_format,
-            args.out_dir,
-            args.xls_dir
-        )
+        if args.dataset_id == "1":
+            get_eanet_monthly_data(
+                "Dry Monthly",
+                args.site_code,
+                parameter,
+                start_date,
+                end_date,
+                args.data_format,
+                args.out_dir,
+                args.xls_dir
+            )
+        else:
+            get_eanet_hourly_data(
+                args.dataset_id,
+                args.site_code,
+                parameter,
+                start_date,
+                end_date,
+                args.data_format,
+                args.out_dir,
+                args.xls_dir
+            )
 
 
 if __name__ == "__main__":
     cli()
+    # ./get_eanet_data.py 1 all SO2 2001-01-01 2017-12-31 -e dat -q /tmp  -x /tmp # noqa
+    # ./get_eanet_data.py 2 CNA007 SO42- 2005-01-01 2006-12-31 -e dat -q /tmp  -x /tmp # noqa

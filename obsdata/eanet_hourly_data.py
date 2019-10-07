@@ -1,11 +1,16 @@
+"""
+   This module contains classes and functions
+   that downloads and imports data from the
+   non-public EANET dataset
+"""
 import os
 import requests
 import json
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from obsdata.save_data import ObsData, Record, save_data_txt
+from obsdata.save_data import ObsData, Record
 from obsdata.eanet_config import eanet_sites
 
 
@@ -14,6 +19,14 @@ class InputError(Exception):
 
 
 class EanetWetDataExtractor:
+    """A class derived for extracting data
+       form EANET wet deposition csv files.
+
+       These csv files are non standard and typically
+       contain six different tables, (i.e. one row of
+       the csv file can contain data from six different
+       tables.
+    """
 
     def __init__(self, csvfile, parameter):
         self.parameter = parameter
@@ -24,14 +37,15 @@ class EanetWetDataExtractor:
             self.df = pd.read_csv(self.csvfile)
 
     def parameter_in_dataset(self):
-        '''returns true if csvfile contains
+        '''returns true if the csvfile contains
            a column of data for the target parameter'''
         table_locations = self._get_table_locations()
         index = self._get_first_table_with_target(table_locations)
         return True if index > -1 else False
 
     def get_products(self):
-        '''reurns a list with data cloumn headers'''
+        '''reurns a list of parameters found within
+           all tables in the csvfile'''
         table_locations = self._get_table_locations()
         products = []
         for table in table_locations:
@@ -44,13 +58,19 @@ class EanetWetDataExtractor:
         return products
 
     def get_dataset(self):
+        """returns a dataset (i.e. data from the the table containing
+           the parameter of interest)
+        """
         table_locations = self._get_table_locations()
         index = self._get_first_table_with_target(table_locations)
         usecols = range(
             table_locations[index]["start"],
             table_locations[index]["end"]
         )
-        return pd.read_csv(self.csvfile, skiprows=9, usecols=usecols)
+        row_number = self._get_row_number_of_headers(
+            table_locations[index]["start"]
+        )
+        return pd.read_csv(self.csvfile, skiprows=row_number, usecols=usecols)
 
     def _get_table_locations(self):
         '''these csv files are non standard and typically
@@ -79,13 +99,24 @@ class EanetWetDataExtractor:
                 table_locations[index]["end"] = len(df.columns)
         return table_locations
 
-    def _get_columns_in_table(self, start_column, end_column):
-        """returns a list with data column headers"""
-        # data column headers are assumed to be found on the 10th
-        # row of the csv file
+    def _get_row_number_of_headers(self, start_column):
+        """return the row number where headers are found"""
         df = pd.read_csv(
             self.csvfile,
-            skiprows=9,
+            usecols=[start_column]
+        )
+        index = 0
+        for index, row in enumerate(df[df.columns[0]]):
+            if pd.notnull(row) and row.startswith("Sample No."):
+                return index + 1
+        return index
+
+    def _get_columns_in_table(self, start_column, end_column):
+        """returns a list with data column headers"""
+        row_number = self._get_row_number_of_headers(start_column)
+        df = pd.read_csv(
+            self.csvfile,
+            skiprows=row_number,
             usecols=range(start_column, end_column)
         )
         columns = [
@@ -114,6 +145,7 @@ class EanetWetDataExtractor:
         return -1
 
     def get_records(self):
+        """returns a list of records of the desired parameter"""
         records = []
         for index in range(len(self.df[self.parameter])):
             if not self.df["Sample No."][index] > 0:
@@ -132,12 +164,14 @@ class EanetWetDataExtractor:
         return records
 
     def get_value(self, index):
+        """returns the value of the desired parameter of a record"""
         value = float(self.df[self.parameter][index])
         if np.isnan(value):
             value = -999
         return value
 
     def get_date(self, row_index, start_or_end):
+        """returs the the date of a record"""
         offset = 0 if start_or_end == "start" else 2
         columns = self.df.columns.tolist()
         column_index = columns.index("Sampling period")
@@ -150,11 +184,18 @@ class EanetWetDataExtractor:
         )
 
     def get_unit(self):
+        """returns the unit of the measurements"""
         unit = self.df[self.parameter][1]
         return unit if pd.notnull(unit) else "?"
 
 
 class EanetDryDataExtractor:
+    """A class derived for extracting data
+       form EANET dry deposition csv files.
+
+       These csv files comes in a close to standard
+       format, except that they have two header lines
+    """
 
     def __init__(self, csvfile, parameter):
         self.csvfile = csvfile
@@ -170,16 +211,24 @@ class EanetDryDataExtractor:
         )
 
     def get_records(self):
+        """returns a list of records of the desired parameter"""
         records = []
         if self.parameter not in self.df.columns:
             print("target not in products, available products:")
             print(self.get_products())
             return records
         for index in range(len(self.df[self.parameter])):
+            try:
+                start_date = self.get_start_date(index)
+                end_date = self.get_end_date(index)
+            except ValueError:
+                print(index)
+                print('unable to parse row in records')
+                continue
             records.append(
                 Record(
-                    start_datetime=self.get_start_date(index),
-                    end_datetime=self.get_end_date(index),
+                    start_datetime=start_date,
+                    end_datetime=end_date,
                     value=self.get_value(index),
                     uncertainty=-999,
                     status=-999,
@@ -190,28 +239,43 @@ class EanetDryDataExtractor:
         return records
 
     def get_start_date(self, index):
+        """returns the start datetime of a record"""
         # format varies between files, so we try to ways
         try:
+            day = int(
+                self.df["Day"][index] if pd.notnull(self.df["Day"][index])
+                else 1
+            )
+            hour = int(
+                self.df["Hour"][index] if pd.notnull(self.df["Hour"][index])
+                else 0
+            )
             start_date = datetime(
                 self.df["Year"][index],
                 self.df["Month"][index],
-                self.df["Day"][index],
-                self.df["Hour"][index]
-            )
+                day
+            ) + timedelta(hours=hour)
+            # timedelta is needed since hour=24 in some files
         except KeyError:
+            time = (
+                self.df["Time"][index] if pd.notnull(self.df["Time"][index])
+                else "00:00"
+            )
             start_date = datetime.strptime(
-                '{}T{}'.format(self.df["Date"][index], self.df["Time"][index]),
+                '{}T{}'.format(self.df["Date"][index], time),
                 '%Y/%m/%dT%H:%M'
             )
         return start_date
 
     def get_end_date(self, index):
+        """returns the end datetime of a record"""
         try:
+            time = (
+                self.df["Time.1"][index] if pd.notnull(self.df["Time.1"][index])
+                else "00:00"
+            )
             end_date = datetime.strptime(
-                '{}T{}'.format(
-                    self.df["Date.1"][index],
-                    self.df["Time.1"][index]
-                ),
+                '{}T{}'.format(self.df["Date.1"][index], time),
                 '%Y/%m/%dT%H:%M'
             )
         except KeyError:
@@ -219,18 +283,23 @@ class EanetDryDataExtractor:
         return end_date
 
     def get_products(self):
+        '''reurns a list of parameters found within the csvfile'''
         no_product = [
             "Country", "Site", "Year", "Month", "Day", "Hour", "Memo",
             "Time", "Date", "Time.1", "Date.1"]
         return [
-            product for product in self.df.columns if product not in no_product]
+            product for product in self.df.columns
+            if product not in no_product and
+            not product.startswith("Unnamed")]
 
     def get_unit(self):
+        """returns the unit of the measurements"""
         df = pd.read_csv(self.csvfile, nrows=2, header=None)
         unit = df[self.df.columns.tolist().index(self.parameter)][0]
         return unit if pd.notnull(unit) else "?"
 
     def get_value(self, index):
+        """returns the value of the desired parameter of a record"""
         value = float(self.df[self.parameter][index])
         if np.isnan(value):
             value = -999
@@ -238,6 +307,7 @@ class EanetDryDataExtractor:
 
 
 def is_number(s):
+    """returns true if input can be converted to a float"""
     try:
         float(s)
         return True
@@ -245,7 +315,9 @@ def is_number(s):
         return False
 
 
-def get_payload(dataset, station_code, year):
+def get_payload(dataset, site_code, year):
+    """returns payload needed for a post request
+       to get EANET csv files"""
 
     if dataset == "dry_deposition_auto":
         item_code = 2
@@ -273,18 +345,19 @@ def get_payload(dataset, station_code, year):
     # Viet Nam                          VN
     #
     # two first letter in station code is country code
-    country_code = station[0:2]
+    country_code = site_code[0:2]
     return {
         "mode": "download",
         "siteType": "1",
         "countryCd": country_code,
         "year": year,
-        "siteCd": station_code,
+        "siteCd": site_code,
         "itemCd": item_code,
     }
 
 
 def get_login_payload():
+    """returns login payload"""
     eanet_configfile = os.path.join(os.environ['HOME'], '.eanetconfig')
     if not os.path.isfile(eanet_configfile):
         print(
@@ -339,39 +412,55 @@ def download_csvfile(datadir, dataset, station, year):
 
         if "doctype html" in r.text:
             print('requested data not found on {}'.format(data_url))
-            exit(1)
+            return None
 
     # save csvdata locally
     with open(csvfile, 'wb') as f:
         for chunk in r.iter_content():
+            chunk = chunk.replace(b'\x83', b'')
+            chunk = chunk.replace(b'\xCA', b'u')
             f.write(chunk)
 
     return csvfile
 
 
-def get_data():
+def get_data(dataset, site, parameter, year, datadir):
+    """returns an instance of ObsData.
 
-    csvfile = download_csvfile(datadir, dataset, station, year)
+       These function downloads (if needed) EANET
+       csv file and extract data from the file
+    """
+    csvfile = download_csvfile(datadir, dataset, site, year)
 
-    if dataset == "wet_deposition":
-        data_extractor = EanetWetDataExtractor(csvfile, parameter)
-    else:
-        data_extractor = EanetDryDataExtractor(csvfile, parameter)
+    records = []
+    unit = "?"
 
-    if data_extractor.parameter_in_dataset():
-        records = data_extractor.get_records()
-    else:
-        print(
-            '{} not found in data.\n'.format(parameter) +
-            'available products:'
-        )
-        print(data_extractor.get_products())
-        exit(1)
-        records = []
+    if csvfile is not None:
+        if dataset == "wet_deposition":
+            data_extractor = EanetWetDataExtractor(csvfile, parameter)
+        else:
+            data_extractor = EanetDryDataExtractor(csvfile, parameter)
+
+        if data_extractor.parameter_in_dataset():
+            print("available products:")
+            print(data_extractor.get_products())
+            records = data_extractor.get_records()
+            try:
+                unit = data_extractor.get_unit()
+            except KeyError:
+                unit = "?"
+        else:
+            print(
+                '{} not found in data.\n'.format(parameter) +
+                'available products:'
+            )
+            print(data_extractor.get_products())
+            records = []
 
     eanet_site = eanet_sites[
-        [s.code for s in eanet_sites].index(station)
+        [s.code for s in eanet_sites].index(site)
     ]
+
     return ObsData(
         data_version="?",
         station_name=eanet_site.site.replace('ñ', 'n'),
@@ -391,7 +480,7 @@ def get_data():
         parameter=parameter,
         parameter_code=parameter,
         time_interval="hourly",
-        measurement_unit=data_extractor.get_unit(),
+        measurement_unit=unit,
         measurement_method="?",
         sampling_type="continuous",
         time_zone="UTC",
@@ -399,19 +488,3 @@ def get_data():
         status_flags="?",
         records=records,
     )
-
-
-if __name__ == "__main__":
-
-    datadir = '/home/bengt/Downloads/'
-    parameter = 'SO2'
-
-    station = "CNA007"
-    year = 2005
-    # parameter = "SO2"
-    dataset = "wet_deposition"
-    # dataset = "dry_deposition_auto"
-    # dataset = "dry_deposition_filter_pack"
-    # dataset = "dry_deposition_passive_sampler"
-    obs_data = get_data()
-    save_data_txt(datadir, obs_data)
