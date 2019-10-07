@@ -214,5 +214,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-    # ./get_eanet_data.py 1 all SO2 2001-01-01 2017-12-31 -e dat -q /tmp  -x /tmp # noqa
-    # ./get_eanet_data.py 2 CNA007 SO42- 2005-01-01 2006-12-31 -e dat -q /tmp  -x /tmp # noqa

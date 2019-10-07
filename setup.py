@@ -15,7 +15,7 @@ setup(
         "get_fed_data = scripts.get_fed_data:cli",
         "get_eanet_data = scripts.get_eanet_data:cli",
     ]},
-    packages=['obsdata', 'scripts', 'data'],
+    packages=['obsdata', 'scripts', 'data', 'tests'],
     package_data={
       '': ['*.csv', '*.txt'],
     },

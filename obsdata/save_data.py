@@ -162,19 +162,19 @@ def save_data_txt(out_dir, data):
                 data.records[-1].start_datetime +
                 relativedelta(months=+1) +
                 relativedelta(days=-1)
-            )
+            ).strftime("%Y-%m-%d")
         elif data.time_interval == "annual":
             end_date = (
                 data.records[-1].start_datetime +
                 relativedelta(months=+12) +
                 relativedelta(days=-1)
-            )
+            ).strftime("%Y-%m-%d")
         else:
-            end_date = data.records[-1].start_datetime
+            end_date = data.records[-1].start_datetime.strftime("%Y-%m-%d")
 
     covering_period = "{0} {1}".format(
         data.records[0].start_datetime.strftime("%Y-%m-%d"),
-        end_date.strftime("%Y-%m-%d")
+        end_date
     )
 
     file_header_rows = [

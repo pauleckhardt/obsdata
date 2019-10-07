@@ -6,3 +6,8 @@ include *.ini
 include *.in
 recursive-include data *.csv
 recursive-include data *.txt
+recursive-include tests *.csv
+recursive-include tests *.txt
+recursive-include tests *.dat
+recursive-include tests *.xls
+
