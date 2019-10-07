@@ -86,7 +86,7 @@ The obsdata package can be installed by:
 .. code-block:: bash
 
     workon optimal-interpolation
-    pip install -r requirements/requirements.txt
+    pip install -r requirements.txt
     python3 setup.py install
 
 	
@@ -322,7 +322,7 @@ EANET, and the usage is described below:
                            end-date
 
   positional arguments:
-    dataset_id            dataset_id: 1 for 'Dry Monthly'
+    dataset_id            dataset_id: e.g. 1 for 'Dry Monthly'
     site-code             eanet site code, e.g JPA001 for 'Rishiri', use 'all'
                           for getting data from all available sites
     parameter-code        parameter code e.g. SO2, use 'all' for getting data
@@ -348,14 +348,87 @@ and the script can e.g. be invoked by:
 
    get_eanet_data 1 JPA001 SO2 2001-01-01 2017-12-31 -e dat -q /tmp -x /tmp
 
-So far only the 'Dry Monthly' dataset is handled, but this will be extended.
-The script downloads an Excel file for each year (this file is common for
-all parameters within the dataset), and the -x parameter determines
+
+The package handles five different type of datasets from EANET, and these
+are:
+
+  wet_monthly (dataset_id=1):
+
+  wet_deposition (dataset_id=2):
+
+  dry_deposition_auto (dataset_id=3):
+
+  dry_deposition_filter_pack (dataset_id=4):
+
+  dry_deposition_passive_sampler (dataset_id=5):
+
+The wet_monthly_ dataset is publically available, while
+the other four datasets are not. You need to create a file
+named ".eanetconfig" in your home directory in order to use
+the script "get_eanet_data" for dataset 2 to 5, and the file
+must contain the following data:
+
+.. code-block:: bash
+
+  {
+      "user": "your eanet user here",
+      "password": "your eanet password here"
+  }
+
+You can regiter here_ in order to get an account.
+
+.. _wet_monthly: https://monitoring.eanet.asia/document/public/index
+.. _here: https://monitoring.eanet.asia/document/menu/index
+
+
+The five datasets are described in obsdata.eanet_config module.
+
+.. code-block:: python
+
+    >>> from obsdata import eanet_config
+    >>>
+    >>>
+    # print available datasets
+    >>>for dataset in eanet_config.datasets:
+    ...   print(dataset)
+    ...
+    {'name': 'wet_monthly', 'id': 1, 'parameters': ['Ca2+', 'Cl-', 'HCl', 'HNO3', ...]}
+    {'name': 'wet_deposition', 'id': 2, 'parameters': ['Anion', 'Cation', 'Ca2+', ...]}
+    {'name': 'dry_deposition_auto', 'id': 3, 'parameters': ['NO', 'NO2', 'NOx*', ...]}
+    {'name': 'dry_deposition_filter_pack', 'id': 4, 'parameters': ['Ca2+', 'Cl-', ...]}
+    {'name': 'dry_deposition_passive_sampler', 'id': 5, 'parameters': ['SO2', 'NO2']}
+
+
+The eanet sites are also described in obsdata.eanet_config module.
+
+.. code-block:: python
+
+    >>> from obsdata import eanet_config
+    >>>
+    >>>
+    >>>for site in eanet_config.eanet_sites:
+    ...     print(site)
+    ... 
+    EanetSite(country='Cambodia', site='Phnom Penh', code='KHA001', latitude=11.555, ...)
+    EanetSite(country='China', site='Guanyinqiao', code='CNA002', latitude=29.58333, ...)
+    EanetSite(country='China', site='Haifu', code='CNA003', latitude=29.625, ...)
+    ...
+    ...
+    ...
+    EanetSite(country='Vietnam', site='Yen Bai', code='VNA007', latitude=21.70778, ...)
+
+
+All parameters of a dataset are not necessarily available for a given site
+and year.  
+
+
+The script "get_eanet_data" downloads Excel (or CSV) files
+and the -x parameter determines
 where these files are stored.
 If the file already exists in the data directory (from a previous
 run of the program) the file is not downloaded
 again, and hence the exceution of the script is much faster.
-Data found within the Excel files are then merged into a data
+Data found within the Excel or CSV files are then merged into a data
 format described in the following section.
 
 The data directory of the package contains a file
