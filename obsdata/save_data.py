@@ -1,4 +1,5 @@
 import os
+from dateutil.relativedelta import relativedelta
 from netCDF4 import Dataset, date2num
 from collections import namedtuple
 
@@ -151,9 +152,29 @@ def save_data_txt(out_dir, data):
 
     file_name = get_output_filename(data, "dat")
 
+    try:
+        end_date = data.records[-1].end_datetime.strftime("%Y-%m-%d")
+
+    except AttributeError:
+
+        if data.time_interval == "monthly":
+            end_date = (
+                data.records[-1].start_datetime +
+                relativedelta(months=+1) +
+                relativedelta(days=-1)
+            )
+        elif data.time_interval == "annual":
+            end_date = (
+                data.records[-1].start_datetime +
+                relativedelta(months=+12) +
+                relativedelta(days=-1)
+            )
+        else:
+            end_date = data.records[-1].start_datetime
+
     covering_period = "{0} {1}".format(
         data.records[0].start_datetime.strftime("%Y-%m-%d"),
-        data.records[-1].start_datetime.strftime("%Y-%m-%d")
+        end_date.strftime("%Y-%m-%d")
     )
 
     file_header_rows = [
