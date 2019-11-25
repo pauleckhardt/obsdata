@@ -1,0 +1,54 @@
+Parameter name,Unit,Theme,ID
+Precipitation Amount,mm,Precipitation,1
+Conductivity,µS/cm2,Precipitation,2
+pH,no unit,Precipitation,3
+H+,µeq/l,Precipitation,4
+Na+,µeq/l,Precipitation,5
+NH4+,µeq/l,Precipitation,6
+K+,µeq/l,Precipitation,7
+Ca2+,µeq/l,Precipitation,8
+Mg2+,µeq/l,Precipitation,9
+NO3-,µeq/l,Precipitation,10
+Cl-,µeq/l,Precipitation,11
+SO42-,µeq/l,Precipitation,12
+HCOO,µeq/l,Precipitation,13
+CH3COO,µeq/l,Precipitation,14
+C2H5COO,µeq/l,Precipitation,15
+C2O4,µeq/l,Precipitation,16
+Total carbonates,µeq/l,Precipitation,17
+HCOO*,µeq/l,Precipitation,18
+CH3COO*,µeq/l,Precipitation,19
+C2H5COO*,µeq/l,Precipitation,20
+C2O4*,µeq/l,Precipitation,21
+HCOO-,µeq/l,Precipitation,22
+CH3COO-,µeq/l,Precipitation,23
+C2H5COO-,µeq/l,Precipitation,24
+C2O4-,µeq/l,Precipitation,25
+Anion sum,µeq/l,Precipitation,26
+Cation sum,µeq/l,Precipitation,27
+Ion Difference,%,Precipitation,28
+NH3,ppb,Gas,29
+HNO3,ppb,Gas,30
+O3,ppb,Gas,31
+SO2,ppb,Gas,32
+NO2,ppb,Gas,33
+V,m3,Aerosols,34
+Cl-,µg/m3,Aerosols,35
+NO3-,µg/m3,Aerosols,36
+SO42-,µg/m3,Aerosols,37
+Na+,µg/m3,Aerosols,38
+NH4+,µg/m3,Aerosols,39
+K+,µg/m3,Aerosols,40
+Mg2+,µg/m3,Aerosols,41
+Ca2+,µg/m3,Aerosols,42
+HCOO,µg/m3,Aerosols,43
+CH3COO,µg/m3,Aerosols,44
+C2H5COO,µg/m3,Aerosols,45
+C2O4,µg/m3,Aerosols,46
+Total carbonates,µg/m3,Aerosols,47
+PM10,µg/m3,Aerosols,48
+Wind speed,m/s,Meteo,49
+Wind direction,°,Meteo,50
+Temperature,°C,Meteo,51
+Relative humidity,%,Meteo,52
+Rain,mm,Meteo,53
