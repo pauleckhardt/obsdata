@@ -14,6 +14,7 @@ setup(
     entry_points={"console_scripts": [
         "get_fed_data = scripts.get_fed_data:cli",
         "get_eanet_data = scripts.get_eanet_data:cli",
+        "get_indaaf_data = scripts.get_indaaf_data:cli",
     ]},
     packages=['obsdata', 'scripts', 'data', 'tests'],
     package_data={

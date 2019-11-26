@@ -6,6 +6,7 @@ import pandas as pd
 import json
 from datetime import datetime
 import numpy as np
+import certifi
 from obsdata.indaaf_config import (
     datasets,
     get_dataset_id,
@@ -13,6 +14,10 @@ from obsdata.indaaf_config import (
     validate_site_id
 )
 from obsdata.save_data import ObsData, Record, save_data_txt
+
+
+url_base = "https://indaaf.sedoo.fr"
+login_url = url_base + "/j_spring_security_check"
 
 
 def get_login_payload():
@@ -39,8 +44,10 @@ def get_csv_file(
 
     with requests.Session() as session:
         p = session.post(
-            login_url, data=login_payload, verify=False)
-
+            login_url,
+            data=login_payload,
+            verify=False
+        )
         url_download = url_base + "/download/{}/{}/{}".format(
             dataset_id, site_id, parameter_id
         )
@@ -205,7 +212,10 @@ def get_records(
         parameter=parameter,
         parameter_code=parameter,
         time_interval=dataset_info["time_interval"],
-        measurement_unit=parameter_info["Unit"].values[0].replace('°', 'degrees '),
+        measurement_unit=parameter_info[
+            "Unit"].values[0].replace(
+                '°', 'degrees ').replace(
+                    'µ', 'u'),
         measurement_method="?",
         sampling_type="continuous",
         time_zone="UTC",
@@ -224,57 +234,3 @@ def date_filter_records(date_start, date_end, records):
         (start_datetimes < date_end)
     )[0]
     return [records.records[index] for index in indexes]
-
-
-if __name__ == "__main__":
-
-    url_base = "https://indaaf.sedoo.fr"
-    login_url = url_base + "/j_spring_security_check"
-    datadir = "/tmp"
-
-    # create_indaaf_sites_file()
-    # create_indaaf_parameters_file()
-    parameter = "Temperature"
-    dataset = "Meteo"
-    for site_id in range(1, 17):
-
-        site_info = validate_site_id(site_id)
-        dataset_id = get_dataset_id(dataset, site_id)
-        if dataset_id == 0:
-            continue
-        parameter_info = get_parameter_id(parameter, dataset)
-
-        out_filename = os.path.join(
-            datadir,
-            "{}-{}-{}.csv".format(
-                dataset,
-                int(site_info.ID),
-                parameter.replace(' ', '')
-            )
-        )
-        dataset_info = datasets[
-            [row["name"] for row in datasets].index(dataset)
-        ]
-
-        if get_csv_file(
-            dataset_id, int(site_info.ID), int(parameter_info.ID), out_filename):
-
-            records = get_records(
-                out_filename,
-                parameter,
-                site_info,
-                parameter_info,
-                dataset_info
-            )
-            if dataset_info["time_interval"] == "hourly":
-                year_start = records.records[0].start_datetime.year
-                year_end = records.records[-1].start_datetime.year + 1
-                for year in range(year_start, year_end):
-                    date_start = datetime(year, 1, 1)
-                    date_end = datetime(year + 1, 1, 1)
-                    filtered_records = date_filter_records(
-                        date_start, date_end, records)
-                    current_records = records._replace(records=filtered_records)
-                    save_data_txt(datadir, current_records)
-            else:
-                save_data_txt(datadir, records)
