@@ -6,7 +6,7 @@ import pandas as pd
 import json
 from datetime import datetime
 import numpy as np
-import certifi
+from urllib3.exceptions import InsecureRequestWarning
 from obsdata.indaaf_config import (
     datasets,
     get_dataset_id,
@@ -42,12 +42,22 @@ def get_csv_file(
 
     login_payload = get_login_payload()
 
+    requests.packages.urllib3.disable_warnings(
+        category=InsecureRequestWarning)
+
     with requests.Session() as session:
         p = session.post(
             login_url,
             data=login_payload,
             verify=False
         )
+        if "Create an account" in p.text:
+            print(
+                'not able to login on {},\n'.format(login_url) +
+                'is your credentials valid?'
+            )
+            exit(0)
+
         url_download = url_base + "/download/{}/{}/{}".format(
             dataset_id, site_id, parameter_id
         )
@@ -76,6 +86,8 @@ def get_site_info(site_id):
     login_payload = get_login_payload()
 
     url_site = url_base + "/catalog/site/{}".format(site_id)
+    requests.packages.urllib3.disable_warnings(
+        category=InsecureRequestWarning)
 
     with requests.Session() as session:
         p = session.post(
