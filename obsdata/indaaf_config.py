@@ -88,4 +88,3 @@ def validate_site_id(site_id):
         print(df)
         exit(0)
     return row
-

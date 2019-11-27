@@ -5,12 +5,15 @@ Observational-Data
 This is observational-data (obsdata), a Python package developed
 in order to retrieve and store data from the
 Federal Land Manager Environmental Database_
-and The Acid Deposition Monitoring Network in East Asia (EANET_)
+, The Acid Deposition Monitoring Network in East Asia (EANET_)
+, and the International Network to study Deposition and Atmospheric
+chemistry in AFrica (INDAAF_)
 into a specific data format described in this document.
 
 .. _Database: http://views.cira.colostate.edu/fed/QueryWizard/
 .. _EANET: https://monitoring.eanet.asia/
-	
+.. _INDAAF: https://indaaf.obs-mip.fr/
+
 Prerequisites
 --------------------
 
@@ -375,7 +378,7 @@ must contain the following data:
       "password": "your eanet password here"
   }
 
-You can regiter here_ in order to get an account.
+You can register here_ in order to get an account.
 
 .. _wet_monthly: https://monitoring.eanet.asia/document/public/index
 .. _here: https://monitoring.eanet.asia/document/menu/index
@@ -436,6 +439,161 @@ named 'eanet_sites.txt' that contains data about the location
 of the sites. This information is not provided in the
 Excel sheets, and information from the eanet_sites.txt 
 are used to produce the output data.
+
+
+International Network to study Deposition and Atmospheric chemistry in AFrica (INDAAF)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The package contains an executable script for getting data from
+INDAAF, and the usage is described below:
+
+.. code-block:: bash
+
+  usage: get_indaaf_data [-h] [-e DATA_FORMAT] [-q OUT_DIR] [-x CSV_DIR]
+                          dataset_id site-code parameter-code
+
+  positional arguments:
+    dataset_id            dataset_id. e.g 'Precipitation'
+    site-code             eanet site code, e.g. 1 for 'Agoufou'
+    parameter-code        parameter code e.g. "H+"
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -e DATA_FORMAT, --data-format DATA_FORMAT
+                          data format for saving file (nc or dat), default is
+                          dat
+    -q OUT_DIR, --datadir-for-save OUT_DIR
+                          data directory for saving output, default is /tmp
+    -x CSV_DIR, --datadir-for-csv CSV_DIR
+                          data directory for saving indaaf csv files, default is
+                          /tmp
+
+
+and the script can e.g. be invoked by:
+
+.. code-block:: bash
+
+   get_indaaf_data Gas 1 O3 -e dat -q /tmp -x /tmp
+
+The script will produce a file having a format described in the following
+section, but it will also download and store a CSV file from INDAAF 
+(in this case /tmp/Gas-1-O3.csv). 
+
+The package handles four different type of datasets from INDAAF, and these
+are:
+  
+  * Precipitation (daily data)
+  * Gas (monthly data)
+  * Aerosols (daily data)
+  * Meteo (hourly data)
+
+53 parameters are available, and the package file  data/indaaf_parameters.csv
+describes these parameters and which dataset (Theme) the parameter belongs to,
+and these are also descibed
+
+.. code-block:: python
+
+        Parameter name     Unit          Theme  ID
+  Precipitation Amount       mm  Precipitation   1
+          Conductivity   µS/cm2  Precipitation   2
+                    pH  no unit  Precipitation   3
+                    H+    µeq/l  Precipitation   4
+                   Na+    µeq/l  Precipitation   5
+                  NH4+    µeq/l  Precipitation   6
+                    K+    µeq/l  Precipitation   7
+                  Ca2+    µeq/l  Precipitation   8
+                  Mg2+    µeq/l  Precipitation   9
+                  NO3-    µeq/l  Precipitation  10
+                   Cl-    µeq/l  Precipitation  11
+                 SO42-    µeq/l  Precipitation  12
+                  HCOO    µeq/l  Precipitation  13
+                CH3COO    µeq/l  Precipitation  14
+               C2H5COO    µeq/l  Precipitation  15
+                  C2O4    µeq/l  Precipitation  16
+      Total carbonates    µeq/l  Precipitation  17
+                 HCOO*    µeq/l  Precipitation  18
+               CH3COO*    µeq/l  Precipitation  19
+              C2H5COO*    µeq/l  Precipitation  20
+                 C2O4*    µeq/l  Precipitation  21
+                 HCOO-    µeq/l  Precipitation  22
+               CH3COO-    µeq/l  Precipitation  23
+              C2H5COO-    µeq/l  Precipitation  24
+                 C2O4-    µeq/l  Precipitation  25
+             Anion sum    µeq/l  Precipitation  26
+            Cation sum    µeq/l  Precipitation  27
+        Ion Difference        %  Precipitation  28
+                   NH3      ppb            Gas  29
+                  HNO3      ppb            Gas  30
+                    O3      ppb            Gas  31
+                   SO2      ppb            Gas  32
+                   NO2      ppb            Gas  33
+                     V       m3       Aerosols  34
+                   Cl-    µg/m3       Aerosols  35
+                  NO3-    µg/m3       Aerosols  36
+                 SO42-    µg/m3       Aerosols  37
+                   Na+    µg/m3       Aerosols  38
+                  NH4+    µg/m3       Aerosols  39
+                    K+    µg/m3       Aerosols  40
+                  Mg2+    µg/m3       Aerosols  41
+                  Ca2+    µg/m3       Aerosols  42
+                  HCOO    µg/m3       Aerosols  43
+                CH3COO    µg/m3       Aerosols  44
+               C2H5COO    µg/m3       Aerosols  45
+                  C2O4    µg/m3       Aerosols  46
+      Total carbonates    µg/m3       Aerosols  47
+                  PM10    µg/m3       Aerosols  48
+            Wind speed      m/s          Meteo  49
+        Wind direction        °          Meteo  50
+           Temperature       °C          Meteo  51
+     Relative humidity        %          Meteo  52
+                  Rain       mm          Meteo  53
+ 
+
+Data from sixteen sites are available, and these are:
+
+.. code-block:: python
+
+           Site name       Location            Type  Longitude  Latitude  Altitude  ID
+             Agoufou           Mali     Dry savanna     0.6667   15.1500     300.0   1
+          Katibougou           Mali     Dry savanna    -7.5333   12.9333     290.0   2
+    Banizoumbou (LA)          Niger     Dry savanna     2.4667   13.5167     220.0   3
+             Djougou          Benin     Wet Savanna     1.9167    9.6667     430.0   4
+               Lamto  Cote d'Ivoire     Wet Savanna    -5.0333    6.2167     105.0   5
+             Zoetele       Cameroon          Forest    11.9667    3.1667     720.0   6
+             Bomassa          Congo          Forest    16.3333    2.2000     350.0   7
+     Louis Trichardt   South Africa     Dry savanna    30.0000  -23.0000    1465.0   8
+          Amersfoort   South Africa     Dry savanna    29.8667  -27.0667    1646.0   9
+          Cape Point   South Africa  Coastal marine    18.483   -34.3500     230.0  10
+              M'Bour        Senegal             NaN   -16.9600   14.3900       NaN  11
+             Cinzana           Mali             NaN    -5.9333   13.2833     285.0  12
+              Bambey        Senegal             NaN   -16.4700   14.7000      31.0  13
+  Banizoumbou (Lisa)          Niger             NaN     2.6600   13.5400       NaN  14
+             Skukuza   South Africa     Dry savanna    31.583   -24.9833     267.0  15
+            Medenine        Tunisia     Dry savanna    10.6333   33.5000      90.0  16
+
+
+Note: All parameters are not available from all sites. The package does
+not contain this information. Thus, if you use the script "get_indaaf_data"
+to get data from a parameter that is not available from a site, the script
+will try to retrieve this data, but no data will of course be retrieved
+and you will get a warning message that data are not available.
+
+You need to create a file
+named ".indaafconfig" in your home directory in order to use
+the script "get_infaaf_data", and the file
+must contain the following data:
+
+.. code-block:: bash
+
+  {
+      "user": "your indaaf user here",
+      "password": "your indaaf password here"
+  }
+
+You can register on the INDAAF site_ in order to get an account.
+
+.. _site: https://indaaf.obs-mip.fr/database/
+
 
 
 Data format description

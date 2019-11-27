@@ -1,26 +1,21 @@
-#pip install -U requests[security]
 import os
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import json
-from datetime import datetime
 import numpy as np
+import pandas as pd
+from datetime import datetime
 from urllib3.exceptions import InsecureRequestWarning
-from obsdata.indaaf_config import (
-    datasets,
-    get_dataset_id,
-    get_parameter_id,
-    validate_site_id
-)
-from obsdata.save_data import ObsData, Record, save_data_txt
+from obsdata.save_data import ObsData, Record
 
 
 url_base = "https://indaaf.sedoo.fr"
 login_url = url_base + "/j_spring_security_check"
+datadir = "/tmp"
 
 
 def get_login_payload():
+    """returns login payload"""
     indaaf_configfile = os.path.join(os.environ['HOME'], '.indaafconfig')
     if not os.path.isfile(indaaf_configfile):
         print(
@@ -39,7 +34,8 @@ def get_login_payload():
 
 def get_csv_file(
         dataset_id, site_id, parameter_id, out_filename):
-
+    """retrieves a csv file form indaaf and returns True
+       or False on success or failure"""
     login_payload = get_login_payload()
 
     requests.packages.urllib3.disable_warnings(
@@ -82,7 +78,7 @@ def get_csv_file(
 
 
 def get_site_info(site_id):
-
+    """scrapes an indaaf web-page on site info"""
     login_payload = get_login_payload()
 
     url_site = url_base + "/catalog/site/{}".format(site_id)
@@ -90,7 +86,7 @@ def get_site_info(site_id):
         category=InsecureRequestWarning)
 
     with requests.Session() as session:
-        p = session.post(
+        session.post(
             login_url, data=login_payload, verify=False)
         r = session.get(url_site)
 
@@ -118,7 +114,9 @@ def create_indaaf_sites_file():
     """creates a csv file that describes indaaf sites
     """
     data = {}
-    for index, site_id in enumerate(range(1, 17)):
+    nr_indaaf_sites = 16
+    for index, site_id in enumerate(
+            range(1, nr_indaaf_sites + 1)):
         headers, values = get_site_info(site_id)
         if index == 0:
             for header in headers:
@@ -128,7 +126,7 @@ def create_indaaf_sites_file():
         for header, value in zip(headers, values):
             data[header].append(value)
     df_out = pd.DataFrame(data, columns=data.keys())
-    export_csv = df_out.to_csv(
+    df_out.to_csv(
         os.path.join(datadir, 'indaaf_sites.csv'),
         index=None,
         header=True
@@ -136,14 +134,14 @@ def create_indaaf_sites_file():
 
 
 def get_parameter_info(parameter_id):
-
+    """scrapes an indaaf web-page on parameter info"""
     login_payload = get_login_payload()
 
     url_parameter = url_base + "/catalog/param/{}".format(
         parameter_id)
 
     with requests.Session() as session:
-        p = session.post(
+        session.post(
             login_url, data=login_payload, verify=False)
         r = session.get(url_parameter)
         soup = BeautifulSoup(r.content, 'html.parser')
@@ -164,7 +162,9 @@ def create_indaaf_parameters_file():
     """creates a csv file that describes indaaf parameters
     """
     data = {}
-    for index, parameter_id in enumerate(range(1, 54)):
+    nr_indaaf_parameters = 53
+    for index, parameter_id in enumerate(
+            range(1, nr_indaaf_parameters + 1)):
         headers, values = get_parameter_info(parameter_id)
         if index == 0:
             for header in headers:
@@ -175,7 +175,7 @@ def create_indaaf_parameters_file():
             data[header].append(value)
     data.pop('Code')  # not all parameters have this
     df_out = pd.DataFrame(data, columns=data.keys())
-    export_csv = df_out.to_csv(
+    df_out.to_csv(
         os.path.join(datadir, 'indaaf_parameters.csv'),
         index=None,
         header=True
@@ -184,6 +184,8 @@ def create_indaaf_parameters_file():
 
 def get_records(
         csv_file, parameter, site_info, parameter_info, dataset_info):
+    """parse indaaf csv file and returns an instance of ObsData
+    """
     df = pd.read_csv(csv_file, skiprows=19, delimiter=';')
     records = []
     target_parameter = df.columns[1]
@@ -238,11 +240,12 @@ def get_records(
 
 
 def date_filter_records(date_start, date_end, records):
+    """filter records on time"""
     start_datetimes = np.array(
-        [record.start_datetime for record in records.records]
+        [record.start_datetime for record in records]
     )
     indexes = np.nonzero(
         (start_datetimes >= date_start) &
         (start_datetimes < date_end)
     )[0]
-    return [records.records[index] for index in indexes]
+    return [records[index] for index in indexes]

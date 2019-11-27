@@ -2,8 +2,6 @@
 import os
 import argparse
 from datetime import datetime
-import pandas as pd
-import numpy as np
 from obsdata import (
     indaaf_config,
     indaaf_data,
@@ -21,14 +19,17 @@ def get_indaaf_data(
     out_filename = os.path.join(
         csv_dir,
         "{}-{}-{}.csv".format(
-            dataset_id, int(site_info.ID), parameter
+            dataset_info["name"], int(site_info.ID), parameter
         )
     )
 
     if indaaf_data.get_csv_file(
-        dataset_id, int(site_info.ID), int(parameter_info.ID), out_filename):
+            dataset_id,
+            int(site_info.ID),
+            int(parameter_info.ID),
+            out_filename):
 
-        records = indaaf_data.get_records(
+        data = indaaf_data.get_records(
             out_filename,
             parameter,
             site_info,
@@ -36,17 +37,23 @@ def get_indaaf_data(
             dataset_info
         )
         if dataset_info["time_interval"] == "hourly":
-            year_start = records.records[0].start_datetime.year
-            year_end = records.records[-1].start_datetime.year + 1
+            year_start = data.records[0].start_datetime.year
+            year_end = data.records[-1].start_datetime.year + 1
             for year in range(year_start, year_end):
                 date_start = datetime(year, 1, 1)
                 date_end = datetime(year + 1, 1, 1)
                 filtered_records = indaaf_data.date_filter_records(
-                    date_start, date_end, records)
-                current_records = records._replace(records=filtered_records)
-                save_data.save_data_txt(out_dir, current_records)
+                    date_start, date_end, data.records)
+                current_data = data._replace(records=filtered_records)
+                if data_format == "nc":
+                    save_data.save_data_netcdf(out_dir, current_data)
+                elif data_format == "dat":
+                    save_data.save_data_txt(out_dir, current_data)
         else:
-            save_data.save_data_txt(out_dir, records)
+            if data_format == "nc":
+                save_data.save_data_netcdf(out_dir, data)
+            elif data_format == "dat":
+                save_data.save_data_txt(out_dir, data)
 
 
 def cli():
@@ -110,8 +117,8 @@ def cli():
     if dataset_id == 0:
         print("Dataset not available.")
 
-    dataset_info = indaaf_data.datasets[
-        [row["name"] for row in indaaf_data.datasets].index(
+    dataset_info = indaaf_config.datasets[
+        [row["name"] for row in indaaf_config.datasets].index(
             args.dataset_id)
     ]
 
