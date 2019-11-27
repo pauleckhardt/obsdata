@@ -70,7 +70,7 @@ Then you can create a virtualenv by:
 	
 .. code-block:: bash	
 	
-    mkvirtualenv --python=/usr/bin/python3.6 obsdata
+    mkvirtualenv --python=/usr/bin/python3.7 obsdata
 	
 and change to this envorinment by:
 	
@@ -88,7 +88,7 @@ The obsdata package can be installed by:
 
 .. code-block:: bash
 
-    workon optimal-interpolation
+    workon obsdata
     pip install -r requirements.txt
     python3 setup.py install
 
