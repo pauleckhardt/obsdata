@@ -42,8 +42,10 @@ def get_indaaf_data(
             for year in range(year_start, year_end):
                 date_start = datetime(year, 1, 1)
                 date_end = datetime(year + 1, 1, 1)
-                filtered_records = indaaf_data.date_filter_records(
+                filtered_records = save_data.date_filter_records(
                     date_start, date_end, data.records)
+                if len(filtered_records) == 0:
+                    continue
                 current_data = data._replace(records=filtered_records)
                 if data_format == "nc":
                     save_data.save_data_netcdf(out_dir, current_data)

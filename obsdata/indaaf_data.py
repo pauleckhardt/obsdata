@@ -2,7 +2,6 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import json
-import numpy as np
 import pandas as pd
 from datetime import datetime
 from urllib3.exceptions import InsecureRequestWarning
@@ -237,15 +236,3 @@ def get_records(
         status_flags="?",
         records=records,
     )
-
-
-def date_filter_records(date_start, date_end, records):
-    """filter records on time"""
-    start_datetimes = np.array(
-        [record.start_datetime for record in records]
-    )
-    indexes = np.nonzero(
-        (start_datetimes >= date_start) &
-        (start_datetimes < date_end)
-    )[0]
-    return [records[index] for index in indexes]

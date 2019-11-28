@@ -15,11 +15,36 @@ def get_capmon_data(
     for year in range(date_start.year, date_end.year + 1):
         capmon_data.download_csvfile(dataset, year, csv_dir)
 
-    records = capmon_data.merge_data_many_years(
+    data = capmon_data.merge_data_many_years(
         dataset, parameter, site_info,
         date_start.year, date_end.year, csv_dir)
+    if data == -1:
+        print("no data available.")
+        exit(0)
 
-    save_data.save_data_txt("/tmp", records)
+    if data.time_interval == "hourly":
+        for year in range(date_start.year, date_end.year + 1):
+            date_start = datetime(year, 1, 1)
+            date_end = datetime(year + 1, 1, 1)
+            filtered_records = save_data.date_filter_records(
+                date_start, date_end, data.records)
+            if len(filtered_records) == 0:
+                continue
+            current_data = data._replace(records=filtered_records)
+            if data_format == "nc":
+                save_data.save_data_netcdf(out_dir, current_data)
+            elif data_format == "dat":
+                save_data.save_data_txt(out_dir, current_data)
+    else:
+        filtered_records = save_data.date_filter_records(
+                date_start, date_end, data.records)
+        if len(filtered_records) == 0:
+            return
+        data = data._replace(records=filtered_records)
+        if data_format == "nc":
+            save_data.save_data_netcdf(out_dir, data)
+        elif data_format == "dat":
+            save_data.save_data_txt(out_dir, data)
 
 
 def cli():
@@ -91,10 +116,10 @@ def cli():
     args = parser.parse_args()
 
     start_date = datetime.strptime(
-        args.start_date, '%Y-%m-%d').date()
+        args.start_date, '%Y-%m-%d')
 
     end_date = datetime.strptime(
-        args.end_date, '%Y-%m-%d').date()
+        args.end_date, '%Y-%m-%d')
 
     capmon_config.validate_dataset(args.dataset_id)
     capmon_config.validate_parameter(

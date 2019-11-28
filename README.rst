@@ -3,16 +3,23 @@ Observational-Data
 ==================
 
 This is observational-data (obsdata), a Python package developed
-in order to retrieve and store data from the
-Federal Land Manager Environmental Database_
-, The Acid Deposition Monitoring Network in East Asia (EANET_)
-, and the International Network to study Deposition and Atmospheric
-chemistry in AFrica (INDAAF_)
+in order to retrieve and store data from
+
+  * the Federal Land Manager Environmental Database_
+  
+  * the Acid Deposition Monitoring Network in East Asia (EANET_)
+
+  * the International Network to study Deposition and Atmospheric
+    chemistry in AFrica (INDAAF_)
+
+  * the Canadian Air and Precipitation Monitoring Network (CAPMoN_)
+
 into a specific data format described in this document.
 
 .. _Database: http://views.cira.colostate.edu/fed/QueryWizard/
 .. _EANET: https://monitoring.eanet.asia/
 .. _INDAAF: https://indaaf.obs-mip.fr/
+.. _CAPMoN: https://www.canada.ca/en/environment-climate-change/services/air-pollution/monitoring-networks-data.html
 
 Prerequisites
 --------------------
@@ -594,6 +601,172 @@ You can register on the INDAAF site_ in order to get an account.
 
 .. _site: https://indaaf.obs-mip.fr/database/
 
+
+Canadian Air and Precipitation Monitoring Network (CAPMoN)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The package contains an executable script for getting data from
+CAPMoN, and the usage is described below:
+
+.. code-block:: bash
+
+  usage: get_capmon_data [-h] [-e DATA_FORMAT] [-q OUT_DIR] [-x CSV_DIR]
+                         dataset_id site-code parameter-code start-date
+                         end-date
+
+  positional arguments:
+    dataset_id            dataset_id. e.g 'CAPMoN_Ozone'
+    site-code             capmon site code, e.g. CAPMCANS1KEJ for 'Kejimkujik
+                        National Park'
+    parameter-code        parameter code e.g. O3
+    start-date            start date, format YYYY-MM-DD
+    end-date              end date, format YYYY-MM-DD
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -e DATA_FORMAT, --data-format DATA_FORMAT
+                          data format for saving file (nc or dat), default is
+                          dat
+    -q OUT_DIR, --datadir-for-save OUT_DIR
+                          data directory for saving output, default is /tmp
+    -x CSV_DIR, --datadir-for-csv CSV_DIR
+                          data directory for saving indaaf csv files, default is
+                          /tmp
+
+
+and the script can e.g. be invoked by:
+
+.. code-block:: bash
+
+  get_capmon_data CAPMoN_Precip_Chemistry CAPMCANS1KEJ "Cl-" 1986-01-01 1995-12-31
+
+CAPMoN provides a number of different datasets, but this package is currenlty
+only configured to handle two of these datasets, and these are:
+
+  * CAPMoN_Ozone: hourly 'O3' data from 1988 and onwards
+
+  * CAPMoN_Precip_Chemistry: daily data of 'Ca2+', 'Cl-', 'H+', 'K+', 'Mg2+', 'NH4+',
+    'NO3-', 'Na+', 'SO42-', 'nss-SO42-', and 'pH' from 1983 and onwards
+
+
+The 26 sites associated to the CAPMoN_Ozone dataset are (more information
+can be found in the package data/capmon_ozone_sites.csv file):
+
+.. code-block:: python
+
+            SiteID                      SiteName
+  0   CAPMCANS1KEJ      Kejimkujik National Park
+  1   CAPMCAON1ALG                        Algoma
+  2   CAPMCAON1CHA                   Chalk River
+  3   CAPMCAON1EGB                        Egbert
+  4   CAPMCAON1ELA       Experimental Lakes Area
+  5   CAPMCAON1LON                     Longwoods
+  6   CAPMCAPQ1CPS                       Chapais
+  7   CAPMCAPQ1MTM                   Montmorency
+  8   CAPMCAPQ1SUT                        Sutton
+  9   CAPMCABC1SAT                       Saturna
+  10  CAPMCANU1ALT                         Alert
+  11  CAPMCAAB1EST                        Esther
+  12  CAPMCAON2EGB    Egbert - Duplicate Sampler
+  13  CAPMCASK1BRA                  Bratt's Lake
+  14  CAPMCANL1GOS                     Goose Bay
+  15  CAPMCANT1SNA                  Snare Rapids
+  16  CAPMCAON1FRA                    Fraserdale
+  17  CAPMCAPQ1FRE                  Frelighsburg
+  18  CAPMCAPQ1MIN                        Mingan
+  19  CAPMCAQC1RTR                Roundtop Ridge
+  20  CAPMCAON1BON                   Bonner Lake
+  21  CAPMCAON1PKL                   Pickle Lake
+  22  CAPMCAON1EGP            Egbert - Precision
+  23  CAPMCAAB1WBP    Wood Buffalo National Park
+  24  CAPMCASK1PHL                Pinehouse Lake
+  25  CAPMCANS1KEB  Kejimkujik National Park - B
+
+
+The 59 sites associated to the CAPMoN_Precip_Chemistry dataset are
+(more information can be found in the package
+data/capmon_precip_chemistry_sites.csv file):
+
+.. code-block:: python
+   
+            SiteID                                      SiteName
+  0   CAPMCAMB1ISL                                   Island Lake
+  1   CAPMCAMB1MCC                                      McCreary
+  2   CAPMCANB1HAR                                      Harcourt
+  3   CAPMCANL1BAY                                  Bay d'Espoir
+  4   CAPMCANL2COR                                   Cormack - B
+  5   CAPMCANL1GOS                                     Goose Bay
+  6   CAPMCANS1JAC                                       Jackson
+  7   CAPMCANS1KEJ                      Kejimkujik National Park
+  8   CAPMCANS2KEJ  Kejimkujik National Park - Duplicate Sampler
+  9   CAPMCAON1ALG                                        Algoma
+  10  CAPMCAON1BON                                   Bonner Lake
+  11  CAPMCAON1CHA                                   Chalk River
+  12  CAPMCAON1DOR                                        Dorset
+  13  CAPMCAON1ELA                       Experimental Lakes Area
+  14  CAPMCAON1LON                                     Longwoods
+  15  CAPMCAON1PCK                                   Pickle Lake
+  16  CAPMCAON1PRI                                    Priceville
+  17  CAPMCAON2PRI                Priceville - Duplicate Sampler
+  18  CAPMCAON1WAR           Warsaw Caves Conservation Authority
+  19  CAPMCAPQ1MTM                                   Montmorency
+  20  CAPMCAPQ1PCA                                  Port Cartier
+  21  CAPMCAPQ1SUT                                        Sutton
+  22  CAPMCAPQ2SUT                    Sutton - Duplicate Sampler
+  23  CAPMCASK1CRE                                     Cree Lake
+  24  CAPMUSPA1PEN                 Pennsylvania State University
+  25  CAPMCAAB1EST                                        Esther
+  26  CAPMCAPQ1CPS                                       Chapais
+  27  CAPMCANB2HAR                  Harcourt - Duplicate Sampler
+  28  CAPMCANL2GOB                  Goose Bay - B (Happy Valley)
+  29  CAPMCANT1SNA                                  Snare Rapids
+  30  CAPMCAON2BON              Bonner Lake  - Duplicate Sampler
+  31  CAPMCAON1EGB                                        Egbert
+  32  CAPMCAON1PNT                                   Point Petre
+  33  CAPMCABC1SAT                                       Saturna
+  34  CAPMCANL2BAB                              Bay d'Espoir - B
+  35  CAPMCAON1BNT                                  Burnt Island
+  36  CAPMCANB1HAB                                  Harcourt - B
+  37  CAPMCAPQ1MIN                                        Mingan
+  38  CAPMCAAB2EST                    Esther - Duplicate Sampler
+  39  CAPMCANS1SBK                                    Sherbrooke
+  40  CAPMCAON2EGB                    Egbert - Duplicate Sampler
+  41  CAPMCASK1BRA                                  Bratt's Lake
+  42  CAPMCAPQ1FRE                                  Frelighsburg
+  43  CAPMCAPQ1LED                                  Lake Edouard
+  44  CAPMCAON1PKL                               Pickle Lake - B
+  45  CAPMCAON1SPR                                    Sprucedale
+  46  CAPMCAPQ1LGR                                   La Grande-4
+  47  CAPMCAON1WPT                                      Westport
+  48  CAPMCAON1MTR                                  Marten River
+  49  CAPMCASK1CLF                                    Cluff Lake
+  50  CAPMCAON1KNG                      Kinghurst Forest Reserve
+  51  CAPMCASK1IFL                                  Island Falls
+  52  CAPMCAON1LLC                                       Longlac
+  53  CAPMCANT1WBP                    Wood Buffalo National Park
+  54  CAPMCASK1FLX                     Flat Valley--Experimental
+  55  CAPMCASK1PHL                                Pinehouse Lake
+  56  CAPMCANS1KEB                  Kejimkujik National Park - B
+  57  CAPMCAPQ1FRB                              Frelighsburg - B
+  58  CAPMCASK1FLV                                   Flat Valley
+
+
+CAPMoN provides data from these two datasets in one file per year including
+data of all species and all sites (that were operating this year). 
+The script get_capmon_data downloads and saves such files locally,
+if not already downloaded. This means that if you run get_capmon_data
+twice and asking for data from the same dataset, the second run
+will take less time.
+ 
+The obsdata package can probably quite easily be configured
+to handle more datasets from CAPMoN. The same code is handling
+the two datasets described above, and can therefore probably
+handle more datasets. The configuration
+consists of adding a definition of an additional dataset
+in the dictionary "datasets" in obsdata/capmon_config.py,
+and adding a data/{newdataset}_sites.csv file.
+The obsdata/capmon_data module contains a function
+create_sites_file that can create such a csv file.
 
 
 Data format description

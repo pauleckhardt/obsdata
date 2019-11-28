@@ -226,7 +226,8 @@ def merge_data_many_years(
         else:
             data = data.append(data_site, ignore_index=True)
         counter += 1
-
+    if counter == 0:
+        return -1
     return get_records(
         data,
         site_info,
@@ -239,7 +240,7 @@ def merge_data_many_years(
     )
 
 
-def create_sites_file(dataset, year_start,  year_end):
+def create_sites_file(dataset, year_start,  year_end, datadir):
     """creates a csv site file that contains a row for each
        site, this function assumes that product files are
        already downloaded"""
@@ -247,7 +248,7 @@ def create_sites_file(dataset, year_start,  year_end):
     counter = 0
     for year in range(year_start, year_end + 1):
         csv_file = os.path.join(
-            "/tmp",
+            datadir,
             datasets[index]["file_pattern"].format(year=year)
         )
         if not os.path.isfile(csv_file):
@@ -261,7 +262,7 @@ def create_sites_file(dataset, year_start,  year_end):
         counter += 1
     data = data.dropna(axis='columns')
     data.to_csv(
-        os.path.join("/tmp", '{}_sites.csv'.format(dataset.lower())),
+        os.path.join(datadir, '{}_sites.csv'.format(dataset.lower())),
         index=False,
         header=True
     )

@@ -2,6 +2,7 @@ import os
 from dateutil.relativedelta import relativedelta
 from netCDF4 import Dataset, date2num
 from collections import namedtuple
+import numpy as np
 
 
 ObsData = namedtuple(
@@ -51,6 +52,18 @@ Record = namedtuple(
 
 class NotImplementedError(Exception):
     pass
+
+
+def date_filter_records(date_start, date_end, records):
+    """filter records on time"""
+    start_datetimes = np.array(
+        [record.start_datetime for record in records]
+    )
+    indexes = np.nonzero(
+        (start_datetimes >= date_start) &
+        (start_datetimes < date_end)
+    )[0]
+    return [records[index] for index in indexes]
 
 
 def get_output_filename(data, extension):

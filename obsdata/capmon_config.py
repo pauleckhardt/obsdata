@@ -34,7 +34,7 @@ datasets = [
         ],
         "baseurl": "http://donnees.ec.gc.ca/data/air/monitor/monitoring-of-atmospheric-precipitation-chemistry/major-ions/",  # noqa
         "file_pattern": "AtmosphericPrecipitationChemistry-MajorIons-CAPMoN-AllSites-{year}.csv",  # noqa
-        "year_start": 1986,
+        "year_start": 1983,
         "time_interval": "daily"
     }
 ]
@@ -48,7 +48,10 @@ def validate_site_id(dataset, site_id):
     row = df.loc[df['SiteID'] == site_id]
     if row.empty:
         print("Unvalid site ID. Valid sites:")
-        print(df)
+        print(df[[
+            "SiteID", "SiteName", "CountryCode", "SiteLandUse",
+            "Latitude_deg", "Longitude_deg", "GroundElevAMSL_m"
+        ]])
         exit(0)
     return row
 
