@@ -2,7 +2,11 @@ import os
 import pandas as pd
 from datetime import datetime
 import requests
+import numpy as np
 from obsdata.save_data import ObsData, Record, save_data_txt
+from obsdata.capmon_config import (
+    datasets, validate_site_id, validate_dataset, validate_parameter
+)
 
 
 def get_table_row_start(table_name, rows):
@@ -55,7 +59,7 @@ def get_table_data(rows, row_start, row_end, headers):
                                 b"\xc9", b"E").decode(
                                     "utf-8").strip().replace('"', ""))
             except IndexError:
-                data[header].append(None)
+                data[header].append(np.nan)
     return pd.DataFrame(data, columns=data.keys())
 
 
@@ -111,7 +115,13 @@ def get_datetime(date, time):
 
 
 def get_records(
-        data, site_info, target_parameter, status_parameter, units, dataset, parameter):
+        data,
+        site_info,
+        target_parameter,
+        status_parameter,
+        units, dataset,
+        parameter,
+        time_interval):
     records = []
     for _, row in data.iterrows():
         start_datetime = get_datetime(
@@ -155,7 +165,7 @@ def get_records(
         dataset=dataset,
         parameter=parameter,
         parameter_code=parameter,
-        time_interval="hourly",
+        time_interval=time_interval,
         measurement_unit=units,
         measurement_method="?",
         sampling_type="continuous",
@@ -166,62 +176,9 @@ def get_records(
     )
 
 
-def download_csvfile(url_download_csv, out_filename):
-    """save csv file locally if not already exists"""
-    if os.path.isfile(out_filename):
-        return True
-    r = requests.get(url_download_csv)
-    with open(out_filename, 'wb') as f:
-        for chunk in r.iter_content():
-            f.write(chunk)
-    return True
-
-
-if __name__ == "__main__":
-    datadir = "/home/bengt/Downloads"
-
-    datasets = [
-        {
-            "name": "CAPMoN_Ozone",
-            "parameters": ["O3"],
-            "baseurl": "http://donnees.ec.gc.ca/data/air/monitor/monitoring-of-atmospheric-gases/ground-level-ozone/",  # noqa
-            "file_pattern": "AtmosphericGases-GroundLevelOzone-CAPMoN-AllSites-{year}.csv",  # noqa
-            "year_start": 1988,
-            "time_interval": "hourly",
-        },
-        {
-            "name": "CAPMoN_Precip_Chemistry",
-            "parameters": [
-                'Ca2+',
-                'Cl-',
-                'H+',
-                'K+',
-                'Mg2+',
-                'NH4+',
-                'NO3-',
-                'Na+',
-                'SO42-',
-                'nss-SO42-'
-                'pH'
-            ],
-            "baseurl": "http://donnees.ec.gc.ca/data/air/monitor/monitoring-of-atmospheric-precipitation-chemistry/major-ions/",  # noqa
-            "file_pattern": "AtmosphericPrecipitationChemistry-MajorIons-CAPMoN-AllSites-{year}.csv",  # noqa
-            "year_start": 1986,
-            "time_interval": "daily"
-        }
-    ]
-
-    if 0:
-        dataset = "CAPMoN_Ozone"
-        year = 1990
-        parameter = "O3"
-        site_id = "CAPMCANS1KEJ"
-    else:
-        dataset = "CAPMoN_Precip_Chemistry"
-        year = 1995
-        parameter = "Cl-"
-        site_id = "CAPMCANS1KEJ"
-
+def download_csvfile(dataset, year):
+    """downloads a csv file and store it locally if not already exists
+    """
     index = [ds["name"] for ds in datasets].index(dataset)
 
     url_download_csv = os.path.join(
@@ -234,35 +191,112 @@ if __name__ == "__main__":
         datasets[index]["file_pattern"].format(year=year)
     )
 
-    download_csvfile(url_download_csv, csv_file)
+    if os.path.isfile(csv_file):
+        return True
+    r = requests.get(url_download_csv)
+    if not r.status_code == 200:
+        print("{} not available".format(url_download_csv))
+        return False
 
-    validity_flags = get_data_from_csvfile(
-        csv_file, "Data validity flags")
-    print(validity_flags)
+    with open(csv_file, 'wb') as f:
+        for chunk in r.iter_content():
+            f.write(chunk)
+    return True
 
-    site_information = get_data_from_csvfile(
-        csv_file, "Site information")
-    print(site_information)
 
-    data = get_data_from_csvfile(
-        csv_file, dataset)
+def merge_data_many_years(
+        dataset, parameter, site_info, year_start, year_end):
+    """merge data from many years for a given site and returns
+       an instance of obsdata"""
+    index = [ds["name"] for ds in datasets].index(dataset)
+    counter = 0
+    for year in range(year_start, year_end + 1):
+        csv_file = os.path.join(
+            "/tmp",
+            datasets[index]["file_pattern"].format(year=year)
+        )
+        if not os.path.isfile(csv_file):
+            continue
+        data_i = get_data_from_csvfile(csv_file, dataset)
+        data_site = data_i.loc[data_i.SiteID == site_info["SiteID"].values[0]]
+        if counter == 0:
+            data = data_site
+            units = get_units(csv_file, dataset, parameter)
+            header_of_parameter = get_header(
+                csv_file, dataset, parameter
+            )
+        else:
+            data = data.append(data_site, ignore_index=True)
+        counter += 1
 
-    header_of_parameter = get_header(csv_file, dataset, parameter)
-
-    units = get_units(csv_file, dataset, parameter)
-
-    selected_data = data.loc[data.SiteID == site_id]
-
-    site_info = site_information.loc[
-        site_information.SiteID == site_id]
-
-    records = get_records(
-        selected_data,
+    return get_records(
+        data,
         site_info,
         header_of_parameter,
         "{}_Flag".format(header_of_parameter),
         units,
         dataset,
-        parameter
+        parameter,
+        datasets[index]["time_interval"]
     )
+
+
+def create_sites_file(dataset, year_start,  year_end):
+    """creates a csv site file that contains a row for each
+       site, this function assumes that product files are
+       already downloaded"""
+    index = [ds["name"] for ds in datasets].index(dataset)
+    counter = 0
+    for year in range(year_start, year_end + 1):
+        csv_file = os.path.join(
+            "/tmp",
+            datasets[index]["file_pattern"].format(year=year)
+        )
+        if not os.path.isfile(csv_file):
+            continue
+        data_i = get_data_from_csvfile(csv_file, "Site information")
+        if counter == 0:
+            data = data_i
+        else:
+            data = pd.concat(
+                [data, data_i]).drop_duplicates('SiteID').reset_index(drop=True)
+        counter += 1
+        print(counter)
+    data = data.dropna(axis='columns')
+    data.to_csv(
+        os.path.join("/tmp", '{}_sites.csv'.format(dataset.lower())),
+        index=False,
+        header=True
+    )
+
+
+if __name__ == "__main__":
+    datadir = "/home/bengt/Downloads"
+    if 1:
+        dataset = "CAPMoN_Ozone"
+        year = 1990
+        parameter = "O3"
+        site_id = "CAPMCANS1KEJ?"
+    else:
+        dataset = "CAPMoN_Precip_Chemistry"
+        year = 1995
+        parameter = "Cl-"
+        site_id = "CAPMCANS1KEJ"
+
+    date_start = datetime(1986, 1, 1)
+    date_end = datetime(1995, 12, 31)
+
+    validate_dataset(dataset)
+    validate_parameter(dataset, parameter)
+    site_info = validate_site_id(dataset, site_id)
+
+    for year in range(date_start.year, date_end.year + 1):
+        download_csvfile(dataset, year)
+
+    records = merge_data_many_years(
+        dataset, parameter, site_info, date_start.year, date_end.year)
+
+    print(records)
+
     save_data_txt("/tmp", records)
+    # create_sites_file(dataset, 1986, 2017)

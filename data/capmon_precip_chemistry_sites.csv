@@ -1,0 +1,60 @@
+CountryCode,EndDateOfSite,GroundElevAMSL_m,LatLonRefDatum,Latitude_deg,Longitude_deg,ProvinceStateCode,SampleVesselArea_cm2,SiteID,SiteLandUse,SiteName,SiteRating,StartDateOfSite
+CA (CANADA),1998-01-03,245,WGS84 (World Geodetic System 1984),53.86667,-94.67222,MB,    802.,CAPMCAMB1ISL,Rural,Island Lake,2a (potentially regionally representative - some site issues),1983-09-01
+CA (CANADA),1996-01-01,335,WGS84 (World Geodetic System 1984),50.70944,-99.52778,MB,    802.,CAPMCAMB1MCC,Rural,McCreary,1 (regionally representative),1983-09-01
+CA (CANADA),1993-11-01,45,WGS84 (World Geodetic System 1984),46.48417,-65.25833,NB,    802.,CAPMCANB1HAR,Rural,Harcourt,1 (regionally representative),1983-08-01
+CA (CANADA),1989-09-28,190,WGS84 (World Geodetic System 1984),47.99167,-55.81417,NL,    802.,CAPMCANL1BAY,Rural,Bay d'Espoir,1 (regionally representative),1983-07-06
+CA (CANADA),1986-04-30,145,WGS84 (World Geodetic System 1984),49.32361,-57.39583,NL,    802.,CAPMCANL2COR,Rural,Cormack - B,1 (regionally representative),1985-06-11
+CA (CANADA),9999-12-31,26,WGS84 (World Geodetic System 1984),53.30600,-60.36314,NL,    802.,CAPMCANL1GOS,Rural,Goose Bay,2b (potentially regionally unrepresentative - several site issues),1983-10-01
+CA (CANADA),9999-12-31,99,WGS84 (World Geodetic System 1984),45.59325,-63.83369,NS,    802.,CAPMCANS1JAC,Rural,Jackson,1 (regionally representative),1983-08-02
+CA (CANADA),9999-12-31,159,WGS84 (World Geodetic System 1984),44.43244,-65.20264,NS,    802.,CAPMCANS1KEJ,Rural,Kejimkujik National Park,1 (regionally representative),1983-06-02
+CA (CANADA),1988-06-01,159,WGS84 (World Geodetic System 1984),44.43244,-65.20264,NS,    802.,CAPMCANS2KEJ,Rural,Kejimkujik National Park - Duplicate Sampler,1 (regionally representative),1986-04-02
+CA (CANADA),9999-12-31,411,WGS84 (World Geodetic System 1984),47.03367,-84.37897,ON,    802.,CAPMCAON1ALG,Rural,Algoma,1 (regionally representative),1985-01-01
+CA (CANADA),9999-12-31,242,WGS84 (World Geodetic System 1984),49.38553,-82.12125,ON,    802.,CAPMCAON1BON,Rural,Bonner Lake,1 (regionally representative),1985-06-11
+CA (CANADA),9999-12-31,190,WGS84 (World Geodetic System 1984),46.06242,-77.40453,ON,    802.,CAPMCAON1CHA,Rural,Chalk River,2a (potentially regionally representative - some site issues),1983-09-01
+CA (CANADA),1986-06-01,320,WGS84 (World Geodetic System 1984),45.22361,-78.93056,ON,    802.,CAPMCAON1DOR,Rural,Dorset,1 (regionally representative),1983-11-01
+CA (CANADA),9999-12-31,437,WGS84 (World Geodetic System 1984),49.66408,-93.73277,ON,    802.,CAPMCAON1ELA,Rural,Experimental Lakes Area,1 (regionally representative),1983-08-17
+CA (CANADA),9999-12-31,239,WGS84 (World Geodetic System 1984),42.88356,-81.48025,ON,    802.,CAPMCAON1LON,Rural,Longwoods,2a (potentially regionally representative - some site issues),1983-09-20
+CA (CANADA),1986-03-19,370,WGS84 (World Geodetic System 1984),51.45972,-90.19861,ON,    802.,CAPMCAON1PCK,Rural,Pickle Lake,2a (potentially regionally representative - some site issues),1983-09-01
+CA (CANADA),1995-03-31,475,WGS84 (World Geodetic System 1984),44.16806,-80.66111,ON,    802.,CAPMCAON1PRI,Rural,Priceville,2a (potentially regionally representative - some site issues),1984-07-01
+CA (CANADA),1987-11-12,475,WGS84 (World Geodetic System 1984),44.16806,-80.66111,ON,    802.,CAPMCAON2PRI,Rural,Priceville - Duplicate Sampler,2a (potentially regionally representative - some site issues),1985-04-14
+CA (CANADA),9999-12-31,243,WGS84 (World Geodetic System 1984),44.46294,-78.13019,ON,    802.,CAPMCAON1WAR,Rural,Warsaw Caves Conservation Authority,1 (regionally representative),1985-03-08
+CA (CANADA),1997-01-01,640,WGS84 (World Geodetic System 1984),47.31667,-71.15000,PQ,    802.,CAPMCAPQ1MTM,Rural,Montmorency,1 (regionally representative),1983-07-19
+CA (CANADA),1993-01-01,152,WGS84 (World Geodetic System 1984),50.14028,-67.13500,PQ,    802.,CAPMCAPQ1PCA,Rural,Port Cartier,1 (regionally representative),1985-01-01
+CA (CANADA),2008-12-31,243,WGS84 (World Geodetic System 1984),45.07639,-72.67639,PQ,    802.,CAPMCAPQ1SUT,Rural,Sutton,1 (regionally representative),1983-09-01
+CA (CANADA),2002-04-01,243,WGS84 (World Geodetic System 1984),45.07639,-72.67639,PQ,    802.,CAPMCAPQ2SUT,Rural,Sutton - Duplicate Sampler,1 (regionally representative),1985-01-08
+CA (CANADA),1993-05-05,499,WGS84 (World Geodetic System 1984),57.35043,-107.13335,SK,    802.,CAPMCASK1CRE,Rural,Cree Lake,1 (regionally representative),1983-08-11
+US (UNITED STATES),9999-12-31,396,WGS84 (World Geodetic System 1984),40.78883,-77.94556,PA,    802.,CAPMUSPA1PEN,Rural,Pennsylvania State University,2b (potentially regionally unrepresentative - several site issues),1986-08-11
+CA (CANADA),9999-12-31,702,WGS84 (World Geodetic System 1984),51.66978,-110.20656,AB,    802.,CAPMCAAB1EST,Rural,Esther,1 (regionally representative),1987-01-26
+CA (CANADA),9999-12-31,377,WGS84 (World Geodetic System 1984),49.82236,-74.97547,PQ,    802.,CAPMCAPQ1CPS,Rural,Chapais,1 (regionally representative),1987-10-14
+CA (CANADA),1991-02-27,45,WGS84 (World Geodetic System 1984),46.48417,-65.25833,NB,    802.,CAPMCANB2HAR,Rural,Harcourt - Duplicate Sampler,1 (regionally representative),1988-05-31
+CA (CANADA),9999-12-31,39,WGS84 (World Geodetic System 1984),53.29028,-60.38750,NL,    802.,CAPMCANL2GOB,Rural,Goose Bay - B (Happy Valley),2b (potentially regionally unrepresentative - several site issues),1988-10-05
+CA (CANADA),9999-12-31,246,WGS84 (World Geodetic System 1984),63.50844,-116.00792,NT,    802.,CAPMCANT1SNA,Rural,Snare Rapids,1 (regionally representative),1988-10-04
+CA (CANADA),1994-01-01,242,WGS84 (World Geodetic System 1984),49.38553,-82.12125,ON,    802.,CAPMCAON2BON,Rural,Bonner Lake  - Duplicate Sampler,1 (regionally representative),1988-01-01
+CA (CANADA),9999-12-31,206,WGS84 (World Geodetic System 1984),44.23406,-79.79172,ON,    802.,CAPMCAON1EGB,Rural,Egbert,1 (regionally representative),1988-08-01
+CA (CANADA),1993-04-28,78,WGS84 (World Geodetic System 1984),43.84278,-77.15361,ON,    802.,CAPMCAON1PNT,Rural,Point Petre,1 (regionally representative),1988-11-01
+CA (CANADA),9999-12-31,184,WGS84 (World Geodetic System 1984),48.77503,-123.12753,BC,    802.,CAPMCABC1SAT,Rural,Saturna,2a (potentially regionally representative - some site issues),1989-06-01
+CA (CANADA),9999-12-31,167,WGS84 (World Geodetic System 1984),47.98957,-55.81770,NL,    802.,CAPMCANL2BAB,Rural,Bay d'Espoir - B,1 (regionally representative),1989-09-28
+CA (CANADA),2013-03-31,182,WGS84 (World Geodetic System 1984),45.80806,-82.95111,ON,    802.,CAPMCAON1BNT,Rural,Burnt Island,1 (regionally representative),1992-01-15
+CA (CANADA),2012-03-28,45,WGS84 (World Geodetic System 1984),46.49681,-65.26452,NB,    802.,CAPMCANB1HAB,Rural,Harcourt - B,1 (regionally representative),1993-11-01
+CA (CANADA),9999-12-31,6,WGS84 (World Geodetic System 1984),50.27147,-64.22625,PQ,    802.,CAPMCAPQ1MIN,Rural,Mingan,1 (regionally representative),1993-11-29
+CA (CANADA),1996-01-01,702,WGS84 (World Geodetic System 1984),51.66978,-110.20656,AB,    802.,CAPMCAAB2EST,Rural,Esther - Duplicate Sampler,1 (regionally representative),1994-02-01
+CA (CANADA),9999-12-31,94,WGS84 (World Geodetic System 1984),45.15934,-61.97048,NS,    802.,CAPMCANS1SBK,Rural,Sherbrooke,1 (regionally representative),1996-01-01
+CA (CANADA),9999-12-31,206,WGS84 (World Geodetic System 1984),44.23406,-79.79172,ON,    802.,CAPMCAON2EGB,Rural,Egbert - Duplicate Sampler,1 (regionally representative),1988-08-01
+CA (CANADA),2013-04-29,592,WGS84 (World Geodetic System 1984),50.20081,-104.71072,SK,    802.,CAPMCASK1BRA,Rural,Bratt's Lake,1 (regionally representative),1998-01-01
+CA (CANADA),9999-12-31,190,WGS84 (World Geodetic System 1984),45.05006,-72.86161,PQ,    802.,CAPMCAPQ1FRE,Rural,Frelighsburg,1 (regionally representative),2001-12-01
+CA (CANADA),9999-12-31,426,WGS84 (World Geodetic System 1984),47.68039,-72.44489,PQ,    802.,CAPMCAPQ1LED,Rural,Lake Edouard,1 (regionally representative),2001-12-01
+CA (CANADA),9999-12-31,391,WGS84 (World Geodetic System 1984),51.44814,-90.21786,ON,    802.,CAPMCAON1PKL,Rural,Pickle Lake - B,2a (potentially regionally representative - some site issues),2002-10-01
+CA (CANADA),9999-12-31,330,WGS84 (World Geodetic System 1984),45.42397,-79.48614,ON,    802.,CAPMCAON1SPR,Rural,Sprucedale,1 (regionally representative),2002-04-30
+CA (CANADA),9999-12-31,300,WGS84 (World Geodetic System 1984),53.75722,-73.67500,PQ,    802.,CAPMCAPQ1LGR,Rural,La Grande-4,1 (regionally representative),2003-07-21
+CA (CANADA),9999-12-31,148,WGS84 (World Geodetic System 1984),44.63861,-76.37000,ON,    802.,CAPMCAON1WPT,Rural,Westport,1 (regionally representative),2005-12-01
+CA (CANADA),9999-12-31,300,WGS84 (World Geodetic System 1984),46.67119,-79.91925,ON,    802.,CAPMCAON1MTR,Rural,Marten River,1 (regionally representative),2007-11-05
+CA (CANADA),2010-12-12,339,WGS84 (World Geodetic System 1984),58.35931,-109.60097,SK,    802.,CAPMCASK1CLF,Rural,Cluff Lake,1 (regionally representative),2010-10-14
+CA (CANADA),9999-12-31,313,WGS84 (World Geodetic System 1984),44.33169,-80.90933,ON,    802.,CAPMCAON1KNG,Rural,Kinghurst Forest Reserve,1 (regionally representative),2011-01-19
+CA (CANADA),9999-12-31,310,WGS84 (World Geodetic System 1984),55.52889,-102.34503,SK,    802.,CAPMCASK1IFL,Rural,Island Falls,1 (regionally representative),2012-09-20
+CA (CANADA),9999-12-31,243,WGS84 (World Geodetic System 1984),49.74892,-86.71328,ON,    802.,CAPMCAON1LLC,Rural,Longlac, ,2013-02-22
+CA (CANADA),9999-12-31,284,WGS84 (World Geodetic System 1984),60.14653,-113.63770,NT,    802.,CAPMCANT1WBP,Rural,Wood Buffalo National Park,1 (regionally representative),2014-10-01
+CA (CANADA),9999-12-31,506,WGS84 (World Geodetic System 1984),54.29131,-109.22067,SK,    802.,CAPMCASK1FLX,Rural,Flat Valley--Experimental,2a (potentially regionally representative - some site issues),2014-04-01
+CA (CANADA),9999-12-31,404,WGS84 (World Geodetic System 1984),55.51217,-106.72453,SK,    802.,CAPMCASK1PHL,Rural,Pinehouse Lake,1 (regionally representative),2015-02-11
+CA (CANADA),9999-12-31,128,WGS84 (World Geodetic System 1984),44.40298,-65.20274,NS,    802.,CAPMCANS1KEB,Rural,Kejimkujik National Park - B,1 (regionally representative),2016-04-01
+CA (CANADA),9999-12-31,235,WGS84 (World Geodetic System 1984),45.04097,-72.85814,PQ,    802.,CAPMCAPQ1FRB,Rural,Frelighsburg - B,1 (regionally representative),2016-02-02
+CA (CANADA),9999-12-31,506,WGS84 (World Geodetic System 1984),54.29464,-109.20921,SK,    802.,CAPMCASK1FLV,Rural,Flat Valley,2a (potentially regionally representative - some site issues),2016-02-25
