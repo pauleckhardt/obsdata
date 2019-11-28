@@ -454,7 +454,7 @@ INDAAF, and the usage is described below:
 
   positional arguments:
     dataset_id            dataset_id. e.g 'Precipitation'
-    site-code             eanet site code, e.g. 1 for 'Agoufou'
+    site-code             indaaf site code, e.g. 1 for 'Agoufou'
     parameter-code        parameter code e.g. "H+"
 
   optional arguments:

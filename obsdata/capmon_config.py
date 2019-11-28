@@ -68,9 +68,8 @@ def validate_parameter(dataset, parameter):
     try:
         datasets[index]["parameters"].index(parameter)
     except ValueError:
-        print("{} is not a valid parameter for dataset {}.".format(parameter, dataset))
+        print("{} is not a valid parameter for dataset {}.".format(
+            parameter, dataset))
         print("The following parameters are handled:")
         print(datasets[index]["parameters"])
         exit(0)
-
-

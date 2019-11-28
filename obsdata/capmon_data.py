@@ -3,10 +3,8 @@ import pandas as pd
 from datetime import datetime
 import requests
 import numpy as np
-from obsdata.save_data import ObsData, Record, save_data_txt
-from obsdata.capmon_config import (
-    datasets, validate_site_id, validate_dataset, validate_parameter
-)
+from obsdata.save_data import ObsData, Record
+from obsdata.capmon_config import datasets
 
 
 def get_table_row_start(table_name, rows):
@@ -101,8 +99,8 @@ def status_flag_to_number(status_flag):
     return [
         "V0",  # 'Valid value'
         "V1",  # 'Valid value - below detection limit'
-        "V2",  # 'Valid value - extreme or unusual value assessed and considered valid'
-        "V7",  # 'Valid value - below detection limit and reported as the detection limit or lowest measureable value'
+        "V2",  # noqa 'Valid value - extreme or unusual value assessed and considered valid'
+        "V7",  # noqa 'Valid value - below detection limit and reported as the detection limit or lowest measureable value'
         "M1",  # 'Missing value - no value available'
         "M2",  # 'Missing value - invalidated by Principal Investigator'
     ].index(status_flag)
@@ -176,7 +174,7 @@ def get_records(
     )
 
 
-def download_csvfile(dataset, year):
+def download_csvfile(dataset, year, outdir):
     """downloads a csv file and store it locally if not already exists
     """
     index = [ds["name"] for ds in datasets].index(dataset)
@@ -187,7 +185,7 @@ def download_csvfile(dataset, year):
     )
 
     csv_file = os.path.join(
-        "/tmp",
+        outdir,
         datasets[index]["file_pattern"].format(year=year)
     )
 
@@ -205,14 +203,14 @@ def download_csvfile(dataset, year):
 
 
 def merge_data_many_years(
-        dataset, parameter, site_info, year_start, year_end):
+        dataset, parameter, site_info, year_start, year_end, outdir):
     """merge data from many years for a given site and returns
        an instance of obsdata"""
     index = [ds["name"] for ds in datasets].index(dataset)
     counter = 0
     for year in range(year_start, year_end + 1):
         csv_file = os.path.join(
-            "/tmp",
+            outdir,
             datasets[index]["file_pattern"].format(year=year)
         )
         if not os.path.isfile(csv_file):
@@ -261,42 +259,9 @@ def create_sites_file(dataset, year_start,  year_end):
             data = pd.concat(
                 [data, data_i]).drop_duplicates('SiteID').reset_index(drop=True)
         counter += 1
-        print(counter)
     data = data.dropna(axis='columns')
     data.to_csv(
         os.path.join("/tmp", '{}_sites.csv'.format(dataset.lower())),
         index=False,
         header=True
     )
-
-
-if __name__ == "__main__":
-    datadir = "/home/bengt/Downloads"
-    if 1:
-        dataset = "CAPMoN_Ozone"
-        year = 1990
-        parameter = "O3"
-        site_id = "CAPMCANS1KEJ?"
-    else:
-        dataset = "CAPMoN_Precip_Chemistry"
-        year = 1995
-        parameter = "Cl-"
-        site_id = "CAPMCANS1KEJ"
-
-    date_start = datetime(1986, 1, 1)
-    date_end = datetime(1995, 12, 31)
-
-    validate_dataset(dataset)
-    validate_parameter(dataset, parameter)
-    site_info = validate_site_id(dataset, site_id)
-
-    for year in range(date_start.year, date_end.year + 1):
-        download_csvfile(dataset, year)
-
-    records = merge_data_many_years(
-        dataset, parameter, site_info, date_start.year, date_end.year)
-
-    print(records)
-
-    save_data_txt("/tmp", records)
-    # create_sites_file(dataset, 1986, 2017)

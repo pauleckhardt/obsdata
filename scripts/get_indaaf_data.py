@@ -77,7 +77,7 @@ def cli():
         "site_code",
         metavar="site-code",
         type=str,
-        help="eanet site code, e.g. 1 for 'Agoufou'"
+        help="indaaf site code, e.g. 1 for 'Agoufou'"
     )
     parser.add_argument(
         "parameter_code",
