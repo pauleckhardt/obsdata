@@ -40,6 +40,10 @@ datasets = [
 ]
 
 
+class InputError(Exception):
+    pass
+
+
 def validate_site_id(dataset, site_id):
     site_file = os.path.join(
         DATADIR, "{}_sites.csv".format(dataset.lower())
@@ -52,7 +56,7 @@ def validate_site_id(dataset, site_id):
             "SiteID", "SiteName", "CountryCode", "SiteLandUse",
             "Latitude_deg", "Longitude_deg", "GroundElevAMSL_m"
         ]])
-        exit(0)
+        raise(InputError)
     return row
 
 
@@ -63,7 +67,8 @@ def validate_dataset(dataset):
         print("{} is not a valid dataset.".format(dataset))
         print("The following datasets are handled:")
         print([ds["name"] for ds in datasets])
-        exit(0)
+        raise(InputError)
+    return True
 
 
 def validate_parameter(dataset, parameter):
@@ -75,4 +80,5 @@ def validate_parameter(dataset, parameter):
             parameter, dataset))
         print("The following parameters are handled:")
         print(datasets[index]["parameters"])
-        exit(0)
+        raise(InputError)
+    return True

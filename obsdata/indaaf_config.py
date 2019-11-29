@@ -43,6 +43,10 @@ datasets = [
 ]
 
 
+class InputError(Exception):
+    pass
+
+
 def get_dataset_id(dataset, site_id):
     if dataset == "Meteo":
         try:
@@ -72,7 +76,7 @@ def get_parameter_id(parameter, dataset):
     ]
     if row.empty:
         print(df)
-        exit(0)
+        raise(InputError)
     else:
         return row
 
@@ -86,5 +90,5 @@ def validate_site_id(site_id):
     if row.empty:
         print("Unvalid site ID. Valid sites:")
         print(df)
-        exit(0)
+        raise(InputError)
     return row

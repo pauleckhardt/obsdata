@@ -183,3 +183,67 @@ def test_get_records():
             nr_of_samples=-999
         )
     )
+
+
+def test_merge_data_many_years():
+    dataset = "CAPMoN_Precip_Chemistry"
+    parameter = "H+"
+    site_code = "CAPMCAAB1EST"
+    site_info = capmon_config.validate_site_id(
+        dataset, site_code)
+    data = capmon_data.merge_data_many_years(
+        dataset,
+        parameter,
+        site_info,
+        1989,
+        1989,
+        os.path.dirname(__file__)
+    )
+    assert len(data.records) == 358
+    assert (
+        data.records[0] ==
+        save_data.Record(
+            start_datetime=datetime.datetime(1989, 1, 1, 17, 0),
+            end_datetime=datetime.datetime(1989, 1, 2, 16, 0),
+            value=-999.0,
+            uncertainty=-999,
+            status=4,
+            status_flag='M1',
+            nr_of_samples=-999
+        )
+    )
+    assert (
+        data.records[13] ==
+        save_data.Record(
+            start_datetime=datetime.datetime(1989, 1, 14, 16, 0),
+            end_datetime=datetime.datetime(1989, 1, 15, 17, 0),
+            value=0.012023, uncertainty=-999,
+            status=0,
+            status_flag='V0',
+            nr_of_samples=-999
+        )
+    )
+    assert data.data_version == '?'
+    assert data.station_name == 'Esther'
+    assert data.station_code == 'CAPMCAAB1EST'
+    assert data.station_category == 'global'
+    assert data.observation_category == (
+        'Air sampling observation at a stationary platform')
+    assert data.country_territory == 'CA (CANADA)'
+    assert data.contributor == 'capmon'
+    assert data.latitude == pytest.approx(51.6697, abs=1e-4)
+    assert data.longitude == pytest.approx(-110.2065, abs=1e-4)
+    assert data.altitude == 702
+    assert data.nr_of_sampling_heights == 1
+    assert data.sampling_heights == '?'
+    assert data.contact_point == 'enviroinfo@canada.ca'
+    assert data.dataset == 'CAPMoN_Precip_Chemistry'
+    assert data.parameter == 'H+'
+    assert data.parameter_code == 'H+'
+    assert data.time_interval == 'daily'
+    assert data.measurement_unit == 'mg/L (milligram per liter)'
+    assert data.measurement_method == '?'
+    assert data.sampling_type == 'continuous'
+    assert data.time_zone == 'UTC'
+    assert data.measurement_scale == '?'
+    assert data.status_flags == '?'
