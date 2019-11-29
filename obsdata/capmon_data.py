@@ -136,7 +136,7 @@ def get_records(
                 uncertainty=-999,
                 status=status_flag_to_number(
                     row[status_parameter]),
-                status_flag=status_parameter,
+                status_flag=row[status_parameter],
                 nr_of_samples=-999,
             )
         )
