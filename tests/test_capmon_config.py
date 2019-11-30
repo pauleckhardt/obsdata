@@ -12,15 +12,15 @@ def test_validate_dataset():
         "CAPMoN_Ozone")
 
 
-def test_validate_site_id():
-    site_info = capmon_config.validate_site_id(
+def test_get_site_info():
+    site_info = capmon_config.get_site_info(
         "CAPMoN_Precip_Chemistry", "CAPMCAAB1EST")
-    assert site_info["SiteID"].values[0] == "CAPMCAAB1EST"
+    assert site_info.code == "CAPMCAAB1EST"
 
 
-def test_validate_site_id_raises():
+def test_get_site_info_raises():
     with pytest.raises(capmon_config.InputError):
-        capmon_config.validate_site_id(
+        capmon_config.get_site_info(
             "CAPMoN_Precip_Chemistry", "nosite")
 
 

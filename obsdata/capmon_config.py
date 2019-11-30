@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from collections import namedtuple
 
 
 DATADIR = os.path.join(
@@ -8,7 +9,7 @@ DATADIR = os.path.join(
 )
 
 
-datasets = [
+DATASETS = [
     {
         "name": "CAPMoN_Ozone",
         "parameters": ["O3"],
@@ -40,11 +41,39 @@ datasets = [
 ]
 
 
+SiteInfo = namedtuple(
+    "SiteInfo",
+    [
+        "country",
+        "site",
+        "code",
+        "classification",
+        "latitude",
+        "longitude",
+        "altitude",
+        "sampling_heights",
+    ]
+)
+
+
 class InputError(Exception):
     pass
 
 
-def validate_site_id(dataset, site_id):
+def get_all_site_codes(dataset):
+    site_file = os.path.join(
+        DATADIR, "{}_sites.csv".format(dataset.lower())
+    )
+    df = pd.read_csv(site_file)
+    return list(df["SiteID"].values)
+
+
+def get_all_parameters(dataset):
+    index = [ds["name"] for ds in DATASETS].index(dataset)
+    return DATASETS[index]["parameters"]
+
+
+def get_site_info(dataset, site_id):
     site_file = os.path.join(
         DATADIR, "{}_sites.csv".format(dataset.lower())
     )
@@ -57,28 +86,42 @@ def validate_site_id(dataset, site_id):
             "Latitude_deg", "Longitude_deg", "GroundElevAMSL_m"
         ]])
         raise(InputError)
-    return row
+    try:
+        sampling_heights = row["SamplingHeightAG"].values[0]
+    except KeyError:
+        sampling_heights = "?"
+
+    return SiteInfo(
+        country=row["CountryCode"].values[0],
+        site=row["SiteName"].values[0],
+        code=row["SiteID"].values[0],
+        classification=row["SiteLandUse"].values[0],
+        latitude=row["Latitude_deg"].values[0],
+        longitude=row["Longitude_deg"].values[0],
+        altitude=row["GroundElevAMSL_m"].values[0],
+        sampling_heights=sampling_heights,
+    )
 
 
 def validate_dataset(dataset):
     try:
-        [ds["name"] for ds in datasets].index(dataset)
+        [ds["name"] for ds in DATASETS].index(dataset)
     except ValueError:
         print("{} is not a valid dataset.".format(dataset))
         print("The following datasets are handled:")
-        print([ds["name"] for ds in datasets])
+        print([ds["name"] for ds in DATASETS])
         raise(InputError)
     return True
 
 
 def validate_parameter(dataset, parameter):
-    index = [ds["name"] for ds in datasets].index(dataset)
+    index = [ds["name"] for ds in DATASETS].index(dataset)
     try:
-        datasets[index]["parameters"].index(parameter)
+        DATASETS[index]["parameters"].index(parameter)
     except ValueError:
         print("{} is not a valid parameter for dataset {}.".format(
             parameter, dataset))
         print("The following parameters are handled:")
-        print(datasets[index]["parameters"])
+        print(DATASETS[index]["parameters"])
         raise(InputError)
     return True

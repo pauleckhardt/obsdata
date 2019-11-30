@@ -11,7 +11,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 from obsdata.save_data import ObsData, Record
-from obsdata.eanet_config import eanet_sites
+from obsdata.eanet_config import get_site_information
 
 
 class InputError(Exception):
@@ -457,6 +457,7 @@ def get_data(dataset, site, parameter, year, datadir):
             print(data_extractor.get_products())
             records = []
 
+    eanet_sites = get_site_information()
     eanet_site = eanet_sites[
         [s.code for s in eanet_sites].index(site)
     ]

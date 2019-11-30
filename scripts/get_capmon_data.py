@@ -124,7 +124,7 @@ def cli():
     capmon_config.validate_dataset(args.dataset_id)
     capmon_config.validate_parameter(
         args.dataset_id, args.parameter_code)
-    site_info = capmon_config.validate_site_id(
+    site_info = capmon_config.get_site_info(
         args.dataset_id, args.site_code)
 
     get_capmon_data(

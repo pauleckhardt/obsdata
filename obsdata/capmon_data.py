@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 import numpy as np
 from obsdata.save_data import ObsData, Record
-from obsdata.capmon_config import datasets
+from obsdata.capmon_config import DATASETS
 
 
 def get_table_row_start(table_name, rows):
@@ -140,25 +140,20 @@ def get_records(
                 nr_of_samples=-999,
             )
         )
-    try:
-        sampling_heights = site_info["SamplingHeightAG"].values[0]
-    except KeyError:
-        sampling_heights = "?"
-
     return ObsData(
         data_version="?",
-        station_name=site_info["SiteName"].values[0],
-        station_code=str(site_info["SiteID"].values[0]),
+        station_name=site_info.site,
+        station_code=site_info.code,
         station_category="global",
         observation_category=(
             "Air sampling observation at a stationary platform"),
-        country_territory=site_info["CountryCode"].values[0],
+        country_territory=site_info.country,
         contributor="capmon",
-        latitude=site_info["Latitude_deg"].values[0],
-        longitude=site_info["Longitude_deg"].values[0],
-        altitude=site_info["GroundElevAMSL_m"].values[0],
+        latitude=site_info.latitude,
+        longitude=site_info.longitude,
+        altitude=site_info.altitude,
         nr_of_sampling_heights=1,
-        sampling_heights=sampling_heights,
+        sampling_heights=site_info.sampling_heights,
         contact_point="enviroinfo@canada.ca",
         dataset=dataset,
         parameter=parameter,
@@ -177,16 +172,16 @@ def get_records(
 def download_csvfile(dataset, year, outdir):
     """downloads a csv file and store it locally if not already exists
     """
-    index = [ds["name"] for ds in datasets].index(dataset)
+    index = [ds["name"] for ds in DATASETS].index(dataset)
 
     url_download_csv = os.path.join(
-        datasets[index]["baseurl"],
-        datasets[index]["file_pattern"].format(year=year)
+        DATASETS[index]["baseurl"],
+        DATASETS[index]["file_pattern"].format(year=year)
     )
 
     csv_file = os.path.join(
         outdir,
-        datasets[index]["file_pattern"].format(year=year)
+        DATASETS[index]["file_pattern"].format(year=year)
     )
 
     if os.path.isfile(csv_file):
@@ -206,17 +201,17 @@ def merge_data_many_years(
         dataset, parameter, site_info, year_start, year_end, outdir):
     """merge data from many years for a given site and returns
        an instance of obsdata"""
-    index = [ds["name"] for ds in datasets].index(dataset)
+    index = [ds["name"] for ds in DATASETS].index(dataset)
     counter = 0
     for year in range(year_start, year_end + 1):
         csv_file = os.path.join(
             outdir,
-            datasets[index]["file_pattern"].format(year=year)
+            DATASETS[index]["file_pattern"].format(year=year)
         )
         if not os.path.isfile(csv_file):
             continue
         data_i = get_data_from_csvfile(csv_file, dataset)
-        data_site = data_i.loc[data_i.SiteID == site_info["SiteID"].values[0]]
+        data_site = data_i.loc[data_i.SiteID == site_info.code]
         if counter == 0:
             data = data_site
             units = get_units(csv_file, dataset, parameter)
@@ -236,7 +231,7 @@ def merge_data_many_years(
         units,
         dataset,
         parameter,
-        datasets[index]["time_interval"]
+        DATASETS[index]["time_interval"]
     )
 
 
@@ -244,12 +239,12 @@ def create_sites_file(dataset, year_start,  year_end, datadir):
     """creates a csv site file that contains a row for each
        site, this function assumes that product files are
        already downloaded"""
-    index = [ds["name"] for ds in datasets].index(dataset)
+    index = [ds["name"] for ds in DATASETS].index(dataset)
     counter = 0
     for year in range(year_start, year_end + 1):
         csv_file = os.path.join(
             datadir,
-            datasets[index]["file_pattern"].format(year=year)
+            DATASETS[index]["file_pattern"].format(year=year)
         )
         if not os.path.isfile(csv_file):
             continue

@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from collections import namedtuple
 
 
 DATADIR = os.path.join(
@@ -8,7 +9,7 @@ DATADIR = os.path.join(
 )
 
 
-datasets = [
+DATASETS = [
     {
         "name": "Precipitation",
         "href": "/catalog/dataset/1",
@@ -43,26 +44,57 @@ datasets = [
 ]
 
 
+SiteInfo = namedtuple(
+    "SiteInfo",
+    [
+        "country",
+        "site",
+        "code",
+        "classification",
+        "latitude",
+        "longitude",
+        "altitude",
+    ]
+)
+
+
 class InputError(Exception):
     pass
+
+
+def get_all_parameters(dataset):
+    parameter_file = os.path.join(
+        DATADIR, "indaaf_parameters.csv"
+    )
+    df = pd.read_csv(parameter_file)
+    df = df.loc[df['Theme'] == dataset]
+    return list(df["Parameter name"].values)
+
+
+def get_all_site_codes():
+    return range(1, 17)
 
 
 def get_dataset_id(dataset, site_id):
     if dataset == "Meteo":
         try:
-            return datasets[3]["ids"][
-                datasets[3]["site_ids"].index(site_id)
+            return DATASETS[3]["ids"][
+                DATASETS[3]["site_ids"].index(site_id)
             ]
         except ValueError:
-            return 0
+            print(
+                "Meteo dataset is only available for "
+                "sites 11, 12, 13, and 14"
+            )
+            raise(InputError)
     try:
-        return datasets[
-            [row["name"] for row in datasets].index(dataset)
+        return DATASETS[
+            [row["name"] for row in DATASETS].index(dataset)
         ]["id"]
     except ValueError:
         print("Unvalid datasets. Valid datasets:")
-        print(datasets)
-        return 0
+        print(DATASETS)
+        raise(InputError)
 
 
 def get_parameter_id(parameter, dataset):
@@ -75,13 +107,14 @@ def get_parameter_id(parameter, dataset):
         (df['Theme'] == dataset)
     ]
     if row.empty:
+        print("Unvalid parameter. Valid parameters:")
         print(df)
         raise(InputError)
     else:
         return row
 
 
-def validate_site_id(site_id):
+def get_site_info(site_id):
     site_file = os.path.join(
         DATADIR, "indaaf_sites.csv"
     )
@@ -91,4 +124,12 @@ def validate_site_id(site_id):
         print("Unvalid site ID. Valid sites:")
         print(df)
         raise(InputError)
-    return row
+    return SiteInfo(
+        country=row["Location"].values[0],
+        site=row["Site name"].values[0],
+        code=str(row["ID"].values[0]),
+        classification=row["Type"].values[0],
+        latitude=row["Latitude (°)"].values[0],
+        longitude=row["Longitude (°)"].values[0],
+        altitude=row["Altitude (m)"].values[0],
+    )

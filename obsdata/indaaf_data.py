@@ -208,16 +208,16 @@ def get_records(
         )
     return ObsData(
         data_version="?",
-        station_name=site_info["Site name"].values[0],
-        station_code=str(site_info["ID"].values[0]),
+        station_name=site_info.site,
+        station_code=site_info.code,
         station_category="global",
         observation_category=(
             "Air sampling observation at a stationary platform"),
-        country_territory=site_info["Location"].values[0],
+        country_territory=site_info.country,
         contributor="indaaf",
-        latitude=site_info["Latitude (°)"].values[0],
-        longitude=site_info["Longitude (°)"].values[0],
-        altitude=site_info["Altitude (m)"].values[0],
+        latitude=site_info.latitude,
+        longitude=site_info.longitude,
+        altitude=site_info.altitude,
         nr_of_sampling_heights=1,
         sampling_heights="?",
         contact_point=dataset_info["contact"],

@@ -142,7 +142,7 @@ def test_get_records():
     data = capmon_data.get_data_from_csvfile(
         capmon_file, dataset)
     data = data.loc[data.SiteID == site_code]
-    site_info = capmon_config.validate_site_id(
+    site_info = capmon_config.get_site_info(
         dataset, site_code)
     target_parameter = "H_mgL"
     status_parameter = "H_mgL_Flag"
@@ -189,7 +189,7 @@ def test_merge_data_many_years():
     dataset = "CAPMoN_Precip_Chemistry"
     parameter = "H+"
     site_code = "CAPMCAAB1EST"
-    site_info = capmon_config.validate_site_id(
+    site_info = capmon_config.get_site_info(
         dataset, site_code)
     data = capmon_data.merge_data_many_years(
         dataset,

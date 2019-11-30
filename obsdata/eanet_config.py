@@ -9,8 +9,8 @@ DATADIR = os.path.join(
 )
 
 
-EanetSite = namedtuple(
-    "EanetSite",
+SiteInfo = namedtuple(
+    "SiteInfo",
     [
         "country",
         "site",
@@ -23,7 +23,7 @@ EanetSite = namedtuple(
 )
 
 
-Datasets = [
+DATASETS = [
     {
         "name": "wet_monthly",
         "id": 1,
@@ -162,7 +162,7 @@ def get_site_information():
                     site = sline[0].split(" - ")[1]
                 except IndexError:
                     site = sline[0]
-                sites.append(EanetSite(
+                sites.append(SiteInfo(
                     country=country,
                     site=site,
                     code=sline[1],
@@ -175,17 +175,18 @@ def get_site_information():
 
 
 def validate_input(dataset_id, site_code, parameter):
-    if int(dataset_id) not in [dataset["id"] for dataset in Datasets]:
+    if int(dataset_id) not in [dataset["id"] for dataset in DATASETS]:
         print('Only the following datasets are implemented:')
-        for dataset in Datasets:
+        for dataset in DATASETS:
             print('{}: {}'.format(dataset["id"], dataset["name"]))
         raise(InputError)
-    index = [dataset["id"] for dataset in Datasets].index(int(dataset_id))
-    if parameter not in Datasets[index]["parameters"] and parameter != 'all':
+    index = [dataset["id"] for dataset in DATASETS].index(int(dataset_id))
+    if parameter not in DATASETS[index]["parameters"] and parameter != 'all':
         print("Dataset only contains the following parameters: {}".format(
-            Datasets[index]["parameters"]
+            DATASETS[index]["parameters"]
         ))
         raise(InputError)
+    eanet_sites = get_site_information()
     if site_code not in [s.code for s in eanet_sites] and site_code != 'all':
         print('no metadata is found for site {}.'.format(site_code))
         print('available sites are:')
@@ -193,6 +194,3 @@ def validate_input(dataset_id, site_code, parameter):
             print(site)
         raise(InputError)
     return True
-
-
-eanet_sites = get_site_information()

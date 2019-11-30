@@ -19,7 +19,8 @@ def get_eanet_monthly_data(
         xls_dir, dataset, start_date.year, end_date.year)
 
     # for these sites we have needed meta data
-    list_of_eanet_sites = np.array([s.site for s in eanet_config.eanet_sites])
+    list_of_eanet_sites = np.array(
+        [s.site for s in eanet_config.get_site_information()])
 
     list_of_sheets = [
         pd.read_excel(xlsfile, sheet_name=parameter)
@@ -40,7 +41,7 @@ def get_eanet_monthly_data(
             # if we not have meta data for this site
             continue
 
-        eanet_site = eanet_config.eanet_sites[
+        eanet_site = eanet_config.get_site_information()[
             np.nonzero(list_of_eanet_sites == site)[0][0]]
 
         data = eanet_data.merge_data(
@@ -56,12 +57,12 @@ def get_eanet_hourly_data(
         dataset_id, site, parameter, start_date, end_date,
         data_format, out_dir, csv_dir):
 
-    dataset = eanet_config.Datasets[[
-        dataset["id"] for dataset in eanet_config.Datasets
+    dataset = eanet_config.DATASETS[[
+        dataset["id"] for dataset in eanet_config.DATASETS
     ].index(int(dataset_id))]["name"]
 
     if site == "all":
-        sites = [s.code for s in eanet_config.eanet_sites]
+        sites = [s.code for s in eanet_config.get_site_information()]
     else:
         sites = [site]
 
@@ -180,8 +181,8 @@ def cli():
     )
 
     if args.parameter_code == 'all':
-        parameters = eanet_config.Datasets[[
-            dataset["id"] for dataset in eanet_config.Datasets
+        parameters = eanet_config.DATASETS[[
+            dataset["id"] for dataset in eanet_config.DATASETS
         ].index(int(args.dataset_id))]["parameters"]
 
     else:

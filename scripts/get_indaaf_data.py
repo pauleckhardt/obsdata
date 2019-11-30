@@ -19,13 +19,13 @@ def get_indaaf_data(
     out_filename = os.path.join(
         csv_dir,
         "{}-{}-{}.csv".format(
-            dataset_info["name"], int(site_info.ID), parameter
+            dataset_info["name"], site_info.code, parameter
         )
     )
 
     if indaaf_data.get_csv_file(
             dataset_id,
-            int(site_info.ID),
+            site_info.code,
             int(parameter_info.ID),
             out_filename):
 
@@ -116,15 +116,13 @@ def cli():
 
     dataset_id = indaaf_config.get_dataset_id(
         args.dataset_id, int(args.site_code))
-    if dataset_id == 0:
-        print("Dataset not available.")
 
-    dataset_info = indaaf_config.datasets[
-        [row["name"] for row in indaaf_config.datasets].index(
+    dataset_info = indaaf_config.DATASETS[
+        [row["name"] for row in indaaf_config.DATASETS].index(
             args.dataset_id)
     ]
 
-    site_info = indaaf_config.validate_site_id(
+    site_info = indaaf_config.get_site_info(
         int(args.site_code))
 
     parameter_info = indaaf_config.get_parameter_id(

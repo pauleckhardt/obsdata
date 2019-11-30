@@ -399,7 +399,7 @@ The five datasets are described in obsdata.eanet_config module.
     >>>
     >>>
     # print available datasets
-    >>>for dataset in eanet_config.datasets:
+    >>>for dataset in eanet_config.DATASETS:
     ...   print(dataset)
     ...
     {'name': 'wet_monthly', 'id': 1, 'parameters': ['Ca2+', 'Cl-', 'HCl', 'HNO3', ...]}
@@ -414,18 +414,16 @@ The eanet sites are also described in obsdata.eanet_config module.
 .. code-block:: python
 
     >>> from obsdata import eanet_config
-    >>>
-    >>>
-    >>>for site in eanet_config.eanet_sites:
+    >>> for site in eanet_config.get_site_information():
     ...     print(site)
     ... 
-    EanetSite(country='Cambodia', site='Phnom Penh', code='KHA001', latitude=11.555, ...)
-    EanetSite(country='China', site='Guanyinqiao', code='CNA002', latitude=29.58333, ...)
-    EanetSite(country='China', site='Haifu', code='CNA003', latitude=29.625, ...)
+    SiteInfo(country='Cambodia', site='Phnom Penh', code='KHA001', latitude=11.555, ...)
+    SiteInfo(country='China', site='Guanyinqiao', code='CNA002', latitude=29.58333, ...)
+    SiteInfo(country='China', site='Haifu', code='CNA003', latitude=29.625, ...)
     ...
     ...
     ...
-    EanetSite(country='Vietnam', site='Yen Bai', code='VNA007', latitude=21.70778, ...)
+    SiteInfo(country='Vietnam', site='Yen Bai', code='VNA007', latitude=21.70778, ...)
 
 
 All parameters of a dataset are not necessarily available for a given site
