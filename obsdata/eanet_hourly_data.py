@@ -147,8 +147,14 @@ class EanetWetDataExtractor:
     def get_records(self):
         """returns a list of records of the desired parameter"""
         records = []
+        for column in self.df.columns:
+            if column.startswith("Sample No."):
+                sample_no_header = column
+                break
+
         for index in range(len(self.df[self.parameter])):
-            if not self.df["Sample No."][index] > 0:
+
+            if not self.df[sample_no_header][index] > 0:
                 continue
             records.append(
                 Record(
@@ -174,7 +180,10 @@ class EanetWetDataExtractor:
         """returs the the date of a record"""
         offset = 0 if start_or_end == "start" else 2
         columns = self.df.columns.tolist()
-        column_index = columns.index("Sampling period")
+        for column_index, column in enumerate(columns):
+            if column.startswith("Sampling period"):
+                break
+        # column_index = columns.index("Sampling period")
         return datetime.strptime(
             '{}T{}'.format(
                 self.df[columns[column_index + offset]][row_index],
@@ -437,6 +446,7 @@ def get_data(dataset, site, parameter, year, datadir):
     unit = "?"
 
     if csvfile is not None:
+        print(dataset)
         if dataset == "wet_deposition":
             data_extractor = EanetWetDataExtractor(csvfile, parameter)
         else:
