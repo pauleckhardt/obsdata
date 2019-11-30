@@ -600,6 +600,38 @@ You can register on the INDAAF site_ in order to get an account.
 .. _site: https://indaaf.obs-mip.fr/database/
 
 
+The obsdata package can also be used interactively:
+
+.. code-block:: python
+
+    >>> from obsdata import indaaf_config
+
+    # print available datasets
+    >>>for dataset in indaaf_config.DATASETS:
+    ...    print(dataset)
+    ...
+    {'name': 'Precipitation', 'href': '/catalog/dataset/1', ...}
+    {'name': 'Gas', 'href': '/catalog/dataset/2', ...}  
+    {'name': 'Aerosols', 'href': '/catalog/dataset/3', ...}
+    {'name': 'Meteo', 'href': '/catalog/dataset/4', ...}
+
+    # get all site codes 
+    >>>site_codes = indaaf_config.get_all_site_codes()
+    >>>site_codes
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+    # get site information
+    >>>site_info = indaaf_config.get_site_info(1)
+    >>> site_info
+    SiteInfo(country='Mali', site='Agoufou', code='1', classification='Dry savanna',
+    latitude=15.15, longitude=0.6667, altitude=300.0)
+
+    # get all parameters of a dataset
+    >>>parameters = indaaf_config.get_all_parameters('Meteo')
+    >>>parameters
+    ['Wind speed', 'Wind direction', 'Temperature', 'Relative humidity', 'Rain']
+    
+
 Canadian Air and Precipitation Monitoring Network (CAPMoN)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -756,6 +788,34 @@ if not already downloaded. This means that if you run get_capmon_data
 twice and asking for data from the same dataset, the second run
 will take less time.
  
+
+The obsdata package can also be used interactively:
+
+.. code-block:: python
+
+    >>> from obsdata import capmon_config
+
+    # print available datasets
+    >>>for dataset in capmon_config.DATASETS:
+    ...    print(dataset)
+    ... 
+    {'name': 'CAPMoN_Ozone', 'parameters': ['O3'], ...}
+    {'name': 'CAPMoN_Precip_Chemistry', 'parameters': ['Ca2+', 'Cl-', 'H+', ...], ...}
+
+
+    # get all site codes for a specific dataset
+    >>>site_codes = capmon_config.get_all_site_codes('CAPMoN_Ozone')
+    >>>site_codes
+    ['CAPMCANS1KEJ', 'CAPMCAON1ALG', 'CAPMCAON1CHA', ...]
+
+    # get site information
+    >>>site_info = capmon_config.get_site_info('CAPMoN_Ozone', 'CAPMCANS1KEJ')
+    >>>site_info
+    SiteInfo(country='CA (CANADA)', site='Kejimkujik National Park', code='CAPMCANS1KEJ',
+    classification='Rural', latitude=44.43244, longitude=-65.20264, altitude=159,
+    sampling_heights='1988-2004: 2.0m')
+
+
 The obsdata package can probably quite easily be configured
 to handle more datasets from CAPMoN. The same code is handling
 the two datasets described above, and can therefore probably

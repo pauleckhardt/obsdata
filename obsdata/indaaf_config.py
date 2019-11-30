@@ -72,7 +72,7 @@ def get_all_parameters(dataset):
 
 
 def get_all_site_codes():
-    return range(1, 17)
+    return list(range(1, 17))
 
 
 def get_dataset_id(dataset, site_id):

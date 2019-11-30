@@ -50,4 +50,5 @@ def test_get_all_parameters():
 
 
 def test_get_all_site_codes():
-    assert indaaf_config.get_all_site_codes() == range(1, 17)
+    assert indaaf_config.get_all_site_codes() == list(
+        range(1, 17))
