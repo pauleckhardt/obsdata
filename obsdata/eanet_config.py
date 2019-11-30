@@ -145,24 +145,38 @@ def coordinates_to_decimal_form(latitude, longitude):
     )
 
 
-def get_site_information():
+def get_all_site_codes():
     eanetfile = os.path.join(DATADIR, 'eanet_sites.txt')
     with open(eanetfile, 'r') as sitefile:
         lines = sitefile.readlines()
-        sites = []
+        site_codes = []
+        for index, line in enumerate(lines):
+            sline = [i.strip() for i in line.split("  ") if not i == ""]
+            if index > 0 and len(sline) > 1:
+                site_codes.append(sline[1])
+        return site_codes
+
+
+def get_site_info(site_code):
+    eanetfile = os.path.join(DATADIR, 'eanet_sites.txt')
+    with open(eanetfile, 'r') as sitefile:
+        lines = sitefile.readlines()
         for index, line in enumerate(lines):
             sline = [i.strip() for i in line.split("  ") if not i == ""]
             if len(sline) == 1:
                 country = sline[0]
             if index > 0 and len(sline) > 1:
-                latitude, longitude = coordinates_to_decimal_form(
-                    sline[3], sline[4]
-                )
+                if sline[1] != site_code:
+                    continue
                 try:
                     site = sline[0].split(" - ")[1]
                 except IndexError:
                     site = sline[0]
-                sites.append(SiteInfo(
+                latitude, longitude = coordinates_to_decimal_form(
+                    sline[3], sline[4]
+                )
+
+                return SiteInfo(
                     country=country,
                     site=site,
                     code=sline[1],
@@ -170,8 +184,10 @@ def get_site_information():
                     latitude=latitude,
                     longitude=longitude,
                     altitude=sline[5]
-                ))
-    return sites
+                )
+    print("{} is not a valid site code.".format(site_code))
+    print("Valid site codes: {}".format(get_all_site_codes()))
+    raise(InputError)
 
 
 def validate_input(dataset_id, site_code, parameter):
@@ -186,8 +202,8 @@ def validate_input(dataset_id, site_code, parameter):
             DATASETS[index]["parameters"]
         ))
         raise(InputError)
-    eanet_sites = get_site_information()
-    if site_code not in [s.code for s in eanet_sites] and site_code != 'all':
+    eanet_sites = get_all_site_codes()
+    if site_code not in eanet_sites and site_code != 'all':
         print('no metadata is found for site {}.'.format(site_code))
         print('available sites are:')
         for site in eanet_sites:

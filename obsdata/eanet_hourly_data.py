@@ -11,7 +11,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 from obsdata.save_data import ObsData, Record
-from obsdata.eanet_config import get_site_information
+from obsdata.eanet_config import get_site_info
 
 
 class InputError(Exception):
@@ -417,6 +417,7 @@ def download_csvfile(datadir, dataset, station, year):
     # save csvdata locally
     with open(csvfile, 'wb') as f:
         for chunk in r.iter_content():
+            chunk = chunk.replace(b'\x81', b'')
             chunk = chunk.replace(b'\x83', b'')
             chunk = chunk.replace(b'\xCA', b'u')
             f.write(chunk)
@@ -457,10 +458,7 @@ def get_data(dataset, site, parameter, year, datadir):
             print(data_extractor.get_products())
             records = []
 
-    eanet_sites = get_site_information()
-    eanet_site = eanet_sites[
-        [s.code for s in eanet_sites].index(site)
-    ]
+    eanet_site = get_site_info(site)
 
     return ObsData(
         data_version="?",

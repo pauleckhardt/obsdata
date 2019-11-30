@@ -408,31 +408,23 @@ The five datasets are described in obsdata.eanet_config module.
     {'name': 'dry_deposition_filter_pack', 'id': 4, 'parameters': ['Ca2+', 'Cl-', ...]}
     {'name': 'dry_deposition_passive_sampler', 'id': 5, 'parameters': ['SO2', 'NO2']}
 
+    # get all site codes
+    >>> site_codes = eanet_config.get_all_site_codes()
+    >>> site_codes
+    ['KHA001', 'CNA002', 'CNA003', 'CNA004', ...]
 
-The eanet sites are also described in obsdata.eanet_config module.
-
-.. code-block:: python
-
-    >>> from obsdata import eanet_config
-    >>> for site in eanet_config.get_site_information():
-    ...     print(site)
-    ... 
-    SiteInfo(country='Cambodia', site='Phnom Penh', code='KHA001', latitude=11.555, ...)
-    SiteInfo(country='China', site='Guanyinqiao', code='CNA002', latitude=29.58333, ...)
-    SiteInfo(country='China', site='Haifu', code='CNA003', latitude=29.625, ...)
-    ...
-    ...
-    ...
-    SiteInfo(country='Vietnam', site='Yen Bai', code='VNA007', latitude=21.70778, ...)
-
+    # get site information
+    >>>site_info = eanet_config.get_site_info('KHA001')
+    >>> site_info
+    SiteInfo(country='Cambodia', site='Phnom Penh', code='KHA001', classification='Urban',
+    latitude=11.555, longitude=104.93889, altitude='12')
+    
 
 All parameters of a dataset are not necessarily available for a given site
 and year.  
 
-
 The script "get_eanet_data" downloads Excel (or CSV) files
-and the -x parameter determines
-where these files are stored.
+and the -x parameter determines where these files are stored.
 If the file already exists in the data directory (from a previous
 run of the program) the file is not downloaded
 again, and hence the exceution of the script is much faster.

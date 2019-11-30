@@ -2,7 +2,6 @@
 import argparse
 from datetime import datetime
 import pandas as pd
-import numpy as np
 from obsdata import (
     eanet_config,
     eanet_data,
@@ -19,8 +18,11 @@ def get_eanet_monthly_data(
         xls_dir, dataset, start_date.year, end_date.year)
 
     # for these sites we have needed meta data
-    list_of_eanet_sites = np.array(
-        [s.site for s in eanet_config.get_site_information()])
+    site_codes = eanet_config.get_all_site_codes()
+    list_of_eanet_sites = [
+        getattr(eanet_config.get_site_info(site_code), 'site')
+        for site_code in site_codes
+    ]
 
     list_of_sheets = [
         pd.read_excel(xlsfile, sheet_name=parameter)
@@ -28,21 +30,22 @@ def get_eanet_monthly_data(
     ]
 
     # sheets = pd.read_excel(xlsfile, sheet_name=None).keys()
-    list_of_sites_all_sheets = eanet_data.get_all_sites(list_of_sheets)
+    list_of_sites_all_sheets = eanet_data.get_all_sites(
+        list_of_sheets)
 
     if site == 'all':
         list_of_sites = list_of_sites_all_sheets
     else:
-        list_of_sites = [site]
+        list_of_sites = [list_of_eanet_sites[site_codes.index(site)]]
 
     for site in list_of_sites:
 
-        if not np.any(list_of_eanet_sites == site):
+        if site not in list_of_eanet_sites:
             # if we not have meta data for this site
             continue
-
-        eanet_site = eanet_config.get_site_information()[
-            np.nonzero(list_of_eanet_sites == site)[0][0]]
+        eanet_site = eanet_config.get_site_info(
+            site_codes[list_of_eanet_sites.index(site)]
+        )
 
         data = eanet_data.merge_data(
             list_of_sheets, eanet_site, dataset, parameter)
@@ -62,7 +65,7 @@ def get_eanet_hourly_data(
     ].index(int(dataset_id))]["name"]
 
     if site == "all":
-        sites = [s.code for s in eanet_config.get_site_information()]
+        sites = eanet_config.get_all_site_codes()
     else:
         sites = [site]
 
