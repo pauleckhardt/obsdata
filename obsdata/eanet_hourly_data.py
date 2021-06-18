@@ -3,12 +3,12 @@
    that downloads and imports data from the
    non-public EANET dataset
 """
-import os
-import requests
-import json
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
+import json
+import numpy as np
+import os
+import pandas as pd
+import requests  # type: ignore
 
 from obsdata.save_data import ObsData, Record
 from obsdata.eanet_config import get_site_info

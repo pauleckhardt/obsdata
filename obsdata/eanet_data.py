@@ -3,12 +3,13 @@
    that downloads and imports data from the
    public dry monthly EANET dataset
 """
-import pandas as pd
-from datetime import datetime
-import requests
 from bs4 import BeautifulSoup
-import os
+from datetime import datetime
 import numpy as np
+import os
+import pandas as pd
+import requests  # type: ignore
+
 from obsdata.save_data import ObsData, Record
 
 
@@ -78,7 +79,7 @@ class EanetSheetExtractor:
             start_index = site["column"] + 2
             record = []
             # loop over 12 months
-            for d in self.sheet.loc[row][start_index : start_index + 12]:
+            for d in self.sheet.loc[row][start_index: start_index + 12]:
                 try:
                     record.append(float(d))
                 except ValueError:

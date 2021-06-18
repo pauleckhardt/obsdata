@@ -1,8 +1,8 @@
-import os
-from dateutil.relativedelta import relativedelta
-from netCDF4 import Dataset, date2num
 from collections import namedtuple
+from netCDF4 import Dataset, date2num
+import os
 import numpy as np
+from dateutil.relativedelta import relativedelta  # type: ignore
 
 
 ObsData = namedtuple(
