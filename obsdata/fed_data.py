@@ -1,7 +1,8 @@
-import requests
-import csv
-from datetime import datetime
 from bs4 import BeautifulSoup
+from datetime import datetime
+import csv
+import requests  # type: ignore
+
 from obsdata.save_data import ObsData, Record
 
 
@@ -146,10 +147,10 @@ def parse_fed_data(text):
     for item in ["Datasets", "Sites", "Parameters", "Status Flags"]:
         (start_row_nr, end_row_nr) = get_row_nr(rows, item)
         data[item.lower()] = get_data_dict(
-            rows[start_row_nr : end_row_nr])
+            rows[start_row_nr: end_row_nr])
 
     (start_row_nr, end_row_nr) = get_row_nr(rows, "Data")
-    records = get_records(rows[start_row_nr : end_row_nr])
+    records = get_records(rows[start_row_nr: end_row_nr])
 
     return ObsData(
         data_version="",  # FIXME

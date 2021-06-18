@@ -1,10 +1,11 @@
-import os
-import requests
 from bs4 import BeautifulSoup
-import json
-import pandas as pd
 from datetime import datetime
 from urllib3.exceptions import InsecureRequestWarning
+import json
+import os
+import pandas as pd
+import requests  # type: ignore
+
 from obsdata.save_data import ObsData, Record
 
 

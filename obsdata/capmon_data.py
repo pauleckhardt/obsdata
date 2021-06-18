@@ -1,8 +1,9 @@
+from datetime import datetime
+import numpy as np
 import os
 import pandas as pd
-from datetime import datetime
-import requests
-import numpy as np
+import requests  # type: ignore
+
 from obsdata.save_data import ObsData, Record
 from obsdata.capmon_config import DATASETS
 

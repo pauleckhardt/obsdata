@@ -77,7 +77,7 @@ Then you can create a virtualenv by:
 	
 .. code-block:: bash	
 	
-    mkvirtualenv --python=/usr/bin/python3.7 obsdata
+    mkvirtualenv --python=/usr/bin/python3.8 obsdata
 	
 and change to this envorinment by:
 	
