@@ -21,6 +21,36 @@ into a specific data format described in this document.
 .. _INDAAF: https://indaaf.obs-mip.fr/
 .. _CAPMoN: https://www.canada.ca/en/environment-climate-change/services/air-pollution/monitoring-networks-data.html
 
+
+The Project
+-----------
+
+This project was initiated by David Simpson of `EMEP MSC-W`_, Norwegian
+Meteorological Institute, Oslo, and Chalmers University of Technology,
+Gothenburg, Sweden, with funds provided by the Swedish strategic
+research area project: ModElling the Regional and Global Earth system
+(MERGE_). The aim is re-format observational data from different networks
+into a common ascii format, for use in the validation of chemical
+transport models such as the EMEP MSC-W model, and as a contribution to
+Global Atmosphere Watch (GAW_) activities to improve the availability of
+measurement data for various projects.
+
+.. _`EMEP MSC-W`: https://www.emep.int/mscw
+.. _GAW: https://community.wmo.int/activity-areas/gaw
+.. _MERGE: https://www.merge.lu.se
+
+
+The software was designed and constructed by Bengt Rydberg of Molflow,
+a Gothenburg based company which cooperates with science teams in several
+projects to collect, process and compare data from complex sensors.
+
+Contacts
+--------
+
+For questions about the overall project: david.simpson@chalmers.se, david.simpson@met.no
+
+For questions about the software: bengt.rydberg@molflow.com
+
 Prerequisites
 --------------------
 
@@ -55,7 +85,7 @@ Installation
 Python packages should almost never be installed on the host
 Python environment, in order to avoid problems that can arise
 due to dependencies on different versions of packages.
-The obsdata package is prefarbely installed
+The obsdata package is preferably installed
 in a virtualenv_. A suitable virtualenv for the optimal-interpolation
 package can be created by first installing the package
 virtualenvwrapper_ on the host (so check that you are not
@@ -79,13 +109,13 @@ Then you can create a virtualenv by:
 	
     mkvirtualenv --python=/usr/bin/python3.8 obsdata
 	
-and change to this envorinment by:
+and change to this environment by:
 	
 .. code-block:: bash
 	  
     workon obsdata
 	
-and if yoy want to change back:
+and if you want to change back:
 	
 .. code-block:: bash
 	
@@ -159,7 +189,7 @@ In this case the get_all_fed_data.py script retrieves
 OCf data (from IMPROVE Aerosol dataset) at all sites and
 between 2010-01-01 and 2015-12-31,
 and creates a single file for each site.
-The script also retrives O3 data (from the CASTNet Ozone - Hourly dataset),
+The script also retrieves O3 data (from the CASTNet Ozone - Hourly dataset),
 and creates yearly files between 2010 and 2015 for all sites.
 
 
